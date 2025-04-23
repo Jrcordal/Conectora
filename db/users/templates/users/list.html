@@ -1,0 +1,25 @@
+{% extends 'users/base.html' %}
+
+{% block body %}
+    <div class="container">
+        <div class="row m-5">
+            <div class="col-md-12">
+                <h2>CV Database Profile List</h2>
+            </div>
+ 
+        </div>
+ 
+        {% for profile in profiles %}
+        <div class="row">
+            <div class="col-md-6">
+            {{ profile.user.first_name }} {{ profile.user.last_name }}
+            </div>    
+            <div class="col-md-6">
+                   <a href="{% url 'cv' id=profile.user.id %}" class="btn btn-warning">CV</a>
+                </div>  
+        </div>
+        <hr>
+        {% endfor %}
+        
+    </div>
+{% endblock %}

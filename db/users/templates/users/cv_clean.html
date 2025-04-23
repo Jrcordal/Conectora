@@ -1,0 +1,28 @@
+<body>
+    <p>{{ user_profile.first_name }} {{ user_profile.last_name }}</p>
+    <hr/>
+    <br/>
+    <p>Summary</p>
+    <p>{{ user_profile.summary }}</p>
+
+    <hr/>
+    <br/>
+    <p>Education</p>
+
+    <ul>
+        <li>Bachelor: {{ user_profile.bachelor }}. {{ user_profile.university_bachelor }}</li>
+        <li>Master: {{ user_profile.master }}. {{ user_profile.university_master }}</li>
+    </ul>
+    <hr/>
+
+    <p>Projects</p>
+    <p>{{ user_profile.projects }}</p>
+    <hr/>
+
+    <p>Skills</p>
+    <p>{{ user_profile.skills }}</p>
+    <hr/>
+
+    <p>Years of Experience</p>
+    <p>{{ user_profile.years_of_experience }}</p>
+</body>

@@ -1,0 +1,128 @@
+{% extends 'users/base.html' %}
+
+{% block body %}
+    <div class="container">
+      <div class="row justify-content-center m-5">
+        <div class="col-md-8 text-center">
+          <h1>Profile Generator</h1>
+          <hr>
+        </div>
+      </div>
+      <div class="row justify-content-center m-5">
+        <div class="col-md-8 text-center">
+          <h4>Please fill out your details</h4>
+          
+        </div>
+      </div>
+        <div class="row justify-content-center m-5">
+            <div class="col-md-7">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+
+                    <div class="form-group mb-3 text-center">
+                        <label for="{{ form.summary.id_for_label }}" class="d-block mb-2">Summary</label>
+                        {{ form.summary }}
+                        {% if form.summary.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.summary.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group mb-3 text-center">
+                        <label for="{{ form.bachelor.id_for_label }}" class="d-block mb-2">Bachelor Degree</label>
+                        {{ form.bachelor }}
+                        {% if form.bachelor.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.bachelor.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group mb-3 text-center">
+                        <label for="{{ form.university_bachelor.id_for_label }}" class="d-block mb-2">University Bachelor</label>
+                        {{ form.university_bachelor }}
+                        {% if form.university_bachelor.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.university_bachelor.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group mb-3 text-center">
+                        <label for="{{ form.master.id_for_label }}" class="d-block mb-2">Master Degree</label>
+                        {{ form.master }}
+                        {% if form.master.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.master.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group mb-3 text-center">
+                        <label for="{{ form.university_master.id_for_label }}" class="d-block mb-2">University Master</label>
+                        {{ form.university_master }}
+                        {% if form.university_master.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.university_master.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group mb-3 text-center">
+                        <label for="{{ form.years_of_experience.id_for_label }}" class="d-block mb-2">Years of Experience</label>
+                        {{ form.years_of_experience }}
+                        {% if form.years_of_experience.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.years_of_experience.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group mb-3 text-center">
+                        <label for="{{ form.skills.id_for_label }}" class="d-block mb-2">Skills</label>
+                        {{ form.skills }}
+                        {% if form.skills.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.skills.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group mb-3 text-center">
+                        <label for="{{ form.projects.id_for_label }}" class="d-block mb-2">Projects</label>
+                        {{ form.projects }}
+                        {% if form.projects.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.projects.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group mb-3 text-center">
+                        <label for="{{ form.image.id_for_label }}" class="d-block mb-2">Profile Picture</label>
+                        {{ form.image }}
+                        {% if form.image.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.image.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group mb-3 text-center">
+                        <label for="{{ form.location.id_for_label }}" class="d-block mb-2">Location</label>
+                        {{ form.location }}
+                        {% if form.location.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.location.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Update Profile</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
