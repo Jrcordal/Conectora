@@ -29,7 +29,7 @@ def register(request):
         form = RegisterForm(request.POST)
         if form.is_valid(): #check for duplicates
             form.save() # save user. commit=False means that the user is not saved yet
-            Profile.objects.create(user=form.instance)
+            Profile.objects.get_or_create(user=form.instance)
             username= form.cleaned_data.get('username') # extract user name from form
             messages.success(request, f'Welcome {username}, your account is created')
             return redirect('login')
@@ -54,37 +54,54 @@ def logout_view(request):
 
 @login_required
 def cv_form(request):
-    # Intenta obtener el perfil o None si no existe
     try:
         profile = Profile.objects.get(user=request.user)
     except Profile.DoesNotExist:
         profile = None
-
-
+    
+    # Fields that should be converted from lists to newline-separated text for the form
+    list_fields = ['university_education', 'education_certificates', 'experience', 'skills', 'projects', 'interests', 'volunteering', 'languages']
     
     if request.method == 'POST':
+        # Mantener la estructura condicional para determinar si estamos creando o actualizando
         if profile:
-            form = ProfileForm(request.POST, request.FILES, instance=profile)
+            form = ProfileForm(request.POST, instance=profile)
         else:
-            form = ProfileForm(request.POST, request.FILES)
+            form = ProfileForm(request.POST)
+        
+        if form.is_valid(): #check if the form is valid
+            # Don't save yet - we need to process the list fields
+            profile_instance = form.save(commit=False)
             
-        if form.is_valid():
+            # Convert newline-separated text to lists for JSON fields
+            for field in list_fields:
+                text_value = form.cleaned_data[field]
+                if text_value:
+                    # Split by newlines and remove empty lines
+                    list_value = [line.strip() for line in text_value.split('\n') if line.strip()]
+                    setattr(profile_instance, field, list_value)
+                else:
+                    setattr(profile_instance, field, None)
+            
+            # Set user if this is a new profile
             if not profile:
-                profile = form.save(commit=False) # save the form but don't commit to the database yet because we need to set the user field
-                profile.user = request.user # set the user field to the current user
-                profile.save() # then it is possible tosave the profile to the database
-            else:
-                form.save()
-                
+                profile_instance.user = request.user
+            
+            profile_instance.save()
             messages.success(request, 'Your CV has been updated correctly.')
             return redirect('cv', id=request.user.id)
-        elif form.errors:
-            for field, errors in form.errors.items():
-                for error in errors:
-                    messages.warning(request, f'Error in {field}: {error}')
+            
     else:
+        # For GET requests, create a form with the current data
         if profile:
-            form = ProfileForm(instance=profile)
+            # Convert lists to newline-separated text for display in the form
+            initial_data = {}
+            for field in list_fields:
+                field_value = getattr(profile, field, None)
+                if field_value:
+                    initial_data[field] = '\n'.join(field_value)
+            
+            form = ProfileForm(instance=profile, initial=initial_data)
         else:
             form = ProfileForm()
     
@@ -134,17 +151,17 @@ def cv(request, id):
             # Si es staff, puede ver cualquier perfil
             if request.user.is_staff:
                 # admins can see any profile
-                return render(request, 'users/cv.hmtl', {'user_profile':user})
+                return render(request, 'users/cv.html', {'user_profile':user})
             # Si no es staff, solo puede ver su propio perfil
             elif request.user.id == user_id:
                 return render(request, 'users/cv.html', {'user_profile':user})
             else:
                 raise PermissionDenied("You don't have permission to see this CV")
             
-        except Profile.DoesNotExist:
-            if request.user.id == user_id:
+        except Profile.DoesNotExist: #if the profile does not exist
+            if request.user.id == user_id: #if the user is the same as the one logged in
                 messages.info(request, 'You have not created your profile yet')
-                return redirect('cv_form')
+                return redirect('cv_form') #redirect to the form to create the profile
             elif request.user.is_staff:
                 return render(request, 'users/no_profile.html', {'user':user, 'admin_view':True})
             else:
@@ -167,9 +184,11 @@ def redirect_to_cv(request):
 
 @login_required
 def url_user_cv(request):
-    user_cv_path = f"/cv/{request.user.profile.id}/"
-    return render(request, "users/cv.html", {"user_cv_path": user_cv_path})
+        user_cv_path = f"/cv/{request.user.profile.id}/"
+        return render(request, "users/cv.html", {"user_cv_path": user_cv_path})
 
 
 
 
+def main(request):
+    return render(request, 'users/main.html')

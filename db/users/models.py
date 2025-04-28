@@ -30,20 +30,23 @@ def validate_string(value):
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
 
-    summary = models.TextField(blank=True, null=True)
-    bachelor = models.CharField(max_length=255, validators=[validate_string], null=True, blank=True)
-    university_bachelor = models.CharField(max_length=255, validators=[validate_string], null=True, blank=True)
-    master = models.CharField(max_length=255, validators=[validate_string], null=True, blank=True)
-    university_master = models.CharField(max_length=255, validators=[validate_string], null=True, blank=True)
-    years_of_experience = models.IntegerField(validators=[MinValueValidator(1), validate_integer], null=True, blank=True)
-    skills = models.TextField(max_length=1000, null=True, blank=True)
-    projects = models.TextField(max_length=1000, null=True, blank=True)
-    image = models.ImageField(default='profilepic.jpg', upload_to='profile_pictures', null=True, blank=True)
-    location = models.CharField(max_length=100, null=True, blank=True)
+    # Fields that will store JSON data
+    university_education = models.JSONField(blank=True, null=True, default=None)
+    education_certificates = models.JSONField(blank=True, null=True, default=None)
 
+    experience = models.JSONField(blank=True, null=True, default=None)
+    skills = models.JSONField(blank=True, null=True, default=None)
+    projects = models.JSONField(blank=True, null=True, default=None)
+    interests = models.JSONField(blank=True, null=True, default=None)
+    volunteering = models.JSONField(blank=True, null=True, default=None)
+    languages = models.JSONField(blank=True, null=True, default=None)
+    
+    # Regular fields
+    location = models.CharField(max_length=100, blank=True, null=True)
+    linkedin = models.URLField(blank=True, null=True)
+    github = models.URLField(blank=True, null=True)
+    personal_website = models.URLField(blank=True, null=True)
+    
     def __str__(self):
         return self.user.username
-    
-
-
-
+        

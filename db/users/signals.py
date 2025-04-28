@@ -18,17 +18,20 @@ def create_profile_for_non_superuser(sender, instance, created, **kwargs):
             # Crear el perfil con valores predeterminados si no existe
             Profile.objects.create(
                 user=instance,
-                # Valores predeterminados para campos obligatorios (NOT NULL)
-                bachelor="Por completar",
-                university_bachelor="Por completar",
-                master="Por completar",
-                university_master="Por completar",
-                years_of_experience=1,  # Cumple con MinValueValidator(1)
-                skills="Por completar",
-                projects="Por completar",
-                location="Por completar"
-                # 'summary' puede estar en blanco
-                # 'image' tiene valor predeterminado y permite nulos/blancos
+                # Usar listas vacías para los campos JSON
+                university_education=[],
+                education_certificates=[],
+                experience=[],
+                skills=[],
+                projects=[],
+                interests=[],
+                volunteering=[],
+                languages=[],
+                # Valores predeterminados para campos regulares
+                location="",
+                linkedin="",
+                github="",
+                personal_website=""
             )
 
 # NO incluimos la función save_profile aquí

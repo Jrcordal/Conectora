@@ -11,74 +11,103 @@
       <div class="row justify-content-center m-5">
         <div class="col-md-8 text-center">
           <h4>Please fill out your details</h4>
-          
         </div>
       </div>
         <div class="row justify-content-center m-5">
             <div class="col-md-7">
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
-                    
+                    <!-- Personal Information Section -->
+                    <h3 class="mt-4 mb-3">Personal Information</h3>
 
                     <div class="form-group mb-3 text-center">
-                        <label for="{{ form.summary.id_for_label }}" class="d-block mb-2">Summary</label>
-                        {{ form.summary }}
-                        {% if form.summary.errors %}
+                        <label for="{{ form.location.id_for_label }}" class="d-block mb-2">Location</label>
+                        {{ form.location }}
+                        {% if form.location.errors %}
                             <div class="invalid-feedback d-block">
-                                {{ form.summary.errors }}
+                                {{ form.location.errors }}
                             </div>
                         {% endif %}
                     </div>
 
                     <div class="form-group mb-3 text-center">
-                        <label for="{{ form.bachelor.id_for_label }}" class="d-block mb-2">Bachelor Degree</label>
-                        {{ form.bachelor }}
-                        {% if form.bachelor.errors %}
+                        <label for="{{ form.linkedin.id_for_label }}" class="d-block mb-2">LinkedIn Profile</label>
+                        {{ form.linkedin }}
+                        {% if form.linkedin.errors %}
                             <div class="invalid-feedback d-block">
-                                {{ form.bachelor.errors }}
+                                {{ form.linkedin.errors }}
                             </div>
                         {% endif %}
                     </div>
 
                     <div class="form-group mb-3 text-center">
-                        <label for="{{ form.university_bachelor.id_for_label }}" class="d-block mb-2">University Bachelor</label>
-                        {{ form.university_bachelor }}
-                        {% if form.university_bachelor.errors %}
+                        <label for="{{ form.github.id_for_label }}" class="d-block mb-2">GitHub Profile</label>
+                        {{ form.github }}
+                        {% if form.github.errors %}
                             <div class="invalid-feedback d-block">
-                                {{ form.university_bachelor.errors }}
+                                {{ form.github.errors }}
                             </div>
                         {% endif %}
                     </div>
 
                     <div class="form-group mb-3 text-center">
-                        <label for="{{ form.master.id_for_label }}" class="d-block mb-2">Master Degree</label>
-                        {{ form.master }}
-                        {% if form.master.errors %}
+                        <label for="{{ form.personal_website.id_for_label }}" class="d-block mb-2">Personal Website</label>
+                        {{ form.personal_website }}
+                        {% if form.personal_website.errors %}
                             <div class="invalid-feedback d-block">
-                                {{ form.master.errors }}
+                                {{ form.personal_website.errors }}
                             </div>
                         {% endif %}
                     </div>
 
                     <div class="form-group mb-3 text-center">
-                        <label for="{{ form.university_master.id_for_label }}" class="d-block mb-2">University Master</label>
-                        {{ form.university_master }}
-                        {% if form.university_master.errors %}
+                        <label for="{{ form.image.id_for_label }}" class="d-block mb-2">Profile Picture</label>
+                        {{ form.image }}
+                        {% if form.image.errors %}
                             <div class="invalid-feedback d-block">
-                                {{ form.university_master.errors }}
+                                {{ form.image.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Education Section -->
+                    <h3 class="mt-4 mb-3">Education</h3>
+
+                    <div class="form-group mb-3 text-center">
+                        <label for="{{ form.university_education.id_for_label }}" class="d-block mb-2">University Education</label>
+                        {{ form.university_education }}
+                        {% if form.university_education.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.university_education.errors }}
                             </div>
                         {% endif %}
                     </div>
 
                     <div class="form-group mb-3 text-center">
-                        <label for="{{ form.years_of_experience.id_for_label }}" class="d-block mb-2">Years of Experience</label>
-                        {{ form.years_of_experience }}
-                        {% if form.years_of_experience.errors %}
+                        <label for="{{ form.education_certificates.id_for_label }}" class="d-block mb-2">Certificates & Courses</label>
+                        {{ form.education_certificates }}
+                        {% if form.education_certificates.errors %}
                             <div class="invalid-feedback d-block">
-                                {{ form.years_of_experience.errors }}
+                                {{ form.education_certificates.errors }}
                             </div>
                         {% endif %}
                     </div>
+
+                    <!-- Professional Experience Section -->
+                    <h3 class="mt-4 mb-3">Professional Experience</h3>
+
+                    <div class="form-group mb-3 text-center">
+                        <label for="{{ form.experience.id_for_label }}" class="d-block mb-2">Work Experience</label>
+                        {{ form.experience }}
+                        {% if form.experience.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.experience.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Skills & Projects Section -->
+                    <h3 class="mt-4 mb-3">Skills & Projects</h3>
 
                     <div class="form-group mb-3 text-center">
                         <label for="{{ form.skills.id_for_label }}" class="d-block mb-2">Skills</label>
@@ -100,27 +129,42 @@
                         {% endif %}
                     </div>
 
+                    <!-- Additional Information Section -->
+                    <h3 class="mt-4 mb-3">Additional Information</h3>
+
                     <div class="form-group mb-3 text-center">
-                        <label for="{{ form.image.id_for_label }}" class="d-block mb-2">Profile Picture</label>
-                        {{ form.image }}
-                        {% if form.image.errors %}
+                        <label for="{{ form.interests.id_for_label }}" class="d-block mb-2">Interests</label>
+                        {{ form.interests }}
+                        {% if form.interests.errors %}
                             <div class="invalid-feedback d-block">
-                                {{ form.image.errors }}
+                                {{ form.interests.errors }}
                             </div>
                         {% endif %}
                     </div>
 
                     <div class="form-group mb-3 text-center">
-                        <label for="{{ form.location.id_for_label }}" class="d-block mb-2">Location</label>
-                        {{ form.location }}
-                        {% if form.location.errors %}
+                        <label for="{{ form.volunteering.id_for_label }}" class="d-block mb-2">Volunteering</label>
+                        {{ form.volunteering }}
+                        {% if form.volunteering.errors %}
                             <div class="invalid-feedback d-block">
-                                {{ form.location.errors }}
+                                {{ form.volunteering.errors }}
                             </div>
                         {% endif %}
                     </div>
 
-                    <button type="submit" class="btn btn-primary">Update Profile</button>
+                    <div class="form-group mb-3 text-center">
+                        <label for="{{ form.languages.id_for_label }}" class="d-block mb-2">Languages</label>
+                        {{ form.languages }}
+                        {% if form.languages.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.languages.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="text-center mt-4 mb-5">
+                        <button type="submit" class="btn btn-primary btn-lg">Update Profile</button>
+                    </div>
                 </form>
             </div>
         </div>

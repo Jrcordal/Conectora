@@ -1,34 +1,207 @@
 {% extends 'users/base.html' %}
 
 {% block body %}
-<body>
-    <h2>{{user_profile.user.first_name}} {{user_profile.user.last_name}}</h2>
-    <h2>{{user_profile.user.email}}</h2>
-    <hr/>
-    <br/>
-    <p>Summary</p>
-    <p>{{user_profile.summary}}</p>
+<div class="container my-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>{{user_profile.user.first_name}} {{user_profile.user.last_name}}</h1>
+            <p class="lead">{{user_profile.user.email}}</p>
+            {% if user_profile.location %}
+                <p><i class="fas fa-map-marker-alt"></i> {{user_profile.location}}</p>
+            {% endif %}
+        </div>
+        <div class="col-md-4 text-end">
+            {% if user_profile.image %}
+                <img src="{{ user_profile.image.url }}" alt="Profile Picture" class="img-fluid rounded-circle" style="max-width: 150px;">
+            {% endif %}
+        </div>
+    </div>
 
-    <hr/>
-    <br/>
-    <p>Education</p>
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3>Connect</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% if user_profile.linkedin %}
+                        <div class="col-md-4 mb-2">
+                            <a href="{{ user_profile.linkedin }}" target="_blank" class="btn btn-outline-primary w-100">
+                                <i class="fab fa-linkedin"></i> LinkedIn
+                            </a>
+                        </div>
+                        {% endif %}
+                        
+                        {% if user_profile.github %}
+                        <div class="col-md-4 mb-2">
+                            <a href="{{ user_profile.github }}" target="_blank" class="btn btn-outline-dark w-100">
+                                <i class="fab fa-github"></i> GitHub
+                            </a>
+                        </div>
+                        {% endif %}
+                        
+                        {% if user_profile.personal_website %}
+                        <div class="col-md-4 mb-2">
+                            <a href="{{ user_profile.personal_website }}" target="_blank" class="btn btn-outline-info w-100">
+                                <i class="fas fa-globe"></i> Website
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <ul>
-        <li>Bachelor: {{user_profile.bachelor}}. {{user_profile.university_bachelor}}</li>
-        <li>Master: {{user_profile.master}}. {{user_profile.university_master}}</li>
-    </ul>
-    <hr/>
+    {% if user_profile.university_education %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3>Education</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for education in user_profile.university_education %}
+                            <li class="list-group-item">{{ education }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
-    <p>Projects</p>
-    <p>{{user_profile.projects}}</p>
-    <hr/>
+    {% if user_profile.education_certificates %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3>Certificates & Courses</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for certificate in user_profile.education_certificates %}
+                            <li class="list-group-item">{{ certificate }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
-    <p>Skills</p>
-    <p>{{user_profile.skills}}</p>
-    <hr/>
+    {% if user_profile.experience %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3>Work Experience</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for job in user_profile.experience %}
+                            <li class="list-group-item">{{ job }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
-    <p>Years of Experience</p>
-    <p>{{user_profile.years_of_experience}}</p>
+    {% if user_profile.skills %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3>Skills</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for skill in user_profile.skills %}
+                            <div class="col-md-4 mb-2">
+                                <span class="badge bg-secondary p-2">{{ skill }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
+    {% if user_profile.projects %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3>Projects</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for project in user_profile.projects %}
+                            <li class="list-group-item">{{ project }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
+    <div class="row">
+        {% if user_profile.interests %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h3>Interests</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for interest in user_profile.interests %}
+                            <li class="list-group-item">{{ interest }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if user_profile.volunteering %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h3>Volunteering</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for volunteer in user_profile.volunteering %}
+                            <li class="list-group-item">{{ volunteer }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if user_profile.languages %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h3>Languages</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for language in user_profile.languages %}
+                            <li class="list-group-item">{{ language }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}
