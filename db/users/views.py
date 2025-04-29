@@ -98,8 +98,10 @@ def cv_form(request):
             initial_data = {}
             for field in list_fields:
                 field_value = getattr(profile, field, None)
-                if field_value:
+                if field_value and len(field_value) > 0:
                     initial_data[field] = '\n'.join(field_value)
+                else:
+                    initial_data[field] = ''
             
             form = ProfileForm(instance=profile, initial=initial_data)
         else:
@@ -129,11 +131,20 @@ def cv_pdf(request, id):
         'page-size': 'Letter',
         'encoding': "UTF-8",
     }
-    config = pdfkit.configuration(wkhtmltopdf = r'C:\wkhtmltox\bin\wkhtmltopdf.exe')
+    config = pdfkit.configuration(wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
     pdf = pdfkit.from_string(html,False, options, configuration=config)
     response = HttpResponse(pdf, content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment'
-    filename = "cv.pdf"
+
+
+    if user_profile.user.first_name and user_profile.user.last_name:
+        name = f"{user_profile.user.first_name}_{user_profile.user.last_name}"
+    elif user_profile.user.first_name:
+        name = user_profile.user.first_name
+    else:
+        name = user_profile.user.username
+    filename = f"CV_{name}.pdf"
+
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
     return response
 
 
@@ -151,10 +162,10 @@ def cv(request, id):
             # Si es staff, puede ver cualquier perfil
             if request.user.is_staff:
                 # admins can see any profile
-                return render(request, 'users/cv.html', {'user_profile':user})
+                return render(request, 'users/cv.html', {'user_profile':profile})
             # Si no es staff, solo puede ver su propio perfil
             elif request.user.id == user_id:
-                return render(request, 'users/cv.html', {'user_profile':user})
+                return render(request, 'users/cv.html', {'user_profile':profile})
             else:
                 raise PermissionDenied("You don't have permission to see this CV")
             
@@ -163,7 +174,7 @@ def cv(request, id):
                 messages.info(request, 'You have not created your profile yet')
                 return redirect('cv_form') #redirect to the form to create the profile
             elif request.user.is_staff:
-                return render(request, 'users/no_profile.html', {'user':user, 'admin_view':True})
+                return render(request, 'users/no_profile.html', {'user':profile, 'admin_view':True})
             else:
                 raise PermissionDenied("You don't have permission to see this CV")
 
