@@ -22,9 +22,8 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 env = environ.Env()
+env.read_env(BASE_DIR / '.env.local')  # o '.env.production' según el entorno
 
-env_file = f".env.{os.environ.get('DJANGO_ENV', 'local')}"
-env.read_env(BASE_DIR / env_file)
 
 
 SECRET_KEY = env('SECRET_KEY')
@@ -69,6 +68,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+CSRF_TRUSTED_ORIGINS = env("DJANGO_CSRF_TRUSTED_ORIGINS", default="http://localhost:8000,http://127.0.0.1:8000").split(",")
 
 ROOT_URLCONF = 'main.urls'
 
