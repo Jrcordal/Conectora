@@ -1,0 +1,20 @@
+{% extends 'users/base.html' %}
+
+{% block body %}
+<br/>
+<br/>
+<div class="container">
+    <div class="d-flex flex-column align-items-center" style="margin-top: 50px;">
+        <h2>Do you want to log out?</h2>
+        <br/>
+        <br/>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger" style="background: linear-gradient(to right, #ff9900, #e62e7f);">Log out</button>
+        </form>
+        <br/>
+        <br/>
+        <a href="{% url 'cv' user.id %}" class="btn btn-secondary" style="background: linear-gradient(to right, #ff9900, #e62e7f);">Cancel</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,143 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>ArtificialTech</title>
+    <style>
+        :root {
+            --primary-color: #00B09B;  /* color del logo */
+            --text-dark: #111;
+            --text-light: #fff;
+            --bg-light: #f9f9f9;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+        }
+
+        .member-area {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+        }
+
+        .member-area a {
+            color: var(--text-light);
+            background-color: var(--primary-color);
+            padding: 8px 14px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+
+        .member-area a:hover {
+            background-color: #009682;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            padding: 70px 20px 50px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.8em;
+            margin: 10px 0 5px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            margin: 0;
+        }
+
+        header img {
+            height: 60px;
+        }
+
+        section {
+            padding: 50px 20px;
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .services, .clients, .contact {
+            background-color: white;
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+
+        footer {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            text-align: center;
+            padding: 20px;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="member-area">
+        <a href="{% url 'login' %}">Member Area</a>
+    </div>
+
+    <header>
+        <img src="{% static 'users/images/logo_AT1.png' %}" alt="ArtificialTech Logo">
+        <h1>ArtificialTech</h1>
+        <p>Smart solutions for future-driven companies</p>
+    </header>
+
+    <section class="services">
+        <h2>Services</h2>
+        <ul>
+            <li>Generative AI (chatbots, text/image analysis)</li>
+            <li>Custom software development</li>
+            <li>API and cloud systems integration</li>
+            <li>Machine learning & data visualization</li>
+            <li>Process automation</li>
+        </ul>
+    </section>
+
+    <section class="clients">
+        <h2>Clients</h2>
+        <p>We serve startups, SMEs, and entrepreneurs.</p>
+        <p>From building your internal tools to managing entire external projects, we’ve got the right team for you.</p>
+    </section>
+
+    <section class="contact">
+        <h2>Contact</h2>
+        <p>Have a project in mind? Write to us at <strong><a href="mailto:julioraulcordal@gmail.com">julioraulcordal@gmail.com</a></strong></p>
+    </section>
+
+    <footer>
+        &copy; 2025 ArtificialTech. All rights reserved.
+    </footer>
+
+</body>
+</html>
