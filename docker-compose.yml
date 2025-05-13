@@ -16,15 +16,7 @@ services:
       - ./static:/app/staticfiles
     env_file:
       - .env.${DJANGO_ENV:-local}
-  frontend-proxy:
-    image: nginx:latest
-    ports:
-      - "8000:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./static:/static:ro
-    depends_on:
-      - django-web
+
 
 
 volumes:
