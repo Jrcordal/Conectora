@@ -147,3 +147,9 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'pictures') # path of our current project
 
 MEDIA_URL = '/pictures/'
 
+
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = 'info@artificialtech.com'
+NOTIFY_EMAIL = 'info@artificialtech.com'
+
