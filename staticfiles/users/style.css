@@ -1,6 +1,3 @@
-/* Importar Cal Sans */
-@import url('https://fonts.googleapis.com/css2?family=Cal+Sans&display=swap');
-
 /* Colores basados en el logo */
 body {
     background-color: #fffaf5;
@@ -54,10 +51,4 @@ body {
 .badge-brand {
     background: linear-gradient(to right, #ff9900, #ff6a4d);
     color: white;
-}
-
-.cal-sans-regular {
-  font-family: "Cal Sans", sans-serif;
-  font-weight: 400;
-  font-style: normal;
 }
