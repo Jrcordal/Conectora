@@ -98,6 +98,8 @@ ASGI_APPLICATION = 'main_page.asgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 
+CSRF_TRUSTED_ORIGINS = env("DJANGO_CSRF_TRUSTED_ORIGINS").split(",")
+
 
 
 # Password validation
