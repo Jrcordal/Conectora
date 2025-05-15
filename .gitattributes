@@ -1,0 +1,2 @@
+.env.production merge=ours
+.env.local merge=ours
