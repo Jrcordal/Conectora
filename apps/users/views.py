@@ -70,7 +70,8 @@ def cv_form(request):
     
     # Fields that should be converted from lists to newline-separated text for the form
     list_fields = ['university_education', 'education_certificates', 'experience', 'skills', 'projects', 'interests', 'volunteering', 'languages']
-    
+    non_list_fields = ['hourly_rate']
+
     if request.method == 'POST':
         # Mantener la estructura condicional para determinar si estamos creando o actualizando
         if profile:
@@ -89,6 +90,12 @@ def cv_form(request):
                     # Split by newlines and remove empty lines
                     list_value = [line.strip() for line in text_value.split('\n') if line.strip()]
                     setattr(profile_instance, field, list_value)
+                else:
+                    setattr(profile_instance, field, None)
+            for field in non_list_fields:
+                text_value = form.cleaned_data[field]
+                if text_value:
+                    setattr(profile_instance, field, text_value)
                 else:
                     setattr(profile_instance, field, None)
             

@@ -140,6 +140,14 @@ class ProfileForm(forms.ModelForm):
         })
     )
     
+    hourly_rate = forms.DecimalField(
+        required=False,
+        widget=forms.NumberInput(attrs={
+            'placeholder': 'E.g.: 100',
+            'class': 'form-control'
+        })
+    )
+    
     class Meta:
         model = Profile
         exclude = ['user']
