@@ -1,3 +1,5 @@
 .devcontainer/** merge=ours
 .vscode/** merge=ours
 .gitattributes merge=ours
+main_page.html merge=ours
+pending_form.html merge=ours
