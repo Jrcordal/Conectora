@@ -686,36 +686,38 @@
     <!-- Contact Section -->
     
     <section id="contact" class="contact">
-        <div class="contact-form">
-            <h3 class="form-title">Contact Us</h3> 
-            <p class="form-description">Please fill out the form details</p>        
-        <form action="{% url 'main' %}" method="post">
-            {% csrf_token %}
-            <div class="form-group form-row">
-                <div>
-                    <label for="first-name" class="form-label">First name</label>
-                    <input type="text" id="first-name" name="first_name" class="form-input" placeholder="Enter your first name" required>
-                </div>
-                <div>
-                    <label for="last-name" class="form-label">Last name</label>
-                    <input type="text" id="last-name" name="last_name" class="form-input" placeholder="Enter your last name" required>
-                </div>
+        <div class="container">
+            <div class="contact-form">
+                <h3 class="form-title">Contact Us</h3> 
+                <p class="form-description">Please fill out the form details</p>        
+                <form action="{% url 'main' %}" method="post">
+                    {% csrf_token %}
+                    <div class="form-group form-row">
+                        <div>
+                            <label for="first-name" class="form-label">First name</label>
+                            <input type="text" id="first-name" name="first_name" class="form-input" placeholder="Enter your first name" required>
+                        </div>
+                        <div>
+                            <label for="last-name" class="form-label">Last name</label>
+                            <input type="text" id="last-name" name="last_name" class="form-input" placeholder="Enter your last name" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="linkedin" class="form-label">LinkedIn (optional)</label>
+                        <input type="url" id="linkedin" name="linkedin" class="form-input" placeholder="Enter your LinkedIn profile">
+                    </div>
+                    <div class="form-group">
+                        <label for="message" class="form-label">Message</label>
+                        <textarea id="message" name="message" class="form-textarea" placeholder="Enter your message" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
+                </form>
             </div>
-            <div class="form-group">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email" required>
-            </div>
-            <div class="form-group">
-                <label for="linkedin" class="form-label">LinkedIn (optional)</label>
-                <input type="url" id="linkedin" name="linkedin" class="form-input" placeholder="Enter your LinkedIn profile">
-            </div>
-            <div class="form-group">
-                <label for="message" class="form-label">Message</label>
-                <textarea id="message" name="message" class="form-textarea" placeholder="Enter your message" required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
-        </form>
-    </div>
+        </div>
     </section>
 
 
@@ -728,7 +730,7 @@
             <p class="copyright">© {% now "Y" %} ArtificialTech. All rights reserved.</p>
             
         </div>
-    </footer>s
+    </footer>
 
     <!-- JavaScript for mobile menu toggle -->
     <script>

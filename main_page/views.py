@@ -7,7 +7,7 @@ def main(request):
         email = request.POST.get("email")
         first_name = request.POST.get("first_name")
         last_name = request.POST.get("last_name")
-        linkedin = request.POST.get("linkedin", "")  # Campo opcional
+        linkedin = request.POST.get("linkedin", "") 
         message = request.POST.get("message")
 
         full_message = f"""
