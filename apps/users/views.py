@@ -20,6 +20,8 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from .models import MagicLink
 from django.contrib.admin.views.decorators import staff_member_required
+import platform
+import os
 #def staff_required(user):
 #    return user.is_staff
 #@user_passes_test(staff_required)
@@ -138,7 +140,14 @@ def cv_pdf(request, id):
             request.user.is_staff):
         raise PermissionDenied
 
-
+    # Detectar el sistema operativo y usar la ruta adecuada
+    if platform.system() == 'Windows':
+        wkhtmltopdf_path = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
+    else:
+        # En Linux (Railway/Docker)
+        wkhtmltopdf_path = '/usr/bin/wkhtmltopdf'
+    
+    config = pdfkit.configuration(wkhtmltopdf=wkhtmltopdf_path)
 
     template = loader.get_template('users/cv_clean.html') # get the template
     html = template.render({'user_profile': user_profile}) # render the template
@@ -147,7 +156,6 @@ def cv_pdf(request, id):
         'page-size': 'Letter',
         'encoding': "UTF-8",
     }
-    config = pdfkit.configuration(wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
     pdf = pdfkit.from_string(html,False, options, configuration=config)
     response = HttpResponse(pdf, content_type='application/pdf')
 
