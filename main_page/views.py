@@ -11,7 +11,8 @@ def main(request):
         message = request.POST.get("message")
 
         full_message = f"""
-            Received message below from {email}, {first_name} {last_name}
+            Received message below from {email}, {first_name} {last_name}.
+            LinkedIn: {linkedin}
             ________________________
 
             {message}

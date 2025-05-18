@@ -154,7 +154,12 @@ MEDIA_URL = '/pictures/'
 
 
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-DEFAULT_FROM_EMAIL = 'info@artificialtech.com'
-NOTIFY_EMAIL = 'info@artificialtech.com'
-
+EMAIL_BACKEND = env("EMAIL_BACKEND")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
+NOTIFY_EMAIL = env("NOTIFY_EMAIL")
+EMAIL_HOST = env("EMAIL_HOST")  
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")  
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")  
+EMAIL_PORT = env("EMAIL_PORT")  
+EMAIL_USE_TLS = env("EMAIL_USE_TLS")  
+NOTIFY_EMAIL = env("NOTIFY_EMAIL")
