@@ -161,9 +161,19 @@
                             </div>
                         {% endif %}
                     </div>
+                    <h3 class="mt-4 mb-3">Rates Information</h3>
+                    <div class="form-group mb-3 text-center">
+                        <label for="{{ form.hourly_rate.id_for_label }}" class="d-block mb-2">Hourly rate</label>
+                        {{ form.hourly_rate }}
+                        {% if form.hourly_rate.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.hourly_rate.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
 
                     <div class="text-center mt-4 mb-5">
-                        <button type="submit" class="btn btn-primary btn-lg">Update Profile</button>
+                        <button type="submit" class="btn btn-primary" style="background-color: #00a99d;">Update Profile</button>
                     </div>
                 </form>
             </div>
