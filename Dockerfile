@@ -42,6 +42,10 @@ WORKDIR /app
 # Copy application code
 COPY . . 
 
+# Collect static files
+RUN python manage.py collectstatic --noinput
+
+
 # Make the entrypoint script executable
 RUN chmod +x /app/entrypoint.prod.sh
 
