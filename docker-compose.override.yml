@@ -1,0 +1,15 @@
+services:
+  django-web:
+    # Monta el código fuente completo desde tu máquina local al contenedor
+    volumes:
+      - .:/app
+    # En desarrollo, usamos el servidor de desarrollo de Django
+    command: python manage.py runserver 0.0.0.0:8000
+    # Opcional: evitar problemas de permisos en desarrollo (usa root)
+    user: root
+    # Exponemos el puerto 8000 para acceder directamente
+    ports:
+      - "8000:8000"
+
+
+
