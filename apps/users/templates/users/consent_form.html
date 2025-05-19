@@ -1,0 +1,25 @@
+<h2>Consent to Use Your Profile</h2>
+<p>
+  Before continuing, we need your permission to display your professional profile on our platform.
+  You may also choose whether your profile can be featured in promotional content and whether your contact information is shown publicly.
+</p>
+
+<form method="post">
+  {% csrf_token %}
+
+  <label>
+    <input type="checkbox" name="consent_promotional_use">
+    I authorize [Your Platform Name] to use my professional profile (skills, projects, experience) in external promotional content (e.g., website showcases, social media, advertising).
+  </label><br>
+
+  <label>
+    <input type="checkbox" name="consent_contact_visibility">
+    I agree to display my contact information (email, phone number) publicly on my profile.
+  </label><br><br>
+
+  <button type="submit">Continue</button>
+</form>
+<p style="font-size: 0.9em; color: gray;">
+    You can revoke or update your consents at any time by contacting us at <a href="mailto:julioraulcordal@gmail.com">julioraulcordal@gmail.com</a>.
+  </p>
+  

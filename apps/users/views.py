@@ -26,7 +26,7 @@ from django.urls import reverse
 #def staff_required(user):
 #    return user.is_staff
 #@user_passes_test(staff_required)
-
+from django.utils import timezone
 
 def register(request, token):
     magic_link = get_object_or_404(MagicLink, token=token)
@@ -64,13 +64,33 @@ def logout_view(request):
         return redirect('login')  # Redirects after logout
     return render(request, 'users/logout.html')  # if GET, shows the form
 
+
+
+@login_required
+def consent_form(request):
+    if request.method == 'POST':
+        consent_promo = bool(request.POST.get('consent_promotional_use'))
+        consent_contact = bool(request.POST.get('consent_contact_visibility'))
+
+        profile, created = Profile.objects.get_or_create(user=request.user)
+        profile.consent_promotional_use = consent_promo
+        profile.consent_contact_visibility = consent_contact
+        profile.consent_given_at = timezone.now()
+        profile.save()
+
+        return redirect('cv_form')
+
+    return render(request, 'users/consent_form.html')
 @login_required
 def cv_form(request):
+
     try:
         profile = Profile.objects.get(user=request.user)
     except Profile.DoesNotExist:
-        profile = None
-    
+        return redirect('consent_form')  # No hay perfil, no hay consentimiento
+
+    if profile.consent_promotional_use is None:
+        return redirect('consent_form')  # Falta consentimiento explícito
     # Fields that should be converted from lists to newline-separated text for the form
     list_fields = ['university_education', 'education_certificates', 'experience', 'skills', 'projects', 'interests', 'volunteering', 'languages']
     non_list_fields = ['hourly_rate']
@@ -242,3 +262,4 @@ def magic_link_manager(request):
         'magic_links': magic_links,
         'base_url': base_url,
     })
+
