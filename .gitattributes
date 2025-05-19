@@ -3,3 +3,6 @@
 .gitattributes merge=ours
 main_page.html merge=ours
 pending_form.html merge=ours
+settings.py merge=ours
+docker-compose.yml merge=ours
+docker-compose.override.yml merge=ours
