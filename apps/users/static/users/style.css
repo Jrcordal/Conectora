@@ -8,21 +8,21 @@ body {
 }
 
 .brand-gradient {
-    background: linear-gradient(to right, #ff9900, #e62e7f);
+    background: #00a99d;
 }
 
 .brand-header {
-    background: linear-gradient(to right, #ff9900, #e62e7f);
+    background: #00a99d;
     color: white;
 }
 
 .btn-brand {
-    background-color: #ff9900;
+    background-color: #00a99d;
     color: white;
 }
 
 .btn-brand:hover {
-    background-color: #e62e7f;
+    background-color: #00a99d;
     color: white;
 }
 
@@ -47,12 +47,12 @@ body {
 }
 
 .card-header-brand {
-    background: linear-gradient(to right, #ff9900, #e62e7f);
+    background: #00a99d;
     color: white;
 }
 
 .badge-brand {
-    background: linear-gradient(to right, #ff9900, #ff6a4d);
+    background: #00a99d;
     color: white;
 }
 
