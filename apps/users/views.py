@@ -22,6 +22,7 @@ from .models import MagicLink
 from django.contrib.admin.views.decorators import staff_member_required
 import platform
 import os
+from django.urls import reverse
 #def staff_required(user):
 #    return user.is_staff
 #@user_passes_test(staff_required)
@@ -132,7 +133,7 @@ def cv_form(request):
     })
    
 
-@login_required
+@staff_member_required
 def cv_pdf(request, id):
     user_profile = get_object_or_404(Profile, pk=id) #get the user profile
     

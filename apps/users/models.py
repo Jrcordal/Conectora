@@ -59,6 +59,6 @@ class MagicLink(models.Model):
     used = models.BooleanField(default=False)
 
     def is_valid(self):
-        expiration_minutes = 10  # o el tiempo que quieras
+        expiration_minutes = 60*24  # o el tiempo que quieras
         age = timezone.now() - self.created_at
         return not self.used and age.total_seconds() < expiration_minutes * 60
