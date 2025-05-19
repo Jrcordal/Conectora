@@ -17,7 +17,7 @@
         }
         
         .brand-gradient {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            background: #00a99d;
             box-shadow: 0 4px 12px rgba(0, 169, 157, 0.2);
         }
         
@@ -125,15 +125,16 @@
                                 <i class="fas fa-edit me-1"></i> Edit CV
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="{% url 'cv_pdf' user.id %}" class="nav-link">
-                                <i class="fas fa-file-pdf me-1"></i> Download PDF
-                            </a>
-                        </li>
+
                         {% if user.is_staff %}
                         <li class="nav-item">
                             <a href="{% url 'list' %}" class="nav-link">
                                 <i class="fas fa-users me-1"></i> All Profiles
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'cv_pdf' user.id %}" class="nav-link">
+                                <i class="fas fa-file-pdf me-1"></i> Download PDF
                             </a>
                         </li>
                         {% endif %}

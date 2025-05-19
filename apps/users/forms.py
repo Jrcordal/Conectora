@@ -21,12 +21,23 @@ class RegisterForm(UserCreationForm):
     #phone = forms.CharField(max_length=15)
     class Meta: # Meta class holds information about RegisterForm class
         model = User
-        fields = ['username','email','password1','password2']
+        fields = ['username','first_name','last_name','email','password1','password2']
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if User.objects.filter(email=email).exists():
             raise forms.ValidationError("This email address is already in use.")
         return email
+    def clean(self):
+        cleaned_data = super().clean()
+        first_name = cleaned_data.get('first_name')
+        last_name = cleaned_data.get('last_name')
+        
+        if not first_name:
+            raise forms.ValidationError('First name is mandatory')
+        if not last_name:
+            raise forms.ValidationError('Last name is mandatory')
+            
+        return cleaned_data
     #def clean_phone(self):
     #    return validate_phone(self.cleaned_data.get('phone'))
 

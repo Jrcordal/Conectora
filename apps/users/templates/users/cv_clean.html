@@ -3,9 +3,9 @@
 <head>
     <style>
         :root {
-            --brand-gradient-start: #ff9900; /* Naranja */
-            --brand-gradient-middle: #ff6a4d; /* Naranja-rojo */
-            --brand-gradient-end: #e62e7f;   /* Fucsia */
+            --brand-gradient-start: #00a99d; 
+            --brand-gradient-middle: #00a99d; 
+            --brand-gradient-end: #00a99d;   
         }
         
         body {
@@ -14,10 +14,10 @@
             color: #333;
         }
         h1, h2, h3 {
-            color: #ff6a4d;
+            color: #00a99d;
         }
         .header {
-            border-bottom: 2px solid #e62e7f;
+            border-bottom: 2px solid #00a99d;
             padding-bottom: 10px;
             margin-bottom: 20px;
         }
@@ -25,7 +25,7 @@
             margin-bottom: 20px;
         }
         .section-title {
-            background: linear-gradient(to right, #ff9900, #e62e7f);
+            background:  #00a99d;
             color: white;
             padding: 5px;
             margin-bottom: 10px;
@@ -44,10 +44,7 @@
 </head>
 <body>
     <div class="header">
-        <h1>{{ user_profile.user.first_name }} {{ user_profile.user.last_name }}</h1>
         <div class="contact-info">
-            {{ user_profile.user.email }}
-            {% if user_profile.location %} | {{ user_profile.location }}{% endif %}
             {% if user_profile.linkedin %} | LinkedIn: {{ user_profile.linkedin }}{% endif %}
             {% if user_profile.github %} | GitHub: {{ user_profile.github }}{% endif %}
             {% if user_profile.personal_website %} | Website: {{ user_profile.personal_website }}{% endif %}
