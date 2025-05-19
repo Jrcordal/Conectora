@@ -43,13 +43,6 @@
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="contact-info">
-            {% if user_profile.linkedin %} | LinkedIn: {{ user_profile.linkedin }}{% endif %}
-            {% if user_profile.github %} | GitHub: {{ user_profile.github }}{% endif %}
-            {% if user_profile.personal_website %} | Website: {{ user_profile.personal_website }}{% endif %}
-        </div>
-    </div>
 
     {% if user_profile.university_education %}
     <div class="section">
