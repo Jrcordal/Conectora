@@ -164,10 +164,3 @@ class ProfileForm(forms.ModelForm):
         exclude = ['user']
     #def clean_phone(self):
     #    return validate_phone(self.cleaned_data.get('phone'))
-
-
-
-
-
-
-
