@@ -29,7 +29,7 @@ env.read_env(BASE_DIR / env_file)
 
 SECRET_KEY = env('SECRET_KEY')
 
-DEBUG = env("DEBUG")
+DEBUG = env.bool("DEBUG", default=False)
 
 ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS", default="127.0.0.1").split(",")
 
