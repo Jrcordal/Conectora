@@ -66,21 +66,32 @@ def logout_view(request):
 
 
 
+
 @login_required
 def consent_form(request):
+    # Si el perfil ya existe, redirige directamente a 'cv_form'
+    if Profile.objects.filter(user=request.user).exists():
+        return redirect('terms_and_conditions')
+
+    # Si no existe, permite mostrar el formulario y guardar datos
     if request.method == 'POST':
         consent_promo = bool(request.POST.get('consent_promotional_use'))
-        consent_contact = bool(request.POST.get('consent_contact_visibility'))
 
-        profile, created = Profile.objects.get_or_create(user=request.user)
-        profile.consent_promotional_use = consent_promo
-        profile.consent_contact_visibility = consent_contact
-        profile.consent_given_at = timezone.now()
-        profile.save()
+        profile = Profile.objects.create(
+            user=request.user,
+            consent_promotional_use=consent_promo,
+            consent_given_at=timezone.now()
+        )
 
         return redirect('cv_form')
 
     return render(request, 'users/consent_form.html')
+
+@login_required
+def terms_and_conditions(request):
+    return render(request, 'users/terms_and_conditions.html')
+
+
 @login_required
 def cv_form(request):
 

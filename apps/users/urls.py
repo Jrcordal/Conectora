@@ -12,4 +12,7 @@ urlpatterns = [
     path('list/',user_views.list, name='list'),
     path('cv/<int:id>',user_views.cv, name = 'cv'),
     path('redirect-to-cv/', user_views.redirect_to_cv, name='redirect_to_cv'),
-    path('mlmanager/', user_views.magic_link_manager, name='magic_link_manager'),]
+    path('mlmanager/', user_views.magic_link_manager, name='magic_link_manager'),
+    path('consent/', user_views.consent_form, name='consent_form'),
+    path('terms-and-conditions/', user_views.terms_and_conditions, name='terms_and_conditions'),
+    ]
