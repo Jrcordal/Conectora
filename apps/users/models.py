@@ -30,7 +30,6 @@ def validate_string(value):
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
     consent_promotional_use = models.BooleanField(null=True, blank=True)
-    consent_contact_visibility = models.BooleanField(null=True, blank=True)
     consent_given_at = models.DateTimeField(null=True, blank=True)
     # Fields that will store JSON data
     university_education = models.JSONField(blank=True, null=True, default=None)
