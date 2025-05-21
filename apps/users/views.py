@@ -71,7 +71,7 @@ def logout_view(request):
 def consent_form(request):
     # Si el perfil ya existe, redirige directamente a 'cv_form'
     if Profile.objects.filter(user=request.user).exists() and request.user.is_staff:
-        return redirect('consent_form')
+        return render(request, 'users/consent_form.html')
     if Profile.objects.filter(user=request.user).exists():
         return redirect('terms_and_conditions')
 
