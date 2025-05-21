@@ -70,6 +70,8 @@ def logout_view(request):
 @login_required
 def consent_form(request):
     # Si el perfil ya existe, redirige directamente a 'cv_form'
+    if Profile.objects.filter(user=request.user).exists() and request.user.is_staff:
+        return redirect('consent_form')
     if Profile.objects.filter(user=request.user).exists():
         return redirect('terms_and_conditions')
 
@@ -102,6 +104,8 @@ def cv_form(request):
 
     if profile.consent_promotional_use is None:
         return redirect('consent_form')  # Falta consentimiento explícito
+    
+
     # Fields that should be converted from lists to newline-separated text for the form
     list_fields = ['university_education', 'education_certificates', 'experience', 'skills', 'projects', 'interests', 'volunteering', 'languages']
     non_list_fields = ['hourly_rate']
