@@ -102,9 +102,6 @@ def cv_form(request):
     except Profile.DoesNotExist:
         return redirect('consent_form')  # No hay perfil, no hay consentimiento
 
-    if profile.consent_promotional_use is None:
-        return redirect('consent_form')  # Falta consentimiento explícito
-    
 
     # Fields that should be converted from lists to newline-separated text for the form
     list_fields = ['university_education', 'education_certificates', 'experience', 'skills', 'projects', 'interests', 'volunteering', 'languages']
