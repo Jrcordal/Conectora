@@ -4,8 +4,7 @@ from django.apps import AppConfig
 class UsersConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'apps.users'
-    def ready(self): # this is to connect the signals to the apps
-        import apps.users.signals
+
 
         
         # The ready() method is called by Django when the application is loading
