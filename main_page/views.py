@@ -26,7 +26,7 @@ def main(request):
                 recipient_list=[settings.NOTIFY_EMAIL],
             )
         except Exception as e:
-            return HttpResponse("There was an error sending your message. Please try again later. The error was: " + str(e), status=500)
+            return HttpResponse("There was an error sending your message. Please try again later", status=500)
 
         return redirect('success')
 
