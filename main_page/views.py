@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django.core.mail import send_mail
-
+from django.http import HttpResponse
 def main(request):
     if request.method == 'POST':
         email = request.POST.get("email")
@@ -18,12 +18,16 @@ def main(request):
             {message}
             """
 
-        send_mail(
-            subject="Received contact form submission",
-            message=full_message,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[settings.NOTIFY_EMAIL],
-        )
+        try:
+            send_mail(
+                subject="Received contact form submission",
+                message=full_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[settings.NOTIFY_EMAIL],
+            )
+        except Exception as e:
+            return HttpResponse("There was an error sending your message. Please try again later. The error was: " + str(e), status=500)
+
         return redirect('success')
 
     return render(request, 'main_page/main_page.html')
