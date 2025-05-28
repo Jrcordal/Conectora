@@ -348,7 +348,7 @@
         /* Contact Section */
         .contact {
             padding: 5rem 0;
-            background-color: var(--background-white);
+            background-color: var(--background-light);
         }
 
         .contact-container {
@@ -363,56 +363,31 @@
             border-radius: 0.5rem;
             padding: 2rem;
             box-shadow: var(--shadow-md);
+            max-width: 600px;
+            margin: 0 auto;
         }
 
-        .form-title {
+        .direct-contact {
+            text-align: left;
+        }
+
+        .direct-contact h4 {
+            color: var(--text-dark);
+            margin-bottom: 1.5rem;
             font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
         }
 
-        .form-description {
-            color: var(--text-light);
-            margin-bottom: 1.5rem;
+        .direct-contact p {
+            margin-bottom: 1rem;
         }
 
-        .form-group {
-            margin-bottom: 1.5rem;
+        .direct-contact a {
+            color: var(--primary-color);
+            text-decoration: none;
         }
 
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-        }
-
-        .form-input,
-        .form-textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border-color);
-            border-radius: 0.375rem;
-            font-family: inherit;
-            font-size: 1rem;
-            transition: border-color 0.2s;
-        }
-
-        .form-input:focus,
-        .form-textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-
-        .form-textarea {
-            min-height: 120px;
-            resize: vertical;
+        .direct-contact a:hover {
+            text-decoration: underline;
         }
 
         /* Footer */
@@ -687,7 +662,7 @@
     
     <section id="contact" class="contact">
         <div class="container">
-            <div class="contact-form" style="background-color: var(--background-white); border-radius: 0.5rem; padding: 2rem; box-shadow: var(--shadow-md);">
+            <div class="contact-form">
                 <!--
                 <h3 class="form-title">Contact Us</h3> 
                 <p class="form-description">Please fill out the form details</p>        
