@@ -290,7 +290,7 @@ def magic_link_manager(request):
     magic_links = MagicLink.objects.all().order_by('-created_at')
     base_url = request.build_absolute_uri('/').rstrip('/')
 
-    return render(request, 'users/magic_link_manager.html', {
+    return render(request, 'freelancers/magic_link_manager.html', {
         'magic_links': magic_links,
         'base_url': base_url,
     })

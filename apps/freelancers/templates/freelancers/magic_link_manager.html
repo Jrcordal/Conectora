@@ -16,7 +16,7 @@
     {% for link in magic_links %}
     <tr>
         <td>
-            <input type="text" readonly value="{{ base_url }}/users/register/{{ link.token }}" style="width: 100%;">
+            <input type="text" readonly value="{{ base_url }}/freelancers/register/{{ link.token }}" style="width: 100%;">
         </td>
         <td>{{ link.used }}</td>
         <td>{{ link.created_at|date:"Y-m-d H:i" }}</td>
