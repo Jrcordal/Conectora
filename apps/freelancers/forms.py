@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 import phonenumbers
 from django.core.exceptions import ValidationError
-from apps.users.models import Profile
+from apps.freelancers.models import FreelancerProfile
 
 
 #def validate_phone(value):
@@ -54,7 +54,13 @@ class ProfileForm(forms.ModelForm):
             'class': 'form-control'
         })
     )
-    
+    role = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'placeholder': 'E.g.: Full Stack Developer, Data Scientist, etc.',
+            'class': 'form-control'
+        })
+    )
     education_certificates = forms.CharField(
         required=False,
         widget=forms.Textarea(attrs={
@@ -160,7 +166,7 @@ class ProfileForm(forms.ModelForm):
     )
     
     class Meta:
-        model = Profile
+        model = FreelancerProfile
         exclude = ['user']
     #def clean_phone(self):
     #    return validate_phone(self.cleaned_data.get('phone'))

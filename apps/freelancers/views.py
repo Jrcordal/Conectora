@@ -4,7 +4,7 @@ from django. contrib import messages
 from .forms import RegisterForm
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .models import Profile
+from .models import FreelancerProfile
 import pdfkit
 from django.http import HttpResponse
 from django.template import loader
@@ -22,11 +22,11 @@ from .models import MagicLink
 from django.contrib.admin.views.decorators import staff_member_required
 import platform
 import os
-from django.urls import reverse
-#def staff_required(user):
-#    return user.is_staff
-#@user_passes_test(staff_required)
+from django.urls import reverse_lazy
+
 from django.utils import timezone
+from django.contrib.auth.views import LoginView
+
 
 def register(request, token):
     magic_link = get_object_or_404(MagicLink, token=token)
@@ -39,7 +39,7 @@ def register(request, token):
         if form.is_valid():
             with transaction.atomic():
                 user_saved = form.save()
-                Profile.objects.get_or_create(user=user_saved)
+                FreelancerProfile.objects.get_or_create(user=user_saved)
                 magic_link.used = True
                 magic_link.save()
             username = form.cleaned_data.get('username')
@@ -51,7 +51,7 @@ def register(request, token):
                     messages.warning(request, f'Error in {field}: {error}')
     else: #if request method is not POST but GET. 1st time the page is loaded
         form = RegisterForm() #create a new form
-    return render(request, 'users/register.html', {'form': form})
+    return render(request, 'freelancers/register.html', {'form': form})
 
 
 
@@ -61,25 +61,22 @@ def register(request, token):
 def logout_view(request):
     if request.method == "POST":  # Ensure that it only occurs with POST
         logout(request)
-        return redirect('login')  # Redirects after logout
-    return render(request, 'users/logout.html')  # if GET, shows the form
-
+        return redirect('freelancers:freelancer_login')  # Redirects after logout
+    return render(request, 'freelancers/logout.html')  # if GET, shows the form
 
 
 
 @login_required
 def consent_form(request):
     # Si el perfil ya existe, redirige directamente a 'cv_form'
-    if Profile.objects.filter(user=request.user).exists() and request.user.is_staff:
-        return render(request, 'users/consent_form.html')
-    if Profile.objects.filter(user=request.user).exists():
+    if FreelancerProfile.objects.filter(user=request.user).exists():
         return redirect('terms_and_conditions')
 
     # Si no existe, permite mostrar el formulario y guardar datos
     if request.method == 'POST':
         consent_promo = bool(request.POST.get('consent_promotional_use'))
 
-        profile = Profile.objects.create(
+        profile = FreelancerProfile.objects.create(
             user=request.user,
             consent_promotional_use=consent_promo,
             consent_given_at=timezone.now()
@@ -87,25 +84,27 @@ def consent_form(request):
 
         return redirect('cv_form')
 
-    return render(request, 'users/consent_form.html')
+    return render(request, 'freelancers/consent_form.html')
 
 @login_required
 def terms_and_conditions(request):
-    return render(request, 'users/terms_and_conditions.html')
+    return render(request, 'freelancers/terms_and_conditions.html')
+
 
 
 @login_required
 def cv_form(request):
-
     try:
-        profile = Profile.objects.get(user=request.user)
-    except Profile.DoesNotExist:
+        profile = FreelancerProfile.objects.get(user=request.user)
+    except FreelancerProfile.DoesNotExist:
         return redirect('consent_form')  # No hay perfil, no hay consentimiento
 
-
+    if profile.consent_promotional_use is None:
+        return redirect('consent_form')  # Falta consentimiento explícito
+    
     # Fields that should be converted from lists to newline-separated text for the form
     list_fields = ['university_education', 'education_certificates', 'experience', 'skills', 'projects', 'interests', 'volunteering', 'languages']
-    non_list_fields = ['hourly_rate']
+    non_list_fields = ['hourly_rate','role']
 
     if request.method == 'POST':
         # Mantener la estructura condicional para determinar si estamos creando o actualizando
@@ -158,7 +157,7 @@ def cv_form(request):
         else:
             form = ProfileForm()
     
-    return render(request, 'users/cv_generator.html', {
+    return render(request, 'freelancers/cv_generator.html', {
         'form': form,
         'profile': profile,
         'is_new_profile': profile is None
@@ -167,7 +166,7 @@ def cv_form(request):
 
 @staff_member_required
 def cv_pdf(request, id):
-    user_profile = get_object_or_404(Profile, pk=id) #get the user profile
+    user_profile = get_object_or_404(FreelancerProfile, pk=id) #get the user profile
     
     if not (request.user == user_profile.user or 
             request.user.is_staff):
@@ -182,7 +181,7 @@ def cv_pdf(request, id):
     
     config = pdfkit.configuration(wkhtmltopdf=wkhtmltopdf_path)
 
-    template = loader.get_template('users/cv_clean.html') # get the template
+    template = loader.get_template('freelancers/cv_clean.html') # get the template
     html = template.render({'user_profile': user_profile}) # render the template
 
     options = {
@@ -215,23 +214,23 @@ def cv(request, id):
         # Obtener el perfil solicitado
         user = get_object_or_404(User, pk=user_id)
         try:
-            profile = Profile.objects.get(user_id=user_id)
+            profile = FreelancerProfile.objects.get(user_id=user_id)
             # Si es staff, puede ver cualquier perfil
             if request.user.is_staff:
                 # admins can see any profile
-                return render(request, 'users/cv.html', {'user_profile':profile})
+                return render(request, 'freelancers/cv.html', {'user_profile':profile})
             # Si no es staff, solo puede ver su propio perfil
             elif request.user.id == user_id:
-                return render(request, 'users/cv.html', {'user_profile':profile})
+                return render(request, 'freelancers/cv.html', {'user_profile':profile})
             else:
                 raise PermissionDenied("You don't have permission to see this CV")
             
-        except Profile.DoesNotExist: #if the profile does not exist
+        except FreelancerProfile.DoesNotExist: #if the profile does not exist
             if request.user.id == user_id: #if the user is the same as the one logged in
                 messages.info(request, 'You have not created your profile yet')
                 return redirect('cv_form') #redirect to the form to create the profile
             elif request.user.is_staff:
-                return render(request, 'users/no_profile.html', {'user':profile, 'admin_view':True})
+                return render(request, 'freelancers/no_profile.html', {'user':profile, 'admin_view':True})
             else:
                 raise PermissionDenied("You don't have permission to see this CV")
 
@@ -243,8 +242,8 @@ def list(request):
     if not (request.user.is_staff):
         raise PermissionDenied
         #return redirect('cv', id=request.user.pk)
-    profiles = Profile.objects.all()
-    return render(request,'users/list.html',{'profiles':profiles})
+    profiles = FreelancerProfile.objects.all()
+    return render(request,'freelancers/list.html',{'profiles':profiles})
 
 @login_required
 def redirect_to_cv(request):
@@ -252,13 +251,34 @@ def redirect_to_cv(request):
 
 @login_required
 def url_user_cv(request):
-        user_cv_path = f"/cv/{request.user.profile.id}/"
-        return render(request, "users/cv.html", {"user_cv_path": user_cv_path})
+        user_cv_path = f"/cv/{request.user.freelancerprofile.id}/"
+        return render(request, "freelancers/cv.html", {"user_cv_path": user_cv_path})
 
 
 
 
 
+
+
+@staff_member_required
+def magic_link_manager(request):
+    if request.method == 'POST':
+        magic_link = MagicLink.objects.create()
+        return redirect('magic_link_manager')
+
+    magic_links = MagicLink.objects.all().order_by('-created_at')
+    base_url = request.build_absolute_uri('/').rstrip('/')
+
+    return render(request, 'freelancers/magic_link_manager.html', {
+        'magic_links': magic_links,
+        'base_url': base_url,
+    })
+
+class FreelancerLoginView(LoginView):
+    template_name = 'freelancers/login.html'
+    
+    def get_success_url(self):
+        return reverse_lazy('freelancers:cv', kwargs={'id': self.request.user.id})
 
 
 @staff_member_required

@@ -146,9 +146,8 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = reverse_lazy('redirect_to_cv')
 
-LOGIN_URL = 'login'
+LOGIN_URL = 'freelancers:freelancer_login'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'pictures') # path of our current project
 

@@ -27,11 +27,13 @@ def validate_string(value):
 #    if not phonenumbers.is_valid_number(phone_number):
 #        raise ValidationError("This is not a valid phone number")
 
-class Profile(models.Model):
+class FreelancerProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
     consent_promotional_use = models.BooleanField(null=True, blank=True)
     consent_given_at = models.DateTimeField(null=True, blank=True)
+
     # Fields that will store JSON data
+    
     university_education = models.JSONField(blank=True, null=True, default=None)
     education_certificates = models.JSONField(blank=True, null=True, default=None)
 
@@ -43,6 +45,7 @@ class Profile(models.Model):
     languages = models.JSONField(blank=True, null=True, default=None)
     
     # Regular fields
+    role = models.CharField(max_length=100, blank=True, null=True)
     location = models.CharField(max_length=100, blank=True, null=True)
     linkedin = models.URLField(blank=True, null=True)
     github = models.URLField(blank=True, null=True)
