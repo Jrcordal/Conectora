@@ -8,7 +8,7 @@ from .views import SuccessView
 urlpatterns = [
     path('', main_views.main, name='main'),
     path('admin/', admin.site.urls),
-    path('users/', include('apps.users.urls')),
+    path('freelancers/', include('apps.freelancers.urls')), 
     path("success/", SuccessView.as_view(), name="success"),
     ]
 
