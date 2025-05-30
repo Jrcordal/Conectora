@@ -1,9 +1,9 @@
 from django.contrib import admin
-from .models import Freelancerprofile, MagicLink
+from .models import FreelancerProfile, MagicLink
 
 # Register your models here.
 
-admin.site.register(Freelancerprofile)
+admin.site.register(FreelancerProfile)
 
 
 @admin.register(MagicLink)
