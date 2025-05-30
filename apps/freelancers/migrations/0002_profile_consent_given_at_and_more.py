@@ -20,4 +20,4 @@ class Migration(migrations.Migration):
             name='consent_promotional_use',
             field=models.BooleanField(blank=True, null=True),
         ),
-    ]
+    ] 
