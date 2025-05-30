@@ -43,12 +43,22 @@
     </style>
 </head>
 <body>
+    <div class="header">
+        <div class="contact-info">
+            {% if user_profile.linkedin %} | LinkedIn: {{ user_profile.linkedin }}{% endif %}
+            {% if user_profile.github %} | GitHub: {{ user_profile.github }}{% endif %}
+            {% if user_profile.personal_website %} | Website: {{ user_profile.personal_website }}{% endif %}
+        </div>
+    </div>
+
     {% if user_profile.role %}
     <div class="section">
         <h2 class="section-title">Role</h2>
         <p>{{ user_profile.role }}</p>
     </div>
     {% endif %}
+
+
     {% if user_profile.university_education %}
     <div class="section">
         <h2 class="section-title">Education</h2>

@@ -1,4 +1,4 @@
-{% extends 'users/base.html' %}
+{% extends 'freelancers/base.html' %}
 
 {% block body %}
 <div class="container py-5">
@@ -23,7 +23,7 @@
                                 Yes, Log Out
                             </button>
                         </form>
-                        <a href="{% url 'cv' user.id %}" class="btn py-2 px-4" style="background-color: #f8f9fa; color: #333; border: 1px solid #dee2e6;">
+                        <a href="{% url 'freelancers:cv' user.id %}" class="btn py-2 px-4" style="background-color: #f8f9fa; color: #333; border: 1px solid #dee2e6;">
                             Cancel
                         </a>
                     </div>

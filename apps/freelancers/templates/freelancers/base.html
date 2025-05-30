@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}CV Management System{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'users/style.css' %}">
+    <link rel="stylesheet" href="{% static 'freelancers/style.css' %}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -89,7 +89,7 @@
             <!-- Logo and Brand -->
             <div class="navbar-brand d-flex align-items-center">
                 <a href="/">
-                    <img src="{% static '/users/images/LOGOTIPO-02.png' %}" alt="Logo" class="me-3" style="height: 60px;">
+                    <img src="{% static '/freelancers/images/LOGOTIPO-02.png' %}" alt="Logo" class="me-3" style="height: 60px;">
                 </a>
                 <span class="d-none d-md-inline cal-sans-regular">Platform</span>
             </div>
@@ -116,37 +116,39 @@
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <a href="{% url 'cv' user.id %}" class="nav-link">
+                            <a href="{% url 'freelancers:cv' user.id %}" class="nav-link">
                                 <i class="fas fa-id-card me-1"></i> My CV
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{% url 'cv_form' %}" class="nav-link">
+                            <a href="{% url 'freelancers:cv_form' %}" class="nav-link">
                                 <i class="fas fa-edit me-1"></i> Edit CV
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{% url 'terms_and_conditions' %}" class="nav-link">
+                            <a href="{% url 'freelancers:terms_and_conditions' %}" class="nav-link">
                                 <i class="fas fa-file-alt me-1"></i> Terms and Conditions
                             </a>
                         </li>
+
+
                         {% if user.is_staff %}
                         <li class="nav-item">
-                            <a href="{% url 'list' %}" class="nav-link">
+                            <a href="{% url 'freelancers:list' %}" class="nav-link">
                                 <i class="fas fa-users me-1"></i> All Profiles
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{% url 'cv_pdf' user.id %}" class="nav-link">
+                            <a href="{% url 'freelancers:cv_pdf' user.id %}" class="nav-link">
                                 <i class="fas fa-file-pdf me-1"></i> Download PDF
                             </a>
                         </li>
                         {% endif %}
                         <li class="nav-item">
-                            <a href="{% url 'logout_view' %}" class="nav-link">
+                            <a href="{% url 'freelancers:logout_view' %}" class="nav-link">
                                 <i class="fas fa-sign-out-alt me-1"></i> Logout
                             </a>
-                        </li>
+                        </li>                        
                     {% endif %}
                 </ul>
             </div>

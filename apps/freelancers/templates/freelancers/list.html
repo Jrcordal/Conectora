@@ -1,4 +1,4 @@
-{% extends 'users/base.html' %}
+{% extends 'freelancers/base.html' %}
 
 {% block body %}
     <div class="container">
@@ -15,7 +15,7 @@
                 {{ profile.user.first_name }} {{ profile.user.last_name }}
             </div>    
             <div class="col-md-6">
-                   <a href="{% url 'cv' id=profile.user.id %}" class="btn btn-warning">CV</a>
+                   <a href="{% url 'freelancers:cv' id=profile.user.id %}" class="btn btn-warning">CV</a>
                 </div>  
         </div>
         <hr>
