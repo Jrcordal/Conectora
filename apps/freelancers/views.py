@@ -281,17 +281,5 @@ class FreelancerLoginView(LoginView):
         return reverse_lazy('freelancers:cv', kwargs={'id': self.request.user.id})
 
 
-@staff_member_required
-def magic_link_manager(request):
-    if request.method == 'POST':
-        magic_link = MagicLink.objects.create()
-        return redirect('freelancers:magic_link_manager')
 
-    magic_links = MagicLink.objects.all().order_by('-created_at')
-    base_url = request.build_absolute_uri('/').rstrip('/')
-
-    return render(request, 'freelancers/magic_link_manager.html', {
-        'magic_links': magic_links,
-        'base_url': base_url,
-    })
 

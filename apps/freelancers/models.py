@@ -61,6 +61,7 @@ class MagicLink(models.Model):
     token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     used = models.BooleanField(default=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
 
     def is_valid(self):
         expiration_minutes = 60*24*7  # o el tiempo que quieras
