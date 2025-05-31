@@ -264,7 +264,7 @@ def url_user_cv(request):
 def magic_link_manager(request):
     if request.method == 'POST':
         magic_link = MagicLink.objects.create()
-        return redirect('magic_link_manager')
+        return redirect('freelancers:magic_link_manager')
 
     magic_links = MagicLink.objects.all().order_by('-created_at')
     base_url = request.build_absolute_uri('/').rstrip('/')
@@ -285,7 +285,7 @@ class FreelancerLoginView(LoginView):
 def magic_link_manager(request):
     if request.method == 'POST':
         magic_link = MagicLink.objects.create()
-        return redirect('magic_link_manager')
+        return redirect('freelancers:magic_link_manager')
 
     magic_links = MagicLink.objects.all().order_by('-created_at')
     base_url = request.build_absolute_uri('/').rstrip('/')
