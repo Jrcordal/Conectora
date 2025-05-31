@@ -64,6 +64,7 @@ class MagicLink(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
 
     def is_valid(self):
-        expiration_minutes = 60*24*7  # o el tiempo que quieras
+        # Más claro: definir directamente en días
+        expiration_days = 7  # Una semana
         age = timezone.now() - self.created_at
-        return not self.used and age.total_seconds() < expiration_minutes * 60
+        return not self.used and age.days < expiration_days
