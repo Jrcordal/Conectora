@@ -170,3 +170,10 @@ class ProfileForm(forms.ModelForm):
         exclude = ['user']
     #def clean_phone(self):
     #    return validate_phone(self.cleaned_data.get('phone'))
+
+
+
+from django.contrib.auth.forms import AuthenticationForm
+
+class EmailAuthenticationForm(AuthenticationForm):
+    username = forms.EmailField(label='Email', widget=forms.TextInput(attrs={'autofocus': True}))

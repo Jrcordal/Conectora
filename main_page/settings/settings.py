@@ -159,3 +159,9 @@ EMAIL_BACKEND = env("EMAIL_BACKEND")
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL")
 NOTIFY_EMAIL = env("NOTIFY_EMAIL")
 
+
+
+AUTHENTICATION_BACKENDS = [
+    'apps.freelancers.backends.EmailBackend',
+    'django.contrib.auth.backends.ModelBackend',  # mantiene la autenticación por username
+]

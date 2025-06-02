@@ -16,3 +16,4 @@ urlpatterns = [
     path('consent/', freelancer_views.consent_form, name='consent_form'),
     path('terms-and-conditions/', freelancer_views.terms_and_conditions, name='terms_and_conditions'),
     ]
+
