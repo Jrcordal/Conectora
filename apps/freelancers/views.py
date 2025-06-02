@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django. contrib import messages
-from .forms import RegisterForm, EmailAuthenticationForm
+from .forms import RegisterForm
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import FreelancerProfile
@@ -276,7 +276,6 @@ def magic_link_manager(request):
 
 class FreelancerLoginView(LoginView):
     template_name = 'freelancers/login.html'
-    authentication_form = EmailAuthenticationForm
     def get_success_url(self):
         return reverse_lazy('freelancers:cv', kwargs={'id': self.request.user.id})
 
