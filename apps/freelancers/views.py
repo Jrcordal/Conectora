@@ -70,11 +70,11 @@ def logout_view(request):
 def consent_form(request):
     # Si el perfil ya existe, redirige directamente a 'cv_form'
     if FreelancerProfile.objects.filter(user=request.user).exists():
-        return redirect('terms_and_conditions')
+        return redirect('freelancers:terms_and_conditions')
 
     # Si no existe, permite mostrar el formulario y guardar datos
     if request.method == 'POST':
-        consent_promo = bool(request.POST.get('consent_promotional_use'))
+        consent_promo = bool(request.POST.get('freelancers:consent_promotional_use'))
 
         profile = FreelancerProfile.objects.create(
             user=request.user,
@@ -97,10 +97,10 @@ def cv_form(request):
     try:
         profile = FreelancerProfile.objects.get(user=request.user)
     except FreelancerProfile.DoesNotExist:
-        return redirect('consent_form')  # No hay perfil, no hay consentimiento
+        return redirect('freelancers:consent_form')  # No hay perfil, no hay consentimiento
 
     if profile.consent_promotional_use is None:
-        return redirect('consent_form')  # Falta consentimiento explícito
+        return redirect('freelancers:consent_form')  # Falta consentimiento explícito
     
     # Fields that should be converted from lists to newline-separated text for the form
     list_fields = ['university_education', 'education_certificates', 'experience', 'skills', 'projects', 'interests', 'volunteering', 'languages']
@@ -139,7 +139,7 @@ def cv_form(request):
             
             profile_instance.save()
             messages.success(request, 'Your CV has been updated correctly.')
-            return redirect('cv', id=request.user.id)
+            return redirect('freelancers:cv', id=request.user.id)
             
     else:
         # For GET requests, create a form with the current data
@@ -228,7 +228,7 @@ def cv(request, id):
         except FreelancerProfile.DoesNotExist: #if the profile does not exist
             if request.user.id == user_id: #if the user is the same as the one logged in
                 messages.info(request, 'You have not created your profile yet')
-                return redirect('cv_form') #redirect to the form to create the profile
+                return redirect('freelancers:cv_form') #redirect to the form to create the profile
             elif request.user.is_staff:
                 return render(request, 'freelancers/no_profile.html', {'user':profile, 'admin_view':True})
             else:
@@ -247,11 +247,11 @@ def list(request):
 
 @login_required
 def redirect_to_cv(request):
-    return redirect('cv', id=request.user.id)
+    return redirect('freelancers:cv', id=request.user.id)
 
 @login_required
 def url_user_cv(request):
-        user_cv_path = f"/cv/{request.user.freelancerprofile.id}/"
+        user_cv_path = f"/freelancers/cv/{request.user.freelancerprofile.id}/"
         return render(request, "freelancers/cv.html", {"user_cv_path": user_cv_path})
 
 
