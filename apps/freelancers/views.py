@@ -68,18 +68,22 @@ def logout_view(request):
 
 @login_required
 def consent_form(request):
-    # Si el perfil ya existe, redirige directamente a 'cv_form'
-    if FreelancerProfile.objects.filter(user=request.user).exists() and FreelancerProfile.objects.get(user=request.user).consent_promotional_use is not None:
-        return redirect('freelancers:terms_and_conditions')
+    try:
+        profile = FreelancerProfile.objects.get(user=request.user)
+        if profile.consent_promotional_use is not None:
+            return redirect('freelancers:terms_and_conditions')
+    except FreelancerProfile.DoesNotExist:
+        profile = None
 
-    # Si no existe, permite mostrar el formulario y guardar datos
     if request.method == 'POST':
-        consent_promo = bool(request.POST.get('freelancers:consent_promotional_use'))
+        consent_promo = 'consent_promotional_use' in request.POST
 
-        profile = FreelancerProfile.objects.create(
+        FreelancerProfile.objects.update_or_create(
             user=request.user,
-            consent_promotional_use=consent_promo,
-            consent_given_at=timezone.now()
+            defaults={
+                'consent_promotional_use': consent_promo,
+                'consent_given_at': timezone.now()
+            }
         )
 
         return redirect('cv_form')
