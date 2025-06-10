@@ -86,7 +86,7 @@ def consent_form(request):
             }
         )
 
-        return redirect('cv_form')
+        return redirect('freelancers:cv_form')
 
     return render(request, 'freelancers/consent_form.html')
 
