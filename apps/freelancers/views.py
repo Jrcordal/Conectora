@@ -44,7 +44,11 @@ def register(request, token):
                 magic_link.save()
             username = form.cleaned_data.get('username')
             messages.success(request, f'Welcome {username}, your account is created')
-            return redirect('freelancers:freelancer_login')
+            # Autenticar al usuario automáticamente después del registro
+            user = authenticate(username=form.cleaned_data.get('username'),
+                              password=form.cleaned_data.get('password1'))
+            login(request, user)
+            return redirect('freelancers:cv_form')
         elif form.errors: #check for errors in the form 
             for field, errors in form.errors.items():
                 for error in errors:
