@@ -50,7 +50,8 @@ class FreelancerProfile(models.Model):
     linkedin = models.URLField(blank=True, null=True)
     github = models.URLField(blank=True, null=True)
     personal_website = models.URLField(blank=True, null=True)
-    
+    hourly_rate = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+
     def __str__(self):
         return self.user.username
         
