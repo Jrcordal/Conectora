@@ -1,0 +1,531 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Profile Form{% endblock %}
+
+{% block body %}
+<div class="container">
+  <div class="form-wrapper">
+    <div class="form-header">
+      <div class="header-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </div>
+      <h1 class="form-title">Profile Form</h1>
+      <p class="form-subtitle">Please fill out your details to create your professional profile</p>
+    </div>
+
+    <div class="form-card">
+      <form method="POST" enctype="multipart/form-data" class="profile-form">
+        {% csrf_token %}
+        
+        <!-- Personal Information Section -->
+        <div class="form-section">
+          <div class="section-header">
+            <div class="section-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+            <h3 class="section-title">Personal Information</h3>
+          </div>
+
+          <div class="form-grid">
+
+            <div class="form-group">
+              <label for="{{ form.country_living_in.id_for_label }}" class="form-label">
+                <svg class="label-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                Current Location
+              </label>
+              {{ form.country_living_in }}
+              {% if form.country_living_in.errors %}
+                <div class="field-errors">
+                  {% for error in form.country_living_in.errors %}
+                    <span class="field-error">{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="form-group">
+              <label for="{{ form.nationality.id_for_label }}" class="form-label">
+                <svg class="label-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="4" width="18" height="12" rx="1" ry="1"></rect>
+                  <line x1="7" y1="8" x2="17" y2="8"></line>
+                  <line x1="7" y1="12" x2="17" y2="12"></line>
+                </svg>
+                Nationality
+              </label>
+              {{ form.nationality }}
+              {% if form.nationality.errors %}
+                <div class="field-errors">
+                  {% for error in form.nationality.errors %}
+                    <span class="field-error">{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Professional Links Section -->
+        <div class="form-section">
+          <div class="section-header">
+            <div class="section-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+              </svg>
+            </div>
+            <h3 class="section-title">Professional Links</h3>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="{{ form.linkedin.id_for_label }}" class="form-label">
+                <svg class="label-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                  <rect x="2" y="9" width="4" height="12"></rect>
+                  <circle cx="4" cy="4" r="2"></circle>
+                </svg>
+                LinkedIn Profile
+              </label>
+              {{ form.linkedin }}
+              {% if form.linkedin.errors %}
+                <div class="field-errors">
+                  {% for error in form.linkedin.errors %}
+                    <span class="field-error">{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="form-group">
+              <label for="{{ form.github.id_for_label }}" class="form-label">
+                <svg class="label-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+                </svg>
+                GitHub Profile
+              </label>
+              {{ form.github }}
+              {% if form.github.errors %}
+                <div class="field-errors">
+                  {% for error in form.github.errors %}
+                    <span class="field-error">{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="form-group">
+              <label for="{{ form.personal_website.id_for_label }}" class="form-label">
+                <svg class="label-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+                Personal Website
+              </label>
+              {{ form.personal_website }}
+              {% if form.personal_website.errors %}
+                <div class="field-errors">
+                  {% for error in form.personal_website.errors %}
+                    <span class="field-error">{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Documents Section -->
+        <div class="form-section">
+          <div class="section-header">
+            <div class="section-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14,2 14,8 20,8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10,9 9,9 8,9"></polyline>
+              </svg>
+            </div>
+            <h3 class="section-title">Documents</h3>
+          </div>
+
+          <div class="form-group file-upload">
+            <label for="{{ form.cv_file.id_for_label }}" class="form-label">
+              <svg class="label-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7,10 12,15 17,10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              Resume/CV
+            </label>
+            <div class="file-input-wrapper">
+              {{ form.cv_file }}
+              <div class="file-input-placeholder">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7,10 12,15 17,10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>Choose file or drag and drop</span>
+              </div>
+            </div>
+            {% if form.cv_file.errors %}
+              <div class="field-errors">
+                {% for error in form.cv_file.errors %}
+                  <span class="field-error">{{ error }}</span>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Rates Section -->
+        <div class="form-section">
+          <div class="section-header">
+            <div class="section-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="1" x2="12" y2="23"></line>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+              </svg>
+            </div>
+            <h3 class="section-title">Rate Information</h3>
+          </div>
+
+          <div class="form-group">
+            <label for="{{ form.hourly_rate.id_for_label }}" class="form-label">
+              <svg class="label-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="6" x2="12" y2="10"></line>
+                <line x1="12" y1="16" x2="12" y2="16"></line>
+              </svg>
+              Hourly Rate (USD)
+            </label>
+            <div class="input-wrapper">
+              <span class="input-prefix">$</span>
+              {{ form.hourly_rate }}
+              <span class="input-suffix">/hour</span>
+            </div>
+            {% if form.hourly_rate.errors %}
+              <div class="field-errors">
+                {% for error in form.hourly_rate.errors %}
+                  <span class="field-error">{{ error }}</span>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">
+            <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17,21 17,13 7,13 7,21"></polyline>
+              <polyline points="7,3 7,8 15,8"></polyline>
+            </svg>
+            Update Profile
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+  
+  .form-wrapper {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+  
+  .form-header {
+    background: linear-gradient(135deg, #00a99d, #00c4b6);
+    color: white;
+    padding: 2.5rem 2rem;
+    text-align: center;
+  }
+  
+  .header-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+  }
+  
+  .header-icon svg {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .form-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 0.5rem;
+  }
+  
+  .form-subtitle {
+    font-size: 1.125rem;
+    opacity: 0.9;
+    margin: 0;
+  }
+  
+  .form-card {
+    padding: 2.5rem 2rem;
+  }
+  
+  .profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+  
+  .form-section {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    background: #fafafa;
+  }
+  
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e5e7eb;
+  }
+  
+  .section-icon {
+    width: 40px;
+    height: 40px;
+    background: #00a99d;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+  
+  .section-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+  }
+  
+  .form-grid {
+    display: grid;
+    gap: 1.5rem;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .form-label {
+    font-weight: 500;
+    color: #374151;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .label-icon {
+    width: 16px;
+    height: 16px;
+    color: #00a99d;
+  }
+  
+  .form-group input,
+  .form-group select {
+    padding: 0.875rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+    background: white;
+  }
+  
+  .form-group input:focus,
+  .form-group select:focus {
+    outline: none;
+    border-color: #00a99d;
+    box-shadow: 0 0 0 3px rgba(0, 169, 157, 0.1);
+  }
+  
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  
+  .input-prefix,
+  .input-suffix {
+    position: absolute;
+    color: #6b7280;
+    font-weight: 500;
+    pointer-events: none;
+  }
+  
+  .input-prefix {
+    left: 0.875rem;
+  }
+  
+  .input-suffix {
+    right: 0.875rem;
+  }
+  
+  .input-wrapper input {
+    padding-left: 2rem;
+    padding-right: 3.5rem;
+  }
+  
+  .file-upload {
+    position: relative;
+  }
+  
+  .file-input-wrapper {
+    position: relative;
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.2s ease;
+    background: white;
+  }
+  
+  .file-input-wrapper:hover {
+    border-color: #00a99d;
+    background: rgba(0, 169, 157, 0.05);
+  }
+  
+  .file-input-wrapper input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+  }
+  
+  .file-input-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6b7280;
+  }
+  
+  .file-input-placeholder svg {
+    width: 24px;
+    height: 24px;
+    color: #00a99d;
+  }
+  
+  .field-errors {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .field-error {
+    color: #dc2626;
+    font-size: 0.75rem;
+  }
+  
+  .form-actions {
+    text-align: center;
+    padding-top: 1rem;
+  }
+  
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, #00a99d, #00c4b6);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 1.125rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 169, 157, 0.3);
+  }
+  
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 169, 157, 0.4);
+  }
+  
+  .btn-icon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .container {
+      padding: 1rem;
+    }
+    
+    .form-header {
+      padding: 2rem 1.5rem;
+    }
+    
+    .form-title {
+      font-size: 2rem;
+    }
+    
+    .form-card {
+      padding: 2rem 1.5rem;
+    }
+    
+    .form-section {
+      padding: 1rem;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .form-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .file-upload {
+      grid-column: 1 / -1;
+    }
+  }
+</style>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Developers Dashboard{% endblock %}
+
+{% block body %}
+<h1>Developers Dashboard</h1>
+
+<a href="{% url 'developers:profile_form' %}">Create your CV</a>
+
+{% endblock %}
