@@ -35,7 +35,7 @@ TIMEZONE_CHOICES = [
 
 
 ROLE_CHOICES = [
-    ('freelancer', 'Freelancer'),
+    ('developer', 'Developer'),
     ('client', 'Client'),
 ]
 
