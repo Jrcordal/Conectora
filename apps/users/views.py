@@ -96,7 +96,7 @@ def register(request):
 
             # Autenticar y hacer login automático
             user = authenticate(
-                username=form.cleaned_data.get('username'),
+                username=form.cleaned_data.get('email'),
                 password=form.cleaned_data.get('password1')
             )
             if user is not None:
