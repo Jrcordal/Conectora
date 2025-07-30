@@ -79,7 +79,7 @@ class CustomUser(AbstractUser):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'last_name', 'timezone', 'role']  # email NO va aquí
+    REQUIRED_FIELDS = ['username', 'first_name', 'last_name', 'timezone', 'role']  # email NO va aquí
     objects = CustomUserManager()
 
     def __str__(self):
