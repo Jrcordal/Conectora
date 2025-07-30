@@ -2,7 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 import uuid
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 # Create your models here.
 TIMEZONE_CHOICES = [
     ('UTC-12:00', 'UTC-12:00'),
@@ -33,6 +33,7 @@ TIMEZONE_CHOICES = [
 ]
 
 
+
 ROLE_CHOICES = [
     ('developer', 'Developer'),
     ('client', 'Client'),
@@ -41,6 +42,29 @@ ROLE_CHOICES = [
 
     
 
+class CustomUserManager(BaseUserManager):
+    def create_user(self, email, username, password=None, **extra_fields):
+        if not email:
+            raise ValueError('Email is required')
+        if not username:
+            raise ValueError('Username is required')
+
+        email = self.normalize_email(email)
+        user = self.model(email=email, username=username, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, username, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+
+        return self.create_user(email, username, password, **extra_fields)
 
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True, blank=False) # if email had another variable name, we would need to add EMAIL_FIELD to the correct email
@@ -55,7 +79,8 @@ class CustomUser(AbstractUser):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name', 'last_name', 'timezone', 'role']  # email NO va aquí
+    REQUIRED_FIELDS = ['username', 'first_name', 'last_name', 'timezone', 'role']  # email NO va aquí
+    objects = CustomUserManager()
 
     def __str__(self):
         return self.username
