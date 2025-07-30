@@ -63,7 +63,7 @@ def consent_form(request):
 @authorized_required
 @login_required
 def terms_and_conditions(request):
-    return render(request, 'freelancers/terms_and_conditions.html')
+    return render(request, 'developers/terms_and_conditions.html')
 
 
 @authorized_required
