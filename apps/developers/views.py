@@ -56,7 +56,7 @@ def consent_form(request):
             }
         )
 
-        return redirect('developers:cv_form')
+        return redirect('developers:profile_form')
 
     return render(request, 'developers/consent_form.html')
 
