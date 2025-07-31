@@ -81,7 +81,7 @@ def profile_form(request):
     non_list_fields = [
         'country_living_in', 'nationality',
         'telephone_number', 'linkedin', 'github', 'personal_website',
-        'indicative_hourly_rate'
+        'hourly_rate'
     ]
 
     if request.method == 'POST':
