@@ -5,7 +5,7 @@ import phonenumbers
 from django.core.exceptions import ValidationError
 from .models import DeveloperProfile
 from django_countries.fields import CountryField
-from .models import CURRENCY_CHOICES
+from .models import CURRENCY_CHOICES, validate_phone
 
 #def validate_phone(value):
 #    try:
@@ -32,6 +32,7 @@ class DeveloperProfileForm(forms.ModelForm):
     nationality = CountryField(blank_label="(Select country)").formfield()
     telephone_number = forms.CharField(
         required=False,
+        validators=[validate_phone],  # <-- Añadir el validador aquí
         widget=forms.TextInput(attrs={
             'placeholder': 'E.g.: +31 6 12345678',
             'class': 'form-control'
