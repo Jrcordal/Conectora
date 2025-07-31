@@ -60,6 +60,24 @@ def consent_form(request):
 
     return render(request, 'developers/consent_form.html')
 
+
+@authorized_required
+@login_required
+def privacy_settings(request):
+    profile, created = DeveloperProfile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        consent_promo = 'consent_promotional_use' in request.POST
+        profile.consent_promotional_use = consent_promo
+        profile.consent_given_at = timezone.now()
+        profile.save()
+        messages.success(request, "Your privacy preferences have been updated.")
+        return redirect('developers:profile_form')
+
+    return render(request, 'developers/privacy_settings.html', {
+        'profile': profile
+    })
+
 @authorized_required
 @login_required
 def terms_and_conditions(request):
@@ -81,7 +99,7 @@ def profile_form(request):
     non_list_fields = [
         'country_living_in', 'nationality',
         'telephone_number', 'linkedin', 'github', 'personal_website',
-        'hourly_rate'
+        'hourly_rate', 'currency'
     ]
 
     if request.method == 'POST':
@@ -94,8 +112,7 @@ def profile_form(request):
             messages.error(request, 'You must upload your CV.')
             return render(request, 'developers/profile_form.html', {
                 'form': form,
-                'profile': profile,
-                'is_new_profile': profile is None
+                'profile': profile
             })
 
         if form.is_valid():
@@ -120,8 +137,7 @@ def profile_form(request):
 
     return render(request, 'developers/profile_form.html', {
         'form': form,
-        'profile': profile,
-        'is_new_profile': profile is None
+        'profile': profile
     })
 
 

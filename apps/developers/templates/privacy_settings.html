@@ -1,0 +1,10 @@
+<h2>Privacy Settings</h2>
+<form method="post">
+  {% csrf_token %}
+  <label>
+    <input type="checkbox" name="consent_promotional_use"
+           {% if profile.consent_promotional_use %}checked{% endif %}>
+    I allow my profile to be used for promotional purposes
+  </label>
+  <button type="submit">Update Preferences</button>
+</form>
