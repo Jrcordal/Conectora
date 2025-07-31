@@ -9,7 +9,7 @@ services:
       - .env.${DJANGO_ENV:-local}
   django-web:
     build: .
-    container_name: django-docker
+    container_name: conectora
     depends_on:
       - db
     volumes:
