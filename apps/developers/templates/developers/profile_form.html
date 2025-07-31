@@ -656,8 +656,9 @@
   gap: 1.5rem;
 }
 
+/* Remove the grid-column property to make telephone field same size as others */
 .telephone-field {
-  grid-column: 1 / -1;
+  /* grid-column: 1 / -1; - REMOVE THIS LINE */
 }
 
 /* Responsive adjustments */
@@ -690,9 +691,10 @@
     grid-template-columns: 1fr;
   }
   
-  .nationality-field {
+  /* Remove this line since we're not using nationality-field anymore */
+  /* .nationality-field {
     grid-column: 1;
-  }
+  } */
 }
 
 @media (min-width: 768px) {
