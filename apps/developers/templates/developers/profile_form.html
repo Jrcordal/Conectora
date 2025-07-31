@@ -31,8 +31,10 @@
             </div>
             <h3 class="section-title">Personal Information</h3>
           </div>
-
+          
+          <!-- Fila 1: Location + Telephone -->
           <div class="form-grid">
+            <!-- Current Location -->
             <div class="form-group">
               <label for="{{ form.country_living_in.id_for_label }}" class="form-label">
                 <svg class="label-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -50,7 +52,8 @@
                 </div>
               {% endif %}
             </div>
-
+          
+            <!-- Telephone Number -->
             <div class="form-group telephone-field">
               <label for="{{ form.telephone_number.id_for_label }}" class="form-label">
                 <svg class="label-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -68,8 +71,9 @@
               {% endif %}
             </div>
           </div>
-        </div>
-
+          
+          <!-- Fila 2: Nationality -->
+          <div class="form-grid">
             <div class="form-group">
               <label for="{{ form.nationality.id_for_label }}" class="form-label">
                 <svg class="label-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -89,7 +93,6 @@
               {% endif %}
             </div>
           </div>
-        </div>
 
         <!-- Professional Links Section -->
         <div class="form-section">
