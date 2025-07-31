@@ -56,7 +56,6 @@ def cv_upload_path(instance, filename):
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     return f"cvs/{instance.user.id}/{timestamp}.pdf"
 
-
 class DeveloperProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
     consent_promotional_use = models.BooleanField(null=True, blank=True)
