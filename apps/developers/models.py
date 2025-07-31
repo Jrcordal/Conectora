@@ -8,6 +8,7 @@ from django.utils import timezone
 import uuid
 from datetime import timedelta
 from django_countries.fields import CountryField
+from datetime import datetime
 # Create your models here.
 
 def validate_integer(value):
@@ -46,13 +47,19 @@ class AuthorizedEmail(models.Model):
     active = models.BooleanField(default=True)
 
 
+def cv_upload_path(instance, filename):
+    # Formato YYYYMMDD-HHMMSS
+    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    return f"cvs/{instance.user.id}/{timestamp}.pdf"
+
+
 class DeveloperProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
     consent_promotional_use = models.BooleanField(null=True, blank=True)
     consent_given_at = models.DateTimeField(null=True, blank=True)
 
     # ---- Archivo CV y texto original extraído ---- (CV file and original extracted text)
-    cv_file = models.FileField(upload_to='resumes/', blank=False, null=False)
+    cv_file = models.FileField(upload_to=cv_upload_path, blank=False, null=False)
     cv_raw_text = models.TextField(blank=True, null=True)
 
     # ---- Educación ---- (Education)
