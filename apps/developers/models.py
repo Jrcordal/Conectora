@@ -25,19 +25,21 @@ def validate_string(value):
 def validate_phone(value):
     if not value:
         return  # Allow empty if the field is optional
-    
-    # Sanitize input
+
     raw_value = str(value).strip()
-    
+
+    # Requerir que empiece con +
+    if not raw_value.startswith("+"):
+        raise ValidationError("Include country code (e.g., +31).")
+
     try:
-        # Try to parse as international
         phone_number = phonenumbers.parse(raw_value, None)
     except phonenumbers.phonenumberutil.NumberParseException:
-        raise ValidationError("Invalid phone number. Include country code (e.g., +31).")
-    
+        raise ValidationError("Invalid phone number. Use format +[country code][number].")
+
     if not phonenumbers.is_valid_number(phone_number):
         raise ValidationError("The phone number entered is not valid.")
-    
+
     return phonenumbers.format_number(phone_number, phonenumbers.PhoneNumberFormat.E164)
 
 CURRENCY_CHOICES = [
