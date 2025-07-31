@@ -40,7 +40,11 @@ def validate_phone(value):
     
     return phonenumbers.format_number(phone_number, phonenumbers.PhoneNumberFormat.E164)
 
+CURRENCY_CHOICES = [
+    ('USD', 'USD'),
+    ('EUR', 'EUR'),
 
+]
 
 class AuthorizedEmail(models.Model):
     email = models.EmailField(unique=True)
@@ -103,7 +107,8 @@ class DeveloperProfile(models.Model):
     github = models.URLField(blank=True, null=True)
     personal_website = models.URLField(blank=True, null=True)
     hourly_rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-
+    currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, blank=True, null=True)
+    
     # ---- Control de versiones del esquema ---- (Schema version control)
     schema_version = models.CharField(max_length=20, default="v1")
 

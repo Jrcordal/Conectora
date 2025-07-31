@@ -67,6 +67,12 @@ class DeveloperProfileForm(forms.ModelForm):
         })
     )
     
+    currency = forms.ChoiceField(
+        required=False,
+        choices=DeveloperProfile.CURRENCY_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    
     class Meta:
         model = DeveloperProfile
         exclude = ['user']
