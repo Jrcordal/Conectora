@@ -105,6 +105,10 @@ def profile_form(request):
             cv_file = request.FILES.get('cv_file')
             if cv_file:
                 profile_instance.cv_file = cv_file
+                profile_instance.cv_original_name = cv_file.name
+                profile_instance.cv_size = cv_file.size
+                profile_instance.cv_uploaded_at = timezone.now()
+
             elif not profile.cv_file:
                 messages.error(request, 'You must upload your CV.')
                 return render(request, 'developers/profile_form.html', {

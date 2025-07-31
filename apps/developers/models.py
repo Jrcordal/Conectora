@@ -108,7 +108,13 @@ class DeveloperProfile(models.Model):
     personal_website = models.URLField(blank=True, null=True)
     hourly_rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, blank=True, null=True)
-    
+    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
+
+    # Metadata (CV)
+    cv_original_name = models.CharField(max_length=255, blank=True, null=True)
+    cv_size = models.PositiveIntegerField(blank=True, null=True)  # en bytes
+    cv_uploaded_at = models.DateTimeField(auto_now_add=True)
+
     # ---- Control de versiones del esquema ---- (Schema version control)
     schema_version = models.CharField(max_length=20, default="v1")
 
