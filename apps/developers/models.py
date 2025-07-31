@@ -102,7 +102,7 @@ class DeveloperProfile(models.Model):
     linkedin = models.URLField(blank=True, null=True)
     github = models.URLField(blank=True, null=True)
     personal_website = models.URLField(blank=True, null=True)
-    indicative_hourly_rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    hourly_rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
     # ---- Control de versiones del esquema ---- (Schema version control)
     schema_version = models.CharField(max_length=20, default="v1")
