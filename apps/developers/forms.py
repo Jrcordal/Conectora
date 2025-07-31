@@ -30,6 +30,14 @@ class DeveloperProfileForm(forms.ModelForm):
 
     country_living_in = CountryField(blank_label="(Select country)").formfield()
     nationality = CountryField(blank_label="(Select country)").formfield()
+    telephone_number = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'placeholder': 'E.g.: +31 6 12345678',
+            'class': 'form-control'
+        })
+    )
+
 
     linkedin = forms.URLField(
         required=False,
