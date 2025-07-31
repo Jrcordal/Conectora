@@ -59,7 +59,7 @@ class DeveloperProfileForm(forms.ModelForm):
         })
     )
     
-    hourly_rate = forms.DecimalField(
+    indicative_hourly_rate  = forms.DecimalField(
         required=False,
         widget=forms.NumberInput(attrs={
             'placeholder': 'E.g.: 100',
