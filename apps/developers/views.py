@@ -108,7 +108,7 @@ def profile_form(request):
                 profile_instance.cv_original_name = cv_file.name
                 profile_instance.cv_size = cv_file.size
                 profile_instance.cv_uploaded_at = timezone.now()
-                fill_developer_fields.delay(profile_instance.id)
+                fill_developer_fields.delay(profile_instance.user.id)
             elif not profile.cv_file:
                 messages.error(request, 'You must upload your CV.')
                 return render(request, 'developers/profile_form.html', {
