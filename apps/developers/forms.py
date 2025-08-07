@@ -5,7 +5,7 @@ import phonenumbers
 from django.core.exceptions import ValidationError
 from .models import DeveloperProfile
 from django_countries.fields import CountryField
-
+from .models import CURRENCY_CHOICES, validate_phone
 
 #def validate_phone(value):
 #    try:
@@ -20,7 +20,6 @@ from django_countries.fields import CountryField
 
             
 class DeveloperProfileForm(forms.ModelForm):
-   
     cv_file = forms.FileField(
         required=True,
         widget=forms.FileInput(attrs={
@@ -31,10 +30,16 @@ class DeveloperProfileForm(forms.ModelForm):
 
     country_living_in = CountryField(blank_label="(Select country)").formfield()
     nationality = CountryField(blank_label="(Select country)").formfield()
- 
+    telephone_number = forms.CharField(
+        required=False,
+        validators=[validate_phone],  # <-- Añadir el validador aquí
+        widget=forms.TextInput(attrs={
+            'placeholder': 'E.g.: +31 6 12345678',
+            'class': 'form-control'
+        })
+    )
 
-   
-    
+
     linkedin = forms.URLField(
         required=False,
         widget=forms.URLInput(attrs={
@@ -42,7 +47,7 @@ class DeveloperProfileForm(forms.ModelForm):
             'class': 'form-control'
         })
     )
-    
+
     github = forms.URLField(
         required=False,
         widget=forms.URLInput(attrs={
@@ -50,7 +55,7 @@ class DeveloperProfileForm(forms.ModelForm):
             'class': 'form-control'
         })
     )
-    
+
     personal_website = forms.URLField(
         required=False,
         widget=forms.URLInput(attrs={
@@ -58,7 +63,7 @@ class DeveloperProfileForm(forms.ModelForm):
             'class': 'form-control'
         })
     )
-    
+
     hourly_rate = forms.DecimalField(
         required=False,
         widget=forms.NumberInput(attrs={
@@ -66,10 +71,25 @@ class DeveloperProfileForm(forms.ModelForm):
             'class': 'form-control'
         })
     )
-    
+
+    currency = forms.ChoiceField(
+        required=False,
+        choices=CURRENCY_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+
     class Meta:
         model = DeveloperProfile
-        exclude = ['user']
+        fields = [
+            'cv_file',
+            'country_living_in',
+            'nationality',
+            'linkedin',
+            'github',
+            'personal_website',
+            'hourly_rate',
+            'currency'
+        ]
     #def clean_phone(self):
     #    return validate_phone(self.cleaned_data.get('phone'))
 

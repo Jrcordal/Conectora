@@ -8,6 +8,7 @@ from django.utils import timezone
 import uuid
 from datetime import timedelta
 from django_countries.fields import CountryField
+from datetime import datetime
 # Create your models here.
 
 def validate_integer(value):
@@ -24,27 +25,38 @@ def validate_string(value):
 def validate_phone(value):
     if not value:
         return  # Allow empty if the field is optional
-    
-    # Sanitize input
+
     raw_value = str(value).strip()
-    
+
+    # Requerir que empiece con +
+    if not raw_value.startswith("+"):
+        raise ValidationError("Include country code (e.g., +31).")
+
     try:
-        # Try to parse as international
         phone_number = phonenumbers.parse(raw_value, None)
     except phonenumbers.phonenumberutil.NumberParseException:
-        raise ValidationError("Invalid phone number. Include country code (e.g., +31).")
-    
+        raise ValidationError("Invalid phone number. Use format +[country code][number].")
+
     if not phonenumbers.is_valid_number(phone_number):
         raise ValidationError("The phone number entered is not valid.")
-    
+
     return phonenumbers.format_number(phone_number, phonenumbers.PhoneNumberFormat.E164)
 
+CURRENCY_CHOICES = [
+    ('USD', 'USD'),
+    ('EUR', 'EUR'),
 
+]
 
 class AuthorizedEmail(models.Model):
     email = models.EmailField(unique=True)
     active = models.BooleanField(default=True)
 
+
+def cv_upload_path(instance, filename):
+    # Formato YYYYMMDD-HHMMSS
+    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    return f"cvs/{instance.user.id}/{timestamp}.pdf"
 
 class DeveloperProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
@@ -52,7 +64,7 @@ class DeveloperProfile(models.Model):
     consent_given_at = models.DateTimeField(null=True, blank=True)
 
     # ---- Archivo CV y texto original extraído ---- (CV file and original extracted text)
-    cv_file = models.FileField(upload_to='resumes/', blank=False, null=False)
+    cv_file = models.FileField(upload_to=cv_upload_path, blank=False, null=False)
     cv_raw_text = models.TextField(blank=True, null=True)
 
     # ---- Educación ---- (Education)
@@ -92,10 +104,17 @@ class DeveloperProfile(models.Model):
     country_living_in = CountryField(blank=True)
     nationality = CountryField(blank=True)
     telephone_number = models.CharField(max_length=15, blank=True, validators=[validate_phone])
-    linkedin = models.URLField(blank=True)
-    github = models.URLField(blank=True)
-    personal_website = models.URLField(blank=True)
-    indicative_hourly_rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+    linkedin = models.URLField(blank=True, null=True)
+    github = models.URLField(blank=True, null=True)
+    personal_website = models.URLField(blank=True, null=True)
+    hourly_rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
+
+    # Metadata (CV)
+    cv_original_name = models.CharField(max_length=255, blank=True, null=True)
+    cv_size = models.PositiveIntegerField(blank=True, null=True)  # en bytes
+    cv_uploaded_at = models.DateTimeField(auto_now_add=True)
 
     # ---- Control de versiones del esquema ---- (Schema version control)
     schema_version = models.CharField(max_length=20, default="v1")

@@ -60,6 +60,24 @@ def consent_form(request):
 
     return render(request, 'developers/consent_form.html')
 
+
+@authorized_required
+@login_required
+def privacy_settings(request):
+    profile, created = DeveloperProfile.objects.get_or_create(user=request.user)
+
+    if request.method == 'POST':
+        consent_promo = 'consent_promotional_use' in request.POST
+        profile.consent_promotional_use = consent_promo
+        profile.consent_given_at = timezone.now()
+        profile.save()
+        messages.success(request, "Your privacy preferences have been updated.")
+        return redirect('developers:profile_form')
+
+    return render(request, 'developers/privacy_settings.html', {
+        'profile': profile
+    })
+
 @authorized_required
 @login_required
 def terms_and_conditions(request):
@@ -77,38 +95,26 @@ def profile_form(request):
     if profile.consent_promotional_use is None:
         return redirect('developers:consent_form')  # Falta consentimiento explícito
 
-    # Campos simples
-    non_list_fields = [
-        'country_living_in', 'nationality',
-        'telephone_number', 'linkedin', 'github', 'personal_website',
-        'indicative_hourly_rate'
-    ]
-
     if request.method == 'POST':
         form = DeveloperProfileForm(request.POST, request.FILES, instance=profile)
-
-        # CV actual o nuevo
-        cv_file = request.FILES.get('cv_file')
-        if not cv_file and not profile.cv_file:
-            # Si no hay CV previo ni nuevo, error
-            messages.error(request, 'You must upload your CV.')
-            return render(request, 'developers/profile_form.html', {
-                'form': form,
-                'profile': profile,
-                'is_new_profile': profile is None
-            })
 
         if form.is_valid():
             profile_instance = form.save(commit=False)
 
-            # Actualizar campos simples
-            for field in non_list_fields:
-                text_value = form.cleaned_data.get(field)
-                setattr(profile_instance, field, text_value if text_value else None)
-
             # Actualizar CV si hay uno nuevo
+            cv_file = request.FILES.get('cv_file')
             if cv_file:
-                profile_instance.cv_file = cv_file  # reemplaza el archivo existente
+                profile_instance.cv_file = cv_file
+                profile_instance.cv_original_name = cv_file.name
+                profile_instance.cv_size = cv_file.size
+                profile_instance.cv_uploaded_at = timezone.now()
+
+            elif not profile.cv_file:
+                messages.error(request, 'You must upload your CV.')
+                return render(request, 'developers/profile_form.html', {
+                    'form': form,
+                    'profile': profile,
+                })
 
             profile_instance.save()
 
@@ -121,9 +127,7 @@ def profile_form(request):
     return render(request, 'developers/profile_form.html', {
         'form': form,
         'profile': profile,
-        'is_new_profile': profile is None
     })
-
 
 """
 @staff_member_required

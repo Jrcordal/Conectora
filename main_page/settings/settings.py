@@ -52,6 +52,7 @@ DATABASES = {
 # Application definition
 
 INSTALLED_APPS = [
+    'storages',
     'main_page',
     'apps.users.apps.UsersConfig',
     'django_countries',
