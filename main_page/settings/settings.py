@@ -176,6 +176,26 @@ EMAIL_USE_TLS = env('EMAIL_USE_TLS')
 EMAIL_USE_SSL = env('EMAIL_USE_SSL')
 #DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 
+USE_S3 = env.bool("USE_S3", default=False)
+
+if USE_S3:
+    # Configuración real de S3
+    AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
+    AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
+    AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME", default="eu-west-1")
+else:
+    # Carpeta local para pruebas
+    LOCAL_CV_DIR = os.path.join(BASE_DIR, "tmp", "cvs")
+    os.makedirs(LOCAL_CV_DIR, exist_ok=True)
 
 
 
+# Celery configuration
+CELERY_BROKER_URL = env('CELERY_BROKER_URL', default='redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND', default='redis://localhost:6379/0')
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC+2'
