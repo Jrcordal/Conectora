@@ -58,7 +58,7 @@ class CVStorage(S3Boto3Storage):
 
 def cv_upload_path(instance, filename):
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    return f"{instance.user.id}/{timestamp}.pdf"  # ya no pones 'cvs/' porque lo pone storage
+    return f"cvs/{instance.user.id}/{timestamp}.pdf"  # ya no pones 'cvs/' porque lo pone storage
 
 
 class DeveloperProfile(models.Model):
