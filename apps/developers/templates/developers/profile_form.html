@@ -183,41 +183,43 @@
               </svg>
               Resume/CV
             </label>
-            <div class="file-input-wrapper" id="fileInputWrapper">
+            <div class="file-input-wrapper {% if form.instance.cv_file %}file-uploaded{% endif %}" id="fileInputWrapper">
               {% if form.instance.cv_file %}
-                <p>
-                  Current file: 
-                  <a href="{{ form.instance.cv_file.url }}" target="_blank">
-                    {{ form.instance.cv_file.name }}
-                  </a>
-                </p>
-              {% endif %}
-              {{ form.cv_file }}
-              <div class="file-input-placeholder" id="filePlaceholder">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                  <polyline points="7,10 12,15 17,10"></polyline>
-                  <line x1="12" y1="15" x2="12" y2="3"></line>
-                </svg>
-                <span>
-                  Choose file or drag and drop.<br><br>
-                  Include:<br>
-                  • Education, experience, projects<br>
-                  • Languages & soft skills<br>
-                  • Programming & tech stack<br>
-                  • Provide as much detail as possible!
-                </span>
-              </div>
-              <div class="file-success" id="fileSuccess" style="display: none;">
-                <div class="success-animation">
-                  <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="20,6 9,17 4,12"></polyline>
-                  </svg>
+                <div class="file-success" id="fileSuccess" style="display:flex;">
+                  <div class="success-animation">
+                    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20,6 9,17 4,12"></polyline>
+                    </svg>
+                  </div>
+                  <div class="file-info" id="fileInfo" style="text-align:center;">
+                    <a href="{{ form.instance.cv_file.url }}" target="_blank">
+                      <strong>{{ form.instance.cv_file.name }}</strong>
+                    </a>
+                    <br>
+                    {% if form.instance.cv_file.size %}{{ form.instance.cv_file.size|filesizeformat }}{% endif %}
+                  </div>
                 </div>
-                <span class="success-text">File uploaded successfully!</span>
-                <div class="file-info" id="fileInfo"></div>
-              </div>
+              {% else %}
+                <div class="file-input-placeholder" id="filePlaceholder">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7,10 12,15 17,10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  <span>
+                    Choose file or drag and drop.<br><br>
+                    Include:<br>
+                    • Education, experience, projects<br>
+                    • Languages & soft skills<br>
+                    • Programming & tech stack<br>
+                    • Provide as much detail as possible!
+                  </span>
+                </div>
+              {% endif %}
+            
+              {{ form.cv_file }}
             </div>
+            
             {% if form.cv_file.errors %}
               <div class="field-errors">
                 {% for error in form.cv_file.errors %}
