@@ -184,6 +184,14 @@
               Resume/CV
             </label>
             <div class="file-input-wrapper" id="fileInputWrapper">
+              {% if form.instance.cv_file %}
+                <p>
+                  Current file: 
+                  <a href="{{ form.instance.cv_file.url }}" target="_blank">
+                    {{ form.instance.cv_file.name }}
+                  </a>
+                </p>
+              {% endif %}
               {{ form.cv_file }}
               <div class="file-input-placeholder" id="filePlaceholder">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
