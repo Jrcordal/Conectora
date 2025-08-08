@@ -729,66 +729,81 @@
     grid-column: 1 / -1;
   }
 }
+
+
+
+.current-file {
+  text-align: center;
+  color: #6b7280; /* gris */
+  margin-bottom: .5rem;
+}
+.current-file .cv-link {
+  color: #6b7280;
+  text-decoration: none;
+}
+.current-file .cv-link:hover {
+  text-decoration: underline; /* opcional */
+}
+
+
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const fileInput = document.querySelector('input[type="file"]');
-  const fileWrapper = document.getElementById('fileInputWrapper');
-  const filePlaceholder = document.getElementById('filePlaceholder');
-  const fileSuccess = document.getElementById('fileSuccess');
-  const fileInfo = document.getElementById('fileInfo');
+  document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.querySelector('input[name="cv_file"]'); // <-- antes era input[type="file"]
+    const fileWrapper = document.getElementById('fileInputWrapper');
+    const filePlaceholder = document.getElementById('filePlaceholder');
+    const fileSuccess = document.getElementById('fileSuccess');
+    const fileInfo = document.getElementById('fileInfo');
   
-  if (fileInput) {
-    fileInput.addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      
-      if (file) {
-        // Hide placeholder and show success animation
-        filePlaceholder.style.display = 'none';
-        fileSuccess.style.display = 'flex';
-        fileWrapper.classList.add('file-uploaded');
-        
-        // Update file info
-        const fileSize = (file.size / 1024 / 1024).toFixed(2);
-        fileInfo.innerHTML = `<strong>${file.name}</strong><br>${fileSize} MB`;
-        
-        // Add success animation
-        setTimeout(() => {
+    if (fileInput) {
+      fileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+  
+        if (file) {
+          // Oculta placeholder, muestra animación y pinta info
+          if (filePlaceholder) filePlaceholder.style.display = 'none';
+          if (fileSuccess) fileSuccess.style.display = 'flex';
+          fileWrapper.classList.add('file-uploaded');
+  
+          const fileSizeMB = (file.size / 1024 / 1024).toFixed(2);
+          if (fileInfo) fileInfo.innerHTML = `<span>${file.name}</span><br><small>${fileSizeMB} MB</small>`;
+  
+          // Reinicia animación
+          fileSuccess.style.animation = 'none';
+          // fuerza reflow para reiniciar
+          void fileSuccess.offsetWidth;
           fileSuccess.style.animation = 'fadeInUp 0.5s ease-out';
-        }, 100);
-      } else {
-        // Reset to placeholder if no file selected
-        filePlaceholder.style.display = 'flex';
-        fileSuccess.style.display = 'none';
-        fileWrapper.classList.remove('file-uploaded');
-      }
-    });
-    
-    // Handle drag and drop
-    fileWrapper.addEventListener('dragover', function(e) {
-      e.preventDefault();
-      fileWrapper.style.borderColor = '#00a99d';
-      fileWrapper.style.background = 'rgba(0, 169, 157, 0.1)';
-    });
-    
-    fileWrapper.addEventListener('dragleave', function(e) {
-      e.preventDefault();
-      if (!fileWrapper.classList.contains('file-uploaded')) {
-        fileWrapper.style.borderColor = '#d1d5db';
-        fileWrapper.style.background = 'white';
-      }
-    });
-    
-    fileWrapper.addEventListener('drop', function(e) {
-      e.preventDefault();
-      const files = e.dataTransfer.files;
-      if (files.length > 0) {
-        fileInput.files = files;
-        fileInput.dispatchEvent(new Event('change'));
-      }
-    });
-  }
-});
-</script>
+        } else {
+          // Reset
+          if (filePlaceholder) filePlaceholder.style.display = 'flex';
+          if (fileSuccess) fileSuccess.style.display = 'none';
+          fileWrapper.classList.remove('file-uploaded');
+        }
+      });
+  
+      // Drag & drop igual que ya tenías…
+      fileWrapper.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        fileWrapper.style.borderColor = '#00a99d';
+        fileWrapper.style.background = 'rgba(0, 169, 157, 0.1)';
+      });
+      fileWrapper.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        if (!fileWrapper.classList.contains('file-uploaded')) {
+          fileWrapper.style.borderColor = '#d1d5db';
+          fileWrapper.style.background = 'white';
+        }
+      });
+      fileWrapper.addEventListener('drop', function(e) {
+        e.preventDefault();
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          fileInput.files = files;
+          fileInput.dispatchEvent(new Event('change'));
+        }
+      });
+    }
+  });
+  </script>
 {% endblock %}
