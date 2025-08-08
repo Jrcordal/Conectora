@@ -10,6 +10,7 @@ from datetime import timedelta
 from django_countries.fields import CountryField
 from datetime import datetime
 from storages.backends.s3boto3 import S3Boto3Storage
+import os
 # Create your models here.
 
 def validate_integer(value):
@@ -125,7 +126,9 @@ class DeveloperProfile(models.Model):
     def __str__(self):
         return self.user.username
         
-
+    @property
+    def cv_filename(self):
+        return os.path.basename(self.cv_file.name)
 """
 class MagicToken(models.Model):
     token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
