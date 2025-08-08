@@ -54,7 +54,6 @@ class AuthorizedEmail(models.Model):
     active = models.BooleanField(default=True)
 
 class CVStorage(S3Boto3Storage):
-    location = 'cvs'  # carpeta raíz para CVs
     default_acl = 'private'  # o 'public-read'
 
 def cv_upload_path(instance, filename):
