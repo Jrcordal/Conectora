@@ -193,7 +193,7 @@
                   </div>
                   <div class="file-info" id="fileInfo" style="text-align:center;">
                     <a href="{{ form.instance.cv_file.url }}" target="_blank">
-                      <strong>{{ form.instance.cv_file.name }}</strong>
+                      <strong>{{ form.instance.cv_file.name|basename }}</strong>
                     </a>
                   </div>
                 </div>
