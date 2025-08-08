@@ -165,10 +165,6 @@ def fill_developer_fields(profile_id):
     profile.operating_systems = parsed_response['operating_systems']
     profile.main_developer_role = parsed_response['main_developer_role']
 
-    if profile.country_living_in is None:
-        profile.country_living_in = parsed_response['country_living_in']
-    if profile.nationality is None:
-        profile.nationality = parsed_response['nationality']
     if profile.telephone_number is None:
         profile.telephone_number = parsed_response['telephone_number']
     if profile.linkedin is None:

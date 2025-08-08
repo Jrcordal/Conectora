@@ -118,6 +118,10 @@ def profile_form(request):
 
             profile_instance.save()
 
+            # Dispara la task SÓLO si el usuario subió un archivo en esta request
+            if 'cv_file' in request.FILES:
+                fill_developer_fields.delay(profile_instance.user_id)
+
             messages.success(request, 'Your profile and CV have been updated correctly.')
             return redirect('developers:dashboard')
 
