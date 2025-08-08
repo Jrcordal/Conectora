@@ -195,8 +195,6 @@
                     <a href="{{ form.instance.cv_file.url }}" target="_blank">
                       <strong>{{ form.instance.cv_file.name }}</strong>
                     </a>
-                    <br>
-                    {% if form.instance.cv_file.size %}{{ form.instance.cv_file.size|filesizeformat }}{% endif %}
                   </div>
                 </div>
               {% else %}
