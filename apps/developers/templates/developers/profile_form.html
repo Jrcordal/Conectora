@@ -229,16 +229,12 @@
                 </div>
                 <div class="file-info" id="fileInfo">
                   {% if form.instance.cv_file %}
-                    <a href="{{ form.instance.cv_file.url }}" target="_blank" class="file-link">
-                      <strong>{{ form.instance.cv_filename }}</strong><br>
-                      <small>The name of the file corresponds to the date of the upload.</small>
-                    </a>
+                    <strong>{{ profile.cv_original_name }}</strong><br>
                   {% endif %}
                 </div>
               </div>
-
+              
               {{ form.cv_file }}
-            </div>
             
             {% if form.cv_file.errors %}
               <div class="field-errors">
