@@ -203,3 +203,26 @@ CELERY_TIMEZONE = 'UTC+2'
 
 
 GOOGLE_API_KEY = env('GOOGLE_API_KEY')
+
+
+
+
+import sys
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "stream": sys.stdout,
+        },
+    },
+    "root": {"handlers": ["console"], "level": "INFO"},
+    "loggers": {
+        # tu módulo de tasks
+        "apps.developers.tasks": {"handlers": ["console"], "level": "INFO", "propagate": False},
+        # opcional: todo celery
+        "celery": {"handlers": ["console"], "level": "INFO"},
+    },
+}
