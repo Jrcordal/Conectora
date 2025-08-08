@@ -81,6 +81,7 @@ class DeveloperProfileForm(forms.ModelForm):
     class Meta:
         model = DeveloperProfile
         fields = [
+            'telephone_number',
             'cv_file',
             'country_living_in',
             'nationality',
