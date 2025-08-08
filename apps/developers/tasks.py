@@ -11,6 +11,10 @@ from datetime import datetime
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 
+
+import logging
+logger = logging.getLogger(__name__)
+
 class university_fields(BaseModel):
     university: str = Field(description="Name of the university")
     degree: str = Field(description="Degree obtained")
@@ -92,9 +96,10 @@ class DeveloperFields(BaseModel):
 
 
 
-@shared_task
-def fill_developer_fields(profile_id):
+@shared_task(bind=True)
+def fill_developer_fields(self,profile_id):
     from apps.developers.models import DeveloperProfile
+    logger.info(f"Task {self.request.id} started for profile {profile_id}")
 
     profile = DeveloperProfile.objects.get(user_id=profile_id)
     s3_key = profile.cv_file.name
@@ -136,8 +141,10 @@ def fill_developer_fields(profile_id):
     llm_structured = llm_01_temperature.with_structured_output(DeveloperFields)
 
     response = llm_structured.invoke(prompt_input)
+    logger.info(f"LLM raw output (profile_id={profile_id}): {response}")
 
     parsed_response = response.model_dump()
+    logger.info(f"Parsed response: {parsed_response}")
 
     profile.university_education = parsed_response['university_education']
     profile.education_certificates = parsed_response['education_certificates']
@@ -175,5 +182,6 @@ def fill_developer_fields(profile_id):
         profile.personal_website = parsed_response['personal_website']
     
     profile.save()
+    logger.info(f"Profile {profile_id} updated successfully by task {self.request.id}")
 
     return 
