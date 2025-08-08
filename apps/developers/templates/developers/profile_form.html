@@ -160,6 +160,11 @@
         </div>
 
         <!-- Documents Section -->
+
+
+
+
+
         <div class="form-section">
           <div class="section-header">
             <div class="section-icon">
@@ -173,7 +178,7 @@
             </div>
             <h3 class="section-title">Documents</h3>
           </div>
-
+          <div class="file-success" id="fileSuccess" style="display:none;">
           <div class="form-group file-upload">
             <label for="{{ form.cv_file.id_for_label }}" class="form-label">
               <svg class="label-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -183,41 +188,43 @@
               </svg>
               Resume/CV
             </label>
-            <div class="file-input-wrapper {% if form.instance.cv_file %}file-uploaded{% endif %}" id="fileInputWrapper">
+
+            <div class="file-input-wrapper" id="fileInputWrapper">
               {% if form.instance.cv_file %}
-                <div class="file-success" id="fileSuccess" style="display:flex;">
-                  <div class="success-animation">
-                    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="20,6 9,17 4,12"></polyline>
-                    </svg>
-                  </div>
-                  <div class="file-info" id="fileInfo" style="text-align:center;">
-                    <a href="{{ form.instance.cv_file.url }}" target="_blank" style="color: gray; text-decoration: none;">
-                      {{ form.instance.cv_filename }} <br>
-                      The name of the file corresponds to the date of the upload.
-                    </a>
-                  </div>
-                </div>
-              {% else %}
-                <div class="file-input-placeholder" id="filePlaceholder">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="7,10 12,15 17,10"></polyline>
-                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                  </svg>
-                  <span>
-                    Choose file or drag and drop.<br><br>
-                    Include:<br>
-                    • Education, experience, projects<br>
-                    • Languages & soft skills<br>
-                    • Programming & tech stack<br>
-                    • Provide as much detail as possible!
-                  </span>
+                <div class="current-file">
+                  <a href="{{ form.instance.cv_file.url }}" target="_blank" class="cv-link">
+                    {{ form.instance.cv_filename }}
+                  </a>
                 </div>
               {% endif %}
+              <div class="file-input-placeholder" id="filePlaceholder">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7,10 12,15 17,10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>
+                  Choose file or drag and drop.<br><br>
+                  Include:<br>
+                  • Education, experience, projects<br>
+                  • Languages & soft skills<br>
+                  • Programming & tech stack<br>
+                  • Provide as much detail as possible!
+                </span>
+              </div>
+            
+              <div class="file-success" id="fileSuccess" style="display:none;">
+                <div class="success-animation">
+                  <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                </div>
+                <div class="file-info" id="fileInfo"></div>
+              </div>
             
               {{ form.cv_file }}
             </div>
+
             
             {% if form.cv_file.errors %}
               <div class="field-errors">
