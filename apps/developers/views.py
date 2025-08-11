@@ -29,6 +29,9 @@ from .forms import DeveloperProfileForm
 from .models import DeveloperProfile
 from .decorators import authorized_required
 from .tasks import fill_developer_fields
+import logging
+
+logger = logging.getLogger(__name__)
 @authorized_required
 @login_required
 def dashboard(request):
@@ -103,12 +106,14 @@ def profile_form(request):
 
             # Actualizar CV si hay uno nuevo
             cv_file = request.FILES.get('cv_file')
+            cv_uploaded = False
+            
             if cv_file:
                 profile_instance.cv_file = cv_file
                 profile_instance.cv_original_name = cv_file.name
                 profile_instance.cv_size = cv_file.size
                 profile_instance.cv_uploaded_at = timezone.now()
-                fill_developer_fields.delay(profile_instance.user.id)
+                cv_uploaded = True
             elif not profile.cv_file:
                 messages.error(request, 'You must upload your CV.')
                 return render(request, 'developers/profile_form.html', {
@@ -119,7 +124,8 @@ def profile_form(request):
             profile_instance.save()
 
             # Dispara la task SÓLO si el usuario subió un archivo en esta request
-            if 'cv_file' in request.FILES:
+            if cv_uploaded:
+                logger.info(f"Triggering CV processing task for user {profile_instance.user_id}")
                 fill_developer_fields.delay(profile_instance.user_id)
 
             messages.success(request, 'Your profile and CV have been updated correctly.')

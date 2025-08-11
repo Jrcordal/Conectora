@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'apps.users.apps.UsersConfig',
     'django_countries',
     'apps.developers.apps.DevelopersConfig',
+    'apps.workers.apps.WorkersConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -195,7 +196,7 @@ else:
 # Celery configuration
 CELERY_BROKER_URL = env('CELERY_BROKER_URL', default='redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND', default='redis://localhost:6379/0')
-
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'

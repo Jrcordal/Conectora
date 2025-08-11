@@ -97,91 +97,167 @@ class DeveloperFields(BaseModel):
 
 
 @shared_task(bind=True)
-def fill_developer_fields(self,profile_id):
+def fill_developer_fields(self, profile_id):
     from apps.developers.models import DeveloperProfile
-    logger.info(f"Task {self.request.id} started for profile {profile_id}")
-
-    profile = DeveloperProfile.objects.get(user_id=profile_id)
-    s3_key = profile.cv_file.name
-    bucket = settings.AWS_STORAGE_BUCKET_NAME
-
-    loader = S3FileLoader(
-        bucket,
-        s3_key,
-        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-        region_name=settings.AWS_REGION,
-    )
-
-    docs = loader.load()
-    cv_text = docs[0].page_content
-    chat_prompt = ChatPromptTemplate.from_messages([
-        ("system", "You are a software requirements analyst and project manager with a deep knowledge of the IT field and hiring process."),
-        ("human", 
-        """
-    Based on the following CV, extract the information and structure it into the fields of a developer profile. Leave fields empty if no information is found.
-
-    DRAFT:
-    {draft_text}
-    """)
-    ])
-
-
-    prompt_input = chat_prompt.format(draft_text=cv_text)
-    llm_01_temperature = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash",
-        temperature=0.1,
-        max_tokens=None,
-        timeout=None,
-        max_retries=2,
-        google_api_key = settings.GOOGLE_API_KEY
-    )
-
-    # Bind SoftwareRequirements schema as a tool to the model
-    llm_structured = llm_01_temperature.with_structured_output(DeveloperFields)
-
-    response = llm_structured.invoke(prompt_input)
-    logger.info(f"LLM raw output (profile_id={profile_id}): {response}")
-
-    parsed_response = response.model_dump()
-    logger.info(f"Parsed response: {parsed_response}")
-
-    profile.university_education = parsed_response['university_education']
-    profile.education_certificates = parsed_response['education_certificates']
-    profile.relevant_years_of_experience = parsed_response['relevant_years_of_experience']
-    profile.experience = parsed_response['experience']
-    profile.projects = parsed_response['projects']
-    profile.volunteering = parsed_response['volunteering']
-    profile.interests = parsed_response['interests']
-    profile.languages_spoken = parsed_response['languages_spoken']
-    profile.programming_languages = parsed_response['programming_languages']
-    profile.frameworks_libraries = parsed_response['frameworks_libraries']
-    profile.architectures_patterns = parsed_response['architectures_patterns']
-    profile.tools_version_control = parsed_response['tools_version_control']
-    profile.databases = parsed_response['databases']
-    profile.cloud_platforms = parsed_response['cloud_platforms']
-    profile.testing_qa = parsed_response['testing_qa']
-    profile.devops_ci_cd = parsed_response['devops_ci_cd']
-    profile.containerization = parsed_response['containerization']
-    profile.data_skills = parsed_response['data_skills']
-    profile.frontend_technologies = parsed_response['frontend_technologies']
-    profile.mobile_development = parsed_response['mobile_development']
-    profile.apis_integrations = parsed_response['apis_integrations']
-    profile.security = parsed_response['security']
-    profile.agile_pm = parsed_response['agile_pm']
-    profile.operating_systems = parsed_response['operating_systems']
-    profile.main_developer_role = parsed_response['main_developer_role']
-
-    if profile.telephone_number is None:
-        profile.telephone_number = parsed_response['telephone_number']
-    if profile.linkedin is None:
-        profile.linkedin = parsed_response['linkedin']
-    if profile.github is None:
-        profile.github = parsed_response['github']
-    if profile.personal_website is None:
-        profile.personal_website = parsed_response['personal_website']
+    from django.db import transaction
     
-    profile.save()
-    logger.info(f"Profile {profile_id} updated successfully by task {self.request.id}")
+    try:
+        logger.info(f"Task {self.request.id} started for profile {profile_id}")
 
-    return 
+        # Obtener el perfil con manejo de errores
+        try:
+            profile = DeveloperProfile.objects.get(user_id=profile_id)
+            logger.info(f"Profile found for user_id {profile_id}")
+        except DeveloperProfile.DoesNotExist:
+            logger.error(f"DeveloperProfile not found for user_id {profile_id}")
+            raise
+        
+        # Verificar que existe el archivo CV
+        if not profile.cv_file:
+            logger.error(f"No CV file found for profile {profile_id}")
+            raise ValueError("No CV file found")
+        
+        s3_key = profile.cv_file.name
+        bucket = settings.AWS_STORAGE_BUCKET_NAME
+        
+        logger.info(f"Loading CV from S3: bucket={bucket}, key={s3_key}")
+        
+        # Verificar configuración de S3
+        if not settings.USE_S3:
+            logger.error("USE_S3 is False - S3 storage not enabled")
+            raise ValueError("S3 storage not enabled")
+        
+        if not all([settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY, bucket]):
+            logger.error("Missing AWS configuration")
+            raise ValueError("Missing AWS configuration")
+
+        loader = S3FileLoader(
+            bucket,
+            s3_key,
+            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            region_name=settings.AWS_S3_REGION_NAME,
+        )
+
+        # Cargar el documento
+        try:
+            docs = loader.load()
+            if not docs:
+                logger.error("No documents loaded from S3")
+                raise ValueError("No documents loaded from S3")
+            
+            cv_text = docs[0].page_content
+            if not cv_text.strip():
+                logger.error("CV text is empty")
+                raise ValueError("CV text is empty")
+            
+            logger.info(f"CV text loaded successfully, length: {len(cv_text)} characters")
+        except Exception as e:
+            logger.error(f"Error loading CV from S3: {str(e)}")
+            raise
+        
+        # Preparar el prompt
+        chat_prompt = ChatPromptTemplate.from_messages([
+            ("system", "You are a software requirements analyst and project manager with a deep knowledge of the IT field and hiring process."),
+            ("human", 
+            """
+        Based on the following CV, extract the information and structure it into the fields of a developer profile. Leave fields empty if no information is found.
+
+        DRAFT:
+        {draft_text}
+        """)
+        ])
+
+        prompt_input = chat_prompt.format(draft_text=cv_text)
+        
+        # Verificar API key de Google
+        if not settings.GOOGLE_API_KEY:
+            logger.error("Google API key not configured")
+            raise ValueError("Google API key not configured")
+        
+        # Configurar LLM
+        try:
+            llm_01_temperature = ChatGoogleGenerativeAI(
+                model="gemini-2.5-flash",
+                temperature=0.1,
+                max_tokens=None,
+                timeout=None,
+                max_retries=2,
+                google_api_key=settings.GOOGLE_API_KEY
+            )
+
+            # Bind schema as a tool to the model
+            llm_structured = llm_01_temperature.with_structured_output(DeveloperFields)
+            
+            logger.info("Calling LLM for structured output...")
+            response = llm_structured.invoke(prompt_input)
+            logger.info(f"LLM raw output (profile_id={profile_id}): {response}")
+
+            parsed_response = response.model_dump()
+            logger.info(f"Parsed response keys: {list(parsed_response.keys())}")
+            
+        except Exception as e:
+            logger.error(f"Error calling LLM: {str(e)}")
+            raise
+
+        # Guardar en la base de datos con transacción
+        try:
+            with transaction.atomic():
+                # Campos de educación
+                profile.university_education = parsed_response.get('university_education', [])
+                profile.education_certificates = parsed_response.get('education_certificates', [])
+                
+                # Experiencia
+                profile.relevant_years_of_experience = parsed_response.get('relevant_years_of_experience')
+                profile.experience = parsed_response.get('experience', [])
+                profile.projects = parsed_response.get('projects', [])
+                profile.volunteering = parsed_response.get('volunteering', [])
+                
+                # Habilidades blandas
+                profile.interests = parsed_response.get('interests', [])
+                profile.languages_spoken = parsed_response.get('languages_spoken', [])
+                
+                # Habilidades técnicas
+                profile.programming_languages = parsed_response.get('programming_languages', [])
+                profile.frameworks_libraries = parsed_response.get('frameworks_libraries', [])
+                profile.architectures_patterns = parsed_response.get('architectures_patterns', [])
+                profile.tools_version_control = parsed_response.get('tools_version_control', [])
+                profile.databases = parsed_response.get('databases', [])
+                profile.cloud_platforms = parsed_response.get('cloud_platforms', [])
+                profile.testing_qa = parsed_response.get('testing_qa', [])
+                profile.devops_ci_cd = parsed_response.get('devops_ci_cd', [])
+                profile.containerization = parsed_response.get('containerization', [])
+                profile.data_skills = parsed_response.get('data_skills', [])
+                profile.frontend_technologies = parsed_response.get('frontend_technologies', [])
+                profile.mobile_development = parsed_response.get('mobile_development', [])
+                profile.apis_integrations = parsed_response.get('apis_integrations', [])
+                profile.security = parsed_response.get('security', [])
+                profile.agile_pm = parsed_response.get('agile_pm', [])
+                profile.operating_systems = parsed_response.get('operating_systems', [])
+                
+                # Datos generales
+                profile.main_developer_role = parsed_response.get('main_developer_role', '')
+
+                # Solo actualizar si están vacíos
+                if not profile.telephone_number:
+                    profile.telephone_number = parsed_response.get('telephone_number', '')
+                if not profile.linkedin:
+                    profile.linkedin = parsed_response.get('linkedin', '')
+                if not profile.github:
+                    profile.github = parsed_response.get('github', '')
+                if not profile.personal_website:
+                    profile.personal_website = parsed_response.get('personal_website', '')
+                
+                profile.save()
+                logger.info(f"Profile {profile_id} updated successfully by task {self.request.id}")
+                
+        except Exception as e:
+            logger.error(f"Error saving profile to database: {str(e)}")
+            raise
+
+        return f"Profile {profile_id} processed successfully"
+        
+    except Exception as e:
+        logger.error(f"Task {self.request.id} failed for profile {profile_id}: {str(e)}")
+        # Re-raise la excepción para que Celery la registre como fallida
+        raise self.retry(exc=e, countdown=60, max_retries=3) 
