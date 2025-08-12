@@ -57,7 +57,6 @@ INSTALLED_APPS = [
     'apps.users.apps.UsersConfig',
     'django_countries',
     'apps.developers.apps.DevelopersConfig',
-    'apps.workers.apps.WorkersConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
