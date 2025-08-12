@@ -212,17 +212,46 @@ import sys
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+
+    "formatters": {
+        "simple": {
+            "format": "%(asctime)s %(levelname)s [%(name)s] %(message)s"
+        },
+    },
+
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
             "stream": sys.stdout,
+            "formatter": "simple",
         },
     },
+
+    # Si no sabes qué logger usar, se usa el root
     "root": {"handlers": ["console"], "level": "INFO"},
+
     "loggers": {
-        # tu módulo de tasks
+        # Django core (mensajes generales)
+        "django": {"handlers": ["console"], "level": "INFO", "propagate": True},
+
+        # Errores de servidor en peticiones (tracebacks 500)
+        "django.request": {"handlers": ["console"], "level": "ERROR", "propagate": False},
+
+        # Logs del servidor (runserver/gunicorn integration)
+        "django.server": {"handlers": ["console"], "level": "INFO", "propagate": False},
+
+        # Host no permitido (el 400 típico cuando falta ALLOWED_HOSTS)
+        "django.security.DisallowedHost": {"handlers": ["console"], "level": "ERROR", "propagate": False},
+
+        # SQL (actívalo a DEBUG solo para investigar puntualmente)
+        # "django.db.backends": {"handlers": ["console"], "level": "DEBUG", "propagate": False},
+
+        # Tus tasks
         "apps.developers.tasks": {"handlers": ["console"], "level": "INFO", "propagate": False},
-        # opcional: todo celery
-        "celery": {"handlers": ["console"], "level": "INFO"},
+
+        # Celery en general
+        "celery": {"handlers": ["console"], "level": "INFO", "propagate": True},
     },
 }
+
+
