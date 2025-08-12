@@ -67,7 +67,9 @@ USER appuser
 EXPOSE 8000 
 
 # Make entry file executable
-RUN chmod +x /app/entrypoint.prod.sh /app/entrypoint.worker.sh
+RUN sed -i 's/\r$//' /app/entrypoint.prod.sh /app/entrypoint.worker.sh \
+ && chmod +x /app/entrypoint.prod.sh /app/entrypoint.worker.sh
+
 
 # Start the application using Gunicorn
 CMD ["/app/entrypoint.prod.sh"]
