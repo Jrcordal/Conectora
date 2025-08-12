@@ -1,9 +1,9 @@
 import os
 
-from celery import Celery
+from main_page.celery import Celery
 
 # Set the default Django settings module for the 'celery' program.
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'main_page.settings.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'main_page.settings')
 
 app = Celery('main_page')
 

@@ -24,15 +24,7 @@ services:
     env_file:
       - .env.${DJANGO_ENV:-local}
     command: ["/app/entrypoint.worker.sh"]
-  flower:
-    build: .
-    command: celery -A apps.workers flower --port=5555 --url_prefix=flower
-    depends_on:
-      - db
-    env_file:
-      - .env.${DJANGO_ENV:-local}
-    ports:
-      - "5555:5555"
+
 volumes:
   postgres_data:
 
