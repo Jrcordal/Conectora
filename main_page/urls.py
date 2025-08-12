@@ -2,7 +2,7 @@
 from django.contrib import admin
 from django.urls import include, path
 from . import views as main_views
-
+from django.http import HttpResponse
 
 urlpatterns = [
     path('', main_views.main, name='main'),
@@ -12,6 +12,7 @@ urlpatterns = [
 
     ]
 
+urlpatterns += [path("health/", lambda r: HttpResponse("ok"))]
 
 
 
