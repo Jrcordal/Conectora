@@ -4,6 +4,7 @@ from .models import AuthorizedEmail
 from django.shortcuts import render
 
 
+
 def email_authorized(user):
     return AuthorizedEmail.objects.filter(email=user.email, active=True).exists()
 
