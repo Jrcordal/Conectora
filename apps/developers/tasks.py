@@ -3,9 +3,10 @@ from django.conf import settings
 from apps.developers.models import DeveloperProfile
 import boto3
 import tempfile
-from langchain_community.document_loaders import PyPDFLoader
-from langchain_community.document_loaders import S3FileLoader
+from langchain_community.document_loaders import PyPDFLoader,Docx2txtLoader
+#from langchain_community.document_loaders import S3FileLoader
 import os
+import tempfile
 from pydantic import BaseModel, Field
 from datetime import datetime
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -14,6 +15,27 @@ from langchain_core.prompts import ChatPromptTemplate
 
 import logging
 logger = logging.getLogger(__name__)
+
+
+def load_cv_from_s3(bucket: str, key: str):
+    s3_client = boto3.client("s3")
+    fd, tmp_path = tempfile.mkstemp(suffix=os.path.splitext(key)[1])
+    os.close(fd)
+    s3_client.download_file(bucket, key, tmp_path)
+
+    ext = tmp_path.lower().split(".")[-1]
+    if ext == "pdf":
+        docs = PyPDFLoader(tmp_path).load()
+        docs = docs[0].page_content
+    elif ext == "docx":
+        docs = Docx2txtLoader(tmp_path).load()
+        docs = docs[0].page_content
+    else:
+        raise ValueError(f"Unsupported format: {ext}")
+
+    os.remove(tmp_path)
+    return "\n\n".join(d.page_content for d in docs)
+
 
 class university_fields(BaseModel):
     university: str = Field(description="Name of the university")
@@ -131,22 +153,13 @@ def fill_developer_fields(self, profile_id):
             logger.error("Missing AWS configuration")
             raise ValueError("Missing AWS configuration")
 
-        loader = S3FileLoader(
-            bucket,
-            s3_key,
-            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-            region_name=settings.AWS_S3_REGION_NAME,
-        )
-
         # Cargar el documento
         try:
-            docs = loader.load()
-            if not docs:
+            cv_text = load_cv_from_s3(bucket, s3_key)
+            if not cv_text:
                 logger.error("No documents loaded from S3")
                 raise ValueError("No documents loaded from S3")
             
-            cv_text = docs[0].page_content
             if not cv_text.strip():
                 logger.error("CV text is empty")
                 raise ValueError("CV text is empty")
