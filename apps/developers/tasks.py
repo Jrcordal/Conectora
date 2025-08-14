@@ -172,7 +172,7 @@ def fill_developer_fields(self, profile_id):
             ("system", "You are a software requirements analyst and project manager with a deep knowledge of the IT field and hiring process."),
             ("human", 
             """
-        Based on the following CV, extract the information and structure it into the fields of a developer profile. Leave fields empty if no information is found.
+        Based on the following CV, extract the information and structure it into the fields of a developer profile. Leave fields empty if no information is found. Return the dates in the format YYYY-MM-DD.
 
         DRAFT:
         {draft_text}
