@@ -15,8 +15,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include('apps.users.urls')),
     path('developers/', include('apps.developers.urls', namespace='developers')),
-path("health", health_check)
-    ]
+    path("health", health_check),
+]
 
 
 

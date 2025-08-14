@@ -31,6 +31,6 @@ RUN sed -i 's/\r$//' /app/entrypoint.prod.sh /app/entrypoint.worker.sh \
 RUN useradd -m -r appuser && chown -R appuser:appuser /app
 USER appuser
 
-EXPOSE 8000
+# EXPOSE no es necesario en Railway - usa PORT dinámico
 
 CMD ["/app/entrypoint.prod.sh"]
