@@ -35,6 +35,7 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool("DEBUG", default=False) #type: ignore
 
 ALLOWED_HOSTS = env("DJANGO_ALLOWED_HOSTS", default="127.0.0.1").split(",") #type: ignore
+print("DEBUG ALLOWED_HOSTS:", ALLOWED_HOSTS)
 
 DATABASES = {
     'default': {
