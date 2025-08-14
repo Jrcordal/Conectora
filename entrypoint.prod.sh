@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+echo "PORT env is: ${PORT:-<no definido>}"
+
 set -euo pipefail
 
 python manage.py collectstatic --noinput
