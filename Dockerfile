@@ -1,5 +1,5 @@
 # Stage 1: Base build stage
-FROM python:3.13-slim AS builder
+FROM python:3.11-slim AS builder
 WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -12,7 +12,7 @@ COPY requirements.txt .
 RUN pip install --prefer-binary --no-cache-dir -r requirements.txt
 
 # Stage 2: Production stage
-FROM python:3.13-slim
+FROM python:3.11-slim
 WORKDIR /app
 
 # Si usas xvfb aún para algo, mantenlo, sino elimínalo también
@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     xvfb \
  && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /usr/local/lib/python3.13/site-packages/ /usr/local/lib/python3.13/site-packages/
+COPY --from=builder /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
 COPY --from=builder /usr/local/bin/ /usr/local/bin/
 COPY . .
 
