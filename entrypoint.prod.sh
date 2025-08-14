@@ -6,7 +6,6 @@ python manage.py migrate --noinput
 
 exec gunicorn main_page.wsgi:application \
   --bind 0.0.0.0:${PORT:-8080} \
-  --bind [::]:${PORT:-8080} \
   --workers 2 \
   --timeout 60 \
   --graceful-timeout 30 \
