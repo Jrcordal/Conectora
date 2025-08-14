@@ -10,7 +10,6 @@ import io
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
-from bs4 import BeautifulSoup
 from django.core.exceptions import ValidationError
 from django.http import Http404
 from django.contrib.auth import authenticate, login
