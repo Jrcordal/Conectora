@@ -26,10 +26,8 @@ def load_cv_from_s3(bucket: str, key: str):
     ext = tmp_path.lower().split(".")[-1]
     if ext == "pdf":
         docs = PyPDFLoader(tmp_path).load()
-        docs = docs[0].page_content
     elif ext == "docx":
         docs = Docx2txtLoader(tmp_path).load()
-        docs = docs[0].page_content
     else:
         raise ValueError(f"Unsupported format: {ext}")
 
