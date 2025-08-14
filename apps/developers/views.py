@@ -3,7 +3,6 @@ from django.contrib.auth.forms import UserCreationForm
 from django. contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required, user_passes_test
-import pdfkit
 from django.http import HttpResponse
 from django.template import loader
 import io
