@@ -39,36 +39,36 @@ class university_fields(BaseModel):
     university: str = Field(description="Name of the university")
     degree: str = Field(description="Degree obtained")
     degree_type: str = Field(description="Type of degree (Bsc, Msc, PhD, etc.)")
-    start_date: datetime = Field(description="Start date of the degree")
-    end_date: datetime = Field(description="End date of the degree")
+    start_date: str = Field(description="Start date of the degree")
+    end_date: str = Field(description="End date of the degree")
     description: str = Field(description="Description of the degree")
 
 class education_certificates_fields(BaseModel):
     certificate_name: str = Field(description="Name of the certificate")
     certificate_type: str = Field(description="Type of certificate (Certification, Diploma, etc.)")
-    start_date: datetime = Field(description="Start date of the certificate")
-    end_date: datetime = Field(description="End date of the certificate")
+    start_date: str = Field(description="Start date of the certificate")
+    end_date: str = Field(description="End date of the certificate")
     description: str = Field(description="Description of the certificate")
 
 class experience_fields(BaseModel):
     company_name: str = Field(description="Name of the company")
     job_title: str = Field(description="Job title")
-    start_date: datetime = Field(description="Start date of the job")
-    end_date: datetime = Field(description="End date of the job")
+    start_date: str = Field(description="Start date of the job")
+    end_date: str = Field(description="End date of the job")
     description: str = Field(description="Description of the job")
     technologies_used: list[str] = Field(description="List of technologies or tech stack used in the job")
 
 class project_fields(BaseModel):
     project_name: str = Field(description="Name of the project")
-    start_date: datetime = Field(description="Start date of the project")
-    end_date: datetime = Field(description="End date of the project")
+    start_date: str = Field(description="Start date of the project")
+    end_date: str = Field(description="End date of the project")
     description: str = Field(description="Description of the project")
     technologies_used: list[str] = Field(description="List of technologies or tech stack used in the project")
 
 class volunteering_fields(BaseModel):
     organization_name: str = Field(description="Name of the organization")
-    start_date: datetime = Field(description="Start date of the volunteering")
-    end_date: datetime = Field(description="End date of the volunteering")
+    start_date: str = Field(description="Start date of the volunteering")
+    end_date: str = Field(description="End date of the volunteering")
     description: str = Field(description="Description of the volunteering")
 
 class DeveloperFields(BaseModel):
@@ -172,7 +172,9 @@ def fill_developer_fields(self, profile_id):
             ("system", "You are a software requirements analyst and project manager with a deep knowledge of the IT field and hiring process."),
             ("human", 
             """
-        Based on the following CV, extract the information and structure it into the fields of a developer profile. Leave fields empty if no information is found. Return the dates in the format YYYY-MM-DD.
+        Based on the following CV, extract the information and structure it into the fields of a developer profile. Leave fields empty if no information is found. 
+        Return the dates in the format YYYY-MM-DD. If no date day is present, assume the 1st day of the month. If the end date is the present day, output null.
+    
 
         DRAFT:
         {draft_text}
