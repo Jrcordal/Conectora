@@ -69,7 +69,7 @@ def terms_and_conditions(request):
 @authorized_required
 @login_required
 def settings_view(request):
-    profile, _ = DeveloperProfile.objects.get_or_create(user=request.user)
+    profile = DeveloperProfile.objects.get(user=request.user)
 
     if request.method == 'POST':
         # valores que llegan del formulario (checkboxes)
