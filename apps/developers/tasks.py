@@ -173,8 +173,11 @@ def fill_developer_fields(self, profile_id):
             ("human", 
             """
         Based on the following CV, extract the information and structure it into the fields of a developer profile. Leave fields empty if no information is found. 
-        Return the dates in the format YYYY-MM-DD. If no date day is present, assume the 1st day of the month. If the end date is the present day, output null.
-    
+
+        - Return the dates in the format YYYY-MM-DD. If no date day is present, assume the 1st day of the month. If the end date is the present day, output null.
+        - Ignore Primary and Secondary school education for the university_education field and the education_certificates field.
+        - Rephrase the descriptions of each field to make them comprehensive and clear.
+        
 
         DRAFT:
         {draft_text}
