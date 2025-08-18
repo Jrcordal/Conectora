@@ -10,6 +10,7 @@ urlpatterns = [
     path('consent/', developer_views.consent_form, name='consent_form'),
     path('terms-and-conditions/', developer_views.terms_and_conditions, name='terms_and_conditions'),
     path('dashboard/', developer_views.dashboard, name='dashboard'),
+    path('settings/', developer_views.settings_view, name='settings_view'),
     ]
 
 

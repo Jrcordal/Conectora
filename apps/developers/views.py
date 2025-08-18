@@ -62,27 +62,31 @@ def consent_form(request):
     return render(request, 'developers/consent_form.html')
 
 
+
 @authorized_required
 @login_required
-def privacy_settings(request):
-    profile, created = DeveloperProfile.objects.get_or_create(user=request.user)
+def settings_view(request):
+    profile, _ = DeveloperProfile.objects.get_or_create(user=request.user)
 
     if request.method == 'POST':
-        consent_promo = 'consent_promotional_use' in request.POST
-        profile.consent_promotional_use = consent_promo
-        profile.consent_given_at = timezone.now()
+        # valores que llegan del formulario (checkboxes)
+        new_open_to_work  = request.POST.get('is_open_to_work') == 'on'
+        new_open_to_teach = request.POST.get('is_open_to_teach') == 'on'
+
+        # solo actualiza el timestamp si hubo un cambio
+        if new_open_to_work != profile.is_open_to_work:
+            profile.is_open_to_work = new_open_to_work
+            profile.is_open_to_work_changed_at = timezone.now()
+
+        if new_open_to_teach != profile.is_open_to_teach:
+            profile.is_open_to_teach = new_open_to_teach
+            profile.is_open_to_teach_changed_at = timezone.now()
+
         profile.save()
-        messages.success(request, "Your privacy preferences have been updated.")
-        return redirect('developers:profile_form')
+        messages.success(request, 'Your profile visibility has been updated.')
+        return redirect('developers:settings_view')
 
-    return render(request, 'developers/privacy_settings.html', {
-        'profile': profile
-    })
-
-@authorized_required
-@login_required
-def terms_and_conditions(request):
-    return render(request, 'developers/terms_and_conditions.html')
+    return render(request, 'developers/settings_view.html', {'profile': profile})
 
 
 @authorized_required

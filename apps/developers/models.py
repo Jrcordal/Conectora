@@ -66,6 +66,8 @@ class DeveloperProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
     consent_promotional_use = models.BooleanField(null=True, blank=True)
     consent_given_at = models.DateTimeField(null=True, blank=True)
+    is_open_to_work = models.BooleanField(default=True)
+    is_open_to_teach = models.BooleanField(default=True)
 
     # ---- Archivo CV y texto original extraído ---- (CV file and original extracted text)
     cv_file = models.FileField(upload_to=cv_upload_path, blank=False, null=False, storage=CVStorage())
