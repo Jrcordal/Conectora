@@ -177,20 +177,82 @@ EMAIL_USE_TLS = env('EMAIL_USE_TLS')
 EMAIL_USE_SSL = env('EMAIL_USE_SSL')
 #DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 
-# Storage settings for AWS S3 (pictures) and static files (css, js, images, etc.) 
-STORAGES = {
-    "default": {
-        "BACKEND": "storages.backends.s3.S3Storage",
+USE_S3 = env.bool("USE_S3", default=False)
+
+if USE_S3:
+    # Configuración real de S3
+    AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
+    AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
+    AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME", default="eu-west-1")
+else:
+    # Carpeta local para pruebas
+    LOCAL_CV_DIR = os.path.join(BASE_DIR, "tmp", "cvs")
+    os.makedirs(LOCAL_CV_DIR, exist_ok=True)
+
+
+
+# Celery configuration
+CELERY_BROKER_URL = env('CELERY_BROKER_URL', default='redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND', default='redis://localhost:6379/0')
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/Madrid'
+
+
+GOOGLE_API_KEY = env('GOOGLE_API_KEY')
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
+
+
+import sys
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+
+    "formatters": {
+        "simple": {
+            "format": "%(asctime)s %(levelname)s [%(name)s] %(message)s"
+        },
     },
-    "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "stream": sys.stdout,
+            "formatter": "simple",
+        },
+    },
+
+    # Si no sabes qué logger usar, se usa el root
+    "root": {"handlers": ["console"], "level": "INFO"},
+
+    "loggers": {
+        # Django core (mensajes generales)
+        "django": {"handlers": ["console"], "level": "INFO", "propagate": True},
+
+        # Errores de servidor en peticiones (tracebacks 500)
+        "django.request": {"handlers": ["console"], "level": "ERROR", "propagate": False},
+
+        # Logs del servidor (runserver/gunicorn integration)
+        "django.server": {"handlers": ["console"], "level": "INFO", "propagate": False},
+
+        # Host no permitido (el 400 típico cuando falta ALLOWED_HOSTS)
+        "django.security.DisallowedHost": {"handlers": ["console"], "level": "ERROR", "propagate": False},
+
+        # SQL (actívalo a DEBUG solo para investigar puntualmente)
+        # "django.db.backends": {"handlers": ["console"], "level": "DEBUG", "propagate": False},
+
+        # Tus tasks
+        "apps.developers.tasks": {"handlers": ["console"], "level": "INFO", "propagate": False},
+
+        # Celery en general
+        "celery": {"handlers": ["console"], "level": "INFO", "propagate": True},
     },
 }
 
-# AWS
-AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
 
-# File storage
-AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
-AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME')

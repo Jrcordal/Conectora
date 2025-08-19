@@ -81,6 +81,7 @@ class DeveloperProfileForm(forms.ModelForm):
     class Meta:
         model = DeveloperProfile
         fields = [
+            'telephone_number',
             'cv_file',
             'country_living_in',
             'nationality',
@@ -90,6 +91,8 @@ class DeveloperProfileForm(forms.ModelForm):
             'hourly_rate',
             'currency'
         ]
+
+
     #def clean_phone(self):
     #    return validate_phone(self.cleaned_data.get('phone'))
 

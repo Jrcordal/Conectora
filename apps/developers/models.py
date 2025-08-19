@@ -9,6 +9,8 @@ import uuid
 from datetime import timedelta
 from django_countries.fields import CountryField
 from datetime import datetime
+from storages.backends.s3boto3 import S3Boto3Storage
+import os
 # Create your models here.
 
 def validate_integer(value):
@@ -52,19 +54,23 @@ class AuthorizedEmail(models.Model):
     email = models.EmailField(unique=True)
     active = models.BooleanField(default=True)
 
+class CVStorage(S3Boto3Storage):
+    default_acl = 'private'  # o 'public-read'
 
 def cv_upload_path(instance, filename):
-    # Formato YYYYMMDD-HHMMSS
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    return f"cvs/{instance.user.id}/{timestamp}.pdf"
+    return f"cvs/{instance.user.id}/{timestamp}.pdf"  # ya no pones 'cvs/' porque lo pone storage
+
 
 class DeveloperProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
     consent_promotional_use = models.BooleanField(null=True, blank=True)
     consent_given_at = models.DateTimeField(null=True, blank=True)
+    is_open_to_work = models.BooleanField(default=True)
+    is_open_to_teach = models.BooleanField(default=True)
 
     # ---- Archivo CV y texto original extraído ---- (CV file and original extracted text)
-    cv_file = models.FileField(upload_to=cv_upload_path, blank=False, null=False)
+    cv_file = models.FileField(upload_to=cv_upload_path, blank=False, null=False, storage=CVStorage())
     cv_raw_text = models.TextField(blank=True, null=True)
 
     # ---- Educación ---- (Education)
@@ -122,7 +128,9 @@ class DeveloperProfile(models.Model):
     def __str__(self):
         return self.user.username
         
-
+    @property
+    def cv_filename(self):
+        return os.path.basename(self.cv_file.name)
 """
 class MagicToken(models.Model):
     token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)

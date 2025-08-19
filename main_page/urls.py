@@ -2,6 +2,12 @@
 from django.contrib import admin
 from django.urls import include, path
 from . import views as main_views
+from django.http import HttpResponse
+from django.http import JsonResponse
+
+
+def health_check(request):
+    return JsonResponse({"status": "ok"})
 
 
 urlpatterns = [
@@ -9,8 +15,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include('apps.users.urls')),
     path('developers/', include('apps.developers.urls', namespace='developers')),
-
-    ]
+    path("health", health_check),
+]
 
 
 

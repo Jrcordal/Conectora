@@ -160,6 +160,11 @@
         </div>
 
         <!-- Documents Section -->
+
+
+
+
+
         <div class="form-section">
           <div class="section-header">
             <div class="section-icon">
@@ -173,7 +178,6 @@
             </div>
             <h3 class="section-title">Documents</h3>
           </div>
-
           <div class="form-group file-upload">
             <label for="{{ form.cv_file.id_for_label }}" class="form-label">
               <svg class="label-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -183,9 +187,10 @@
               </svg>
               Resume/CV 
             </label>
-            <div class="file-input-wrapper" id="fileInputWrapper">
-              {{ form.cv_file }}
-              <div class="file-input-placeholder" id="filePlaceholder">
+            
+            <div class="file-input-wrapper {% if form.instance.cv_file %}file-uploaded{% endif %}" id="fileInputWrapper">
+              <!-- Placeholder for when no file is selected -->
+              <div class="file-input-placeholder" id="filePlaceholder" {% if form.instance.cv_file %}style="display: none;"{% endif %}>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                   <polyline points="7,10 12,15 17,10"></polyline>
@@ -200,16 +205,37 @@
                   • Provide as much detail as possible!
                 </span>
               </div>
-              <div class="file-success" id="fileSuccess" style="display: none;">
+
+              <!-- Animation container for upload -->
+              <div class="file-upload-animation" id="uploadAnimation" style="display: none;">
+                <div class="upload-progress">
+                  <div class="upload-circle">
+                    <svg class="upload-icon animate-pulse" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="7,10 12,15 17,10"></polyline>
+                      <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                  </div>
+                  <div class="upload-text">Uploading file...</div>
+                </div>
+              </div>
+
+              <!-- Success state for uploaded file -->
+              <div class="file-success" id="fileSuccess" {% if not form.instance.cv_file %}style="display: none;"{% endif %}>
                 <div class="success-animation">
                   <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="20,6 9,17 4,12"></polyline>
                   </svg>
                 </div>
-                <span class="success-text">File uploaded successfully!</span>
-                <div class="file-info" id="fileInfo"></div>
+                <div class="file-info" id="fileInfo">
+                  {% if form.instance.cv_file %}
+                    <strong>{{ profile.cv_original_name }}</strong><br>
+                  {% endif %}
+                </div>
               </div>
-            </div>
+              
+              {{ form.cv_file }}
+            
             {% if form.cv_file.errors %}
               <div class="field-errors">
                 {% for error in form.cv_file.errors %}
@@ -243,7 +269,7 @@
                 Hourly Rate
               </label>
               <div class="input-wrapper">
-                <span class="input-prefix">$</span>
+                <span class="input-prefix"></span>
                 {{ form.hourly_rate }}
                 <span class="input-suffix">/hour</span>
               </div>
@@ -588,6 +614,131 @@
   text-align: center;
 }
 
+.file-link {
+  color: #374151;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.file-link:hover {
+  color: #00a99d;
+}
+
+.file-link strong {
+  color: #1f2937;
+}
+
+.file-link small {
+  color: #6b7280;
+}
+
+/* Upload Animation Styles */
+.file-upload-animation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  color: #00a99d;
+}
+
+.upload-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.upload-circle {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #00a99d, #00c4b6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: uploadPulse 1.5s ease-in-out infinite;
+  box-shadow: 0 4px 15px rgba(0, 169, 157, 0.3);
+}
+
+.upload-icon {
+  width: 28px;
+  height: 28px;
+  color: white;
+  animation: uploadBounce 1s ease-in-out infinite;
+}
+
+.upload-text {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #00a99d;
+  animation: textPulse 1.5s ease-in-out infinite;
+}
+
+.animate-pulse {
+  animation: pulse 1s ease-in-out infinite;
+}
+
+/* Animation Keyframes */
+@keyframes uploadPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 15px rgba(0, 169, 157, 0.3);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 169, 157, 0.5);
+  }
+}
+
+@keyframes uploadBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes textPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromTop {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 @keyframes successPulse {
   0% {
     transform: scale(0);
@@ -663,10 +814,7 @@
   gap: 1.5rem;
 }
 
-/* Remove the grid-column property to make telephone field same size as others */
-.telephone-field {
-  /* grid-column: 1 / -1; - REMOVE THIS LINE */
-}
+/* Telephone field now uses the default grid layout */
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
@@ -720,32 +868,62 @@ document.addEventListener('DOMContentLoaded', function() {
   const fileInput = document.querySelector('input[type="file"]');
   const fileWrapper = document.getElementById('fileInputWrapper');
   const filePlaceholder = document.getElementById('filePlaceholder');
+  const uploadAnimation = document.getElementById('uploadAnimation');
   const fileSuccess = document.getElementById('fileSuccess');
   const fileInfo = document.getElementById('fileInfo');
   
   if (fileInput) {
+    // Function to show upload animation
+    function showUploadAnimation() {
+      filePlaceholder.style.display = 'none';
+      fileSuccess.style.display = 'none';
+      uploadAnimation.style.display = 'flex';
+      uploadAnimation.style.animation = 'slideInFromTop 0.4s ease-out';
+      fileWrapper.style.borderColor = '#00a99d';
+      fileWrapper.style.background = 'rgba(0, 169, 157, 0.05)';
+    }
+    
+    // Function to show success state
+    function showSuccessState(file) {
+      uploadAnimation.style.display = 'none';
+      fileSuccess.style.display = 'flex';
+      fileSuccess.style.animation = 'fadeInUp 0.5s ease-out';
+      fileWrapper.classList.add('file-uploaded');
+      
+      // Update file info
+      const fileSize = (file.size / 1024 / 1024).toFixed(2);
+      const fileName = file.name.length > 30 ? file.name.substring(0, 30) + '...' : file.name;
+      fileInfo.innerHTML = `
+        <strong>${fileName}</strong><br>
+        <small>${fileSize} MB - Uploaded successfully!</small>
+      `;
+    }
+    
+    // Function to reset to placeholder
+    function resetToPlaceholder() {
+      uploadAnimation.style.display = 'none';
+      fileSuccess.style.display = 'none';
+      filePlaceholder.style.display = 'flex';
+      filePlaceholder.style.animation = 'fadeInUp 0.3s ease-out';
+      fileWrapper.classList.remove('file-uploaded');
+      fileWrapper.style.borderColor = '#d1d5db';
+      fileWrapper.style.background = 'white';
+    }
+    
+    // Handle file input change
     fileInput.addEventListener('change', function(e) {
       const file = e.target.files[0];
       
       if (file) {
-        // Hide placeholder and show success animation
-        filePlaceholder.style.display = 'none';
-        fileSuccess.style.display = 'flex';
-        fileWrapper.classList.add('file-uploaded');
+        // Show upload animation first
+        showUploadAnimation();
         
-        // Update file info
-        const fileSize = (file.size / 1024 / 1024).toFixed(2);
-        fileInfo.innerHTML = `<strong>${file.name}</strong><br>${fileSize} MB`;
-        
-        // Add success animation
+        // Simulate upload time for better UX (1.2 seconds)
         setTimeout(() => {
-          fileSuccess.style.animation = 'fadeInUp 0.5s ease-out';
-        }, 100);
+          showSuccessState(file);
+        }, 1200);
       } else {
-        // Reset to placeholder if no file selected
-        filePlaceholder.style.display = 'flex';
-        fileSuccess.style.display = 'none';
-        fileWrapper.classList.remove('file-uploaded');
+        resetToPlaceholder();
       }
     });
     
@@ -754,6 +932,8 @@ document.addEventListener('DOMContentLoaded', function() {
       e.preventDefault();
       fileWrapper.style.borderColor = '#00a99d';
       fileWrapper.style.background = 'rgba(0, 169, 157, 0.1)';
+      fileWrapper.style.transform = 'scale(1.02)';
+      fileWrapper.style.transition = 'all 0.2s ease';
     });
     
     fileWrapper.addEventListener('dragleave', function(e) {
@@ -762,14 +942,39 @@ document.addEventListener('DOMContentLoaded', function() {
         fileWrapper.style.borderColor = '#d1d5db';
         fileWrapper.style.background = 'white';
       }
+      fileWrapper.style.transform = 'scale(1)';
     });
     
     fileWrapper.addEventListener('drop', function(e) {
       e.preventDefault();
+      fileWrapper.style.transform = 'scale(1)';
+      
       const files = e.dataTransfer.files;
       if (files.length > 0) {
         fileInput.files = files;
         fileInput.dispatchEvent(new Event('change'));
+      }
+    });
+    
+    // Add click handler to the wrapper for better UX
+    fileWrapper.addEventListener('click', function(e) {
+      if (e.target === fileWrapper || e.target.closest('.file-input-placeholder')) {
+        fileInput.click();
+      }
+    });
+    
+    // Enhanced visual feedback on hover
+    fileWrapper.addEventListener('mouseenter', function() {
+      if (!fileWrapper.classList.contains('file-uploaded')) {
+        fileWrapper.style.borderColor = '#00a99d';
+        fileWrapper.style.background = 'rgba(0, 169, 157, 0.03)';
+      }
+    });
+    
+    fileWrapper.addEventListener('mouseleave', function() {
+      if (!fileWrapper.classList.contains('file-uploaded')) {
+        fileWrapper.style.borderColor = '#d1d5db';
+        fileWrapper.style.background = 'white';
       }
     });
   }

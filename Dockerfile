@@ -1,73 +1,33 @@
-
 # Stage 1: Base build stage
-FROM python:3.13-slim AS builder
- 
-# Create the app directory
-RUN mkdir /app
- 
-# Set the working directory inside the container
+FROM python:3.11-slim AS builder
 WORKDIR /app
- 
-# Set environment variables 
-# Prevents Python from writing pyc files to disk
-ENV PYTHONDONTWRITEBYTECODE=1
-#Prevents Python from buffering stdout and stderr
-ENV PYTHONUNBUFFERED=1 
- 
-# Upgrade pip
-RUN pip install --upgrade pip 
- 
-# Copy the Django project  and install dependencies
-COPY requirements.txt  /app/
- 
-# run this command to install all dependencies 
-RUN pip install --no-cache-dir -r requirements.txt
- 
 
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_CACHE_DIR=1
+
+RUN pip install --upgrade pip
+COPY requirements.txt .
+RUN pip install --prefer-binary --no-cache-dir -r requirements.txt
 
 # Stage 2: Production stage
-FROM python:3.13-slim
- 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    wkhtmltopdf \
-    xvfb \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN useradd -m -r appuser && \
-   mkdir /app && \
-   chown -R appuser /app
- 
-# Copy the Python dependencies from the builder stage
-COPY --from=builder /usr/local/lib/python3.13/site-packages/ /usr/local/lib/python3.13/site-packages/
-COPY --from=builder /usr/local/bin/ /usr/local/bin/
- 
-# Set the working directory
+FROM python:3.11-slim
 WORKDIR /app
- 
-# Copy application code
-COPY . . 
 
 
-# Make the entrypoint script executable
-RUN chmod +x /app/entrypoint.prod.sh
+COPY --from=builder /usr/local/lib/python3.11/site-packages/ /usr/local/lib/python3.11/site-packages/
+COPY --from=builder /usr/local/bin/ /usr/local/bin/
+COPY . .
 
-# Change ownership of the application directory to the appuser
-RUN chown -R appuser:appuser /app
+RUN sed -i 's/\r$//' /app/entrypoint.prod.sh /app/entrypoint.worker.sh \
+ && chmod +x /app/entrypoint.prod.sh /app/entrypoint.worker.sh
 
-# Set environment variables to optimize Python
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1 
-
-# Switch to non-root user
+# Usuario no root
+RUN useradd -m -r appuser && chown -R appuser:appuser /app
 USER appuser
- 
-# Expose the application port
-EXPOSE 8000 
 
-# Make entry file executable
-RUN chmod +x  /app/entrypoint.prod.sh
- 
-# Start the application using Gunicorn
+# EXPOSE no es necesario en Railway - usa PORT dinámico
+
 CMD ["/app/entrypoint.prod.sh"]
+

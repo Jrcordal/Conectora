@@ -17,7 +17,13 @@ services:
     env_file:
       - .env.${DJANGO_ENV:-local}
 
-
+  celery-worker:
+    build: .
+    depends_on:
+      - db
+    env_file:
+      - .env.${DJANGO_ENV:-local}
+    command: ["/app/entrypoint.worker.sh"]
 
 volumes:
   postgres_data:

@@ -3,14 +3,12 @@ from django.contrib.auth.forms import UserCreationForm
 from django. contrib import messages
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required, user_passes_test
-import pdfkit
 from django.http import HttpResponse
 from django.template import loader
 import io
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import PermissionDenied
-from bs4 import BeautifulSoup
 from django.core.exceptions import ValidationError
 from django.http import Http404
 from django.contrib.auth import authenticate, login
@@ -28,7 +26,10 @@ from django.http import HttpResponseForbidden
 from .forms import DeveloperProfileForm
 from .models import DeveloperProfile
 from .decorators import authorized_required
+from .tasks import fill_developer_fields
+import logging
 
+logger = logging.getLogger(__name__)
 @authorized_required
 @login_required
 def dashboard(request):
@@ -60,28 +61,35 @@ def consent_form(request):
 
     return render(request, 'developers/consent_form.html')
 
-
-@authorized_required
-@login_required
-def privacy_settings(request):
-    profile, created = DeveloperProfile.objects.get_or_create(user=request.user)
-
-    if request.method == 'POST':
-        consent_promo = 'consent_promotional_use' in request.POST
-        profile.consent_promotional_use = consent_promo
-        profile.consent_given_at = timezone.now()
-        profile.save()
-        messages.success(request, "Your privacy preferences have been updated.")
-        return redirect('developers:profile_form')
-
-    return render(request, 'developers/privacy_settings.html', {
-        'profile': profile
-    })
-
 @authorized_required
 @login_required
 def terms_and_conditions(request):
     return render(request, 'developers/terms_and_conditions.html')
+
+@authorized_required
+@login_required
+def settings_view(request):
+    profile = DeveloperProfile.objects.get(user=request.user)
+
+    if request.method == 'POST':
+        # valores que llegan del formulario (checkboxes)
+        new_open_to_work  = request.POST.get('is_open_to_work') == 'on'
+        new_open_to_teach = request.POST.get('is_open_to_teach') == 'on'
+
+        # solo actualiza el timestamp si hubo un cambio
+        if new_open_to_work != profile.is_open_to_work:
+            profile.is_open_to_work = new_open_to_work
+            profile.is_open_to_work_changed_at = timezone.now()
+
+        if new_open_to_teach != profile.is_open_to_teach:
+            profile.is_open_to_teach = new_open_to_teach
+            profile.is_open_to_teach_changed_at = timezone.now()
+
+        profile.save()
+        messages.success(request, 'Your profile visibility has been updated.')
+        return redirect('developers:settings_view')
+
+    return render(request, 'developers/settings_view.html', {'profile': profile})
 
 
 @authorized_required
@@ -103,12 +111,14 @@ def profile_form(request):
 
             # Actualizar CV si hay uno nuevo
             cv_file = request.FILES.get('cv_file')
+            cv_uploaded = False
+            
             if cv_file:
                 profile_instance.cv_file = cv_file
                 profile_instance.cv_original_name = cv_file.name
                 profile_instance.cv_size = cv_file.size
                 profile_instance.cv_uploaded_at = timezone.now()
-
+                cv_uploaded = True
             elif not profile.cv_file:
                 messages.error(request, 'You must upload your CV.')
                 return render(request, 'developers/profile_form.html', {
@@ -117,6 +127,11 @@ def profile_form(request):
                 })
 
             profile_instance.save()
+
+            # Dispara la task SÓLO si el usuario subió un archivo en esta request
+            if cv_uploaded:
+                logger.info(f"Triggering CV processing task for user {profile_instance.user_id}")
+                fill_developer_fields.delay(profile_instance.user_id)
 
             messages.success(request, 'Your profile and CV have been updated correctly.')
             return redirect('developers:dashboard')
