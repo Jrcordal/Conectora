@@ -1,12 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-python manage.py makemigrations developers
-python manage.py migrate developers --noinput
-python manage.py makemigrations users
-python manage.py migrate users --noinput
-python manage.py makemigrations
-python manage.py migrate --noinput
-python manage.py makemigrations
+
 python manage.py collectstatic --noinput
 python manage.py migrate --noinput
 
