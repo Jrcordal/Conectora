@@ -91,6 +91,12 @@ class DeveloperProfileForm(forms.ModelForm):
             'hourly_rate',
             'currency'
         ]
+
+    def clean_personal_website(self):
+        url = self.cleaned_data['personal_website']
+        if url and not url.startswith(('http://', 'https://')):
+            url = 'https://' + url
+        return url
     #def clean_phone(self):
     #    return validate_phone(self.cleaned_data.get('phone'))
 
