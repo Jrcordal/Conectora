@@ -3,7 +3,7 @@ import logging
 from django.db import transaction, IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
-from users.models import CustomUser
+from apps.users.models import CustomUser
 
 logger = logging.getLogger(__name__)
 
