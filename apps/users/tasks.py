@@ -7,7 +7,7 @@ from apps.users.models import CustomUser
 
 logger = logging.getLogger(__name__)
 
-@shared_task(bind=True, autoretry_for=(Exception,), retry_backoff=True, retry_kwargs={"max_retries": 5})
+@shared_task(bind=True, autoretry_for=(IntegrityError,), retry_backoff=True, retry_kwargs={"max_retries": 5})
 def create_missing_developer_profiles(self, user_id: int):
     try:
         user = CustomUser.objects.get(id=user_id)
@@ -33,12 +33,12 @@ def create_missing_developer_profiles(self, user_id: int):
                 },
             )
     except IntegrityError:
-        # Otro worker pudo crearlo a la vez
         profile = DeveloperProfile.objects.get(user=user)
         created = False
 
+    # 🔑 Usa pk (o user_id)
     logger.info(
         f"[create_missing_developer_profiles] user_id={user_id} "
-        f"{'created profile' if created else 'profile already exists'} (id={profile.id})"
+        f"{'created profile' if created else 'profile already exists'} (pk={profile.pk})"
     )
-    return {"created": created, "profile_id": profile.id, "reason": "created" if created else "already_exists"}
+    return {"created": created, "username": user.username, "profile_pk": profile.pk, "reason": "created" if created else "already_exists"}
