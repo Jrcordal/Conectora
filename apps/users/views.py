@@ -100,7 +100,7 @@ def register(request):
             )
             if user is not None:
                 login(request, user)
-                return redirect('users:dashboard')  # Cambia esto a tu vista destino
+                return redirect('users:consent_form')  # Cambia esto a tu vista destino
 
         # Mostrar errores del formulario
         elif form.errors:
