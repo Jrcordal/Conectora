@@ -17,7 +17,7 @@ from django.contrib.auth.forms import PasswordResetForm
 from apps.users.models import CustomUser
 from django.core.mail import EmailMultiAlternatives
 from django.template import loader
-
+from apps.developers.models import DeveloperProfile
 
 
 from django.urls import reverse_lazy
@@ -121,5 +121,10 @@ def logout_view(request):
 
 @login_required
 def dashboard(request):
+    try:
+        profile = DeveloperProfile.objects.get(user=request.user)
+    except DeveloperProfile.DoesNotExist:
+        return redirect('developers:consent_form')
+    
     return render(request, 'users/dashboard.html')
 

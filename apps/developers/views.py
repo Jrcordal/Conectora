@@ -30,9 +30,17 @@ from .tasks import fill_developer_fields
 import logging
 
 logger = logging.getLogger(__name__)
+
+
 @authorized_required
 @login_required
 def dashboard(request):
+    try:
+        profile = DeveloperProfile.objects.get(user=request.user)
+    except DeveloperProfile.DoesNotExist:
+        return redirect('developers:consent_form')
+    
+ 
     return render(request, 'developers/dashboard.html')
 
 
