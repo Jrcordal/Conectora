@@ -59,8 +59,12 @@ class CVStorage(S3Boto3Storage):
 
 def cv_upload_path(instance, filename):
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    return f"cvs/{instance.user.id}/{timestamp}.pdf"  # ya no pones 'cvs/' porque lo pone storage
-
+    if filename.endswith('.pdf'):
+        return f"cvs/{instance.user.id}/{timestamp}.pdf"  # ya no pones 'cvs/' porque lo pone storage
+    elif filename.endswith('.docx'):
+        return f"cvs/{instance.user.id}/{timestamp}.docx"  # ya no pones 'cvs/' porque lo pone storage
+    else:
+        raise ValidationError("Only PDF and DOCX files are allowed.")
 
 class DeveloperProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
@@ -127,6 +131,15 @@ class DeveloperProfile(models.Model):
 
     def __str__(self):
         return self.user.username
+    
+    def clean_cv_file(self):
+        file = self.cleaned_data.get('cv_file')
+        if file:
+            ext= os.path.splitext(file.name)[1].lower()
+            if ext not in ['.pdf', '.docx']:
+                raise ValidationError("Only PDF and DOCX files are allowed.")
+            return file
+        return None
         
     @property
     def cv_filename(self):
