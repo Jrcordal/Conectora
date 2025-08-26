@@ -3,6 +3,8 @@ from .models import CustomUser
 from django.contrib.auth.admin import UserAdmin
 from .forms import CustomUserAdminCreationForm, CustomUserAdminChangeForm
 from .tasks import create_missing_developer_profiles
+from apps.developers.models import DeveloperProfile
+
 
 # Register your models here.
 @admin.action(description="Create developer profile")
@@ -38,8 +40,9 @@ class CustomUserAdmin(UserAdmin):
     )
     actions = [create_dev_profile_action]
 
-
-
+class StackedItemInline(admin.StackedInline):
+    model= DeveloperProfile
+    classes = ('grp-collapse grp-open',)
 
 admin.site.register(CustomUser, CustomUserAdmin)
 
