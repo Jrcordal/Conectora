@@ -27,6 +27,7 @@ class DeveloperProfileAdmin(admin.ModelAdmin):
     search_fields = ("user__username", "main_developer_role", "country")
     actions = [update_from_current_cv]
 
+    classes = ('grp-collapse grp-closed',)
 
 
 @admin.register(AuthorizedEmail)

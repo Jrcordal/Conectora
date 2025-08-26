@@ -12,6 +12,7 @@ def health_check(request):
 
 urlpatterns = [
     path('', main_views.main, name='main'),
+    path('grappelli/', include('grappelli.urls')),
     path('admin/', admin.site.urls),
     path('users/', include('apps.users.urls')),
     path('developers/', include('apps.developers.urls', namespace='developers')),

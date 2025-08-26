@@ -52,6 +52,7 @@ DATABASES = {
 # Application definition
 
 INSTALLED_APPS = [
+    'grappelli',
     'storages',
     'main_page',
     'apps.users.apps.UsersConfig',
