@@ -15,7 +15,11 @@ def create_dev_profile_action(modeladmin, request, queryset):
             
             
 
-
+class DeveloperProfileInline(admin.StackedInline):
+    model = DeveloperProfile
+    can_delete = False
+    extra = 0
+    classes = ('grp-collapse', 'grp-closed')  
 
 
 class CustomUserAdmin(UserAdmin):
@@ -39,10 +43,9 @@ class CustomUserAdmin(UserAdmin):
         ("Important dates", {"fields": ("last_login", "date_joined")}),
     )
     actions = [create_dev_profile_action]
+    inlines = [DeveloperProfileInline]   # <- ahora sí aparece el perfil debajo del usuario
 
-class StackedItemInline(admin.StackedInline):
-    model= DeveloperProfile
-    classes = ('grp-collapse grp-open',)
+
 
 admin.site.register(CustomUser, CustomUserAdmin)
 
