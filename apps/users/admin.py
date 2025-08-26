@@ -5,7 +5,7 @@ from .forms import CustomUserAdminCreationForm, CustomUserAdminChangeForm
 from .tasks import create_missing_developer_profiles
 
 # Register your models here.
-
+@admin.action(description="Create developer profile")
 def create_dev_profile_action(modeladmin, request, queryset):
     for user in queryset:
 

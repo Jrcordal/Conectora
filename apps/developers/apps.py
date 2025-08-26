@@ -5,6 +5,7 @@ class DevelopersConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField' # type: ignore
     name = 'apps.developers'
 
+    actions = []
 
         
         # The ready() method is called by Django when the application is loading

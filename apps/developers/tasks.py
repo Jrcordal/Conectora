@@ -263,6 +263,7 @@ def fill_developer_fields(self, profile_id):
                     profile.github = parsed_response.get('github', '')
                 if not profile.personal_website:
                     profile.personal_website = parsed_response.get('personal_website', '')
+
                 
                 profile.save()
                 logger.info(f"Profile {profile_id} updated successfully by task {self.request.id}")
@@ -277,3 +278,6 @@ def fill_developer_fields(self, profile_id):
         logger.error(f"Task {self.request.id} failed for profile {profile_id}: {str(e)}")
         # Re-raise la excepción para que Celery la registre como fallida
         raise self.retry(exc=e, countdown=60, max_retries=3) 
+
+
+
