@@ -107,7 +107,7 @@ ASGI_APPLICATION = 'main_page.asgi.application'
 
 CSRF_TRUSTED_ORIGINS = env("DJANGO_CSRF_TRUSTED_ORIGINS").split(",") #type: ignore
 
-
+GRAPPELLI_ADMIN_TITLE = "Conectora admin site"
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

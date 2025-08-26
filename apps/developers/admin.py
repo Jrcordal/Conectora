@@ -41,22 +41,22 @@ class DeveloperProfileAdmin(admin.ModelAdmin):
 
     # Colapsables por secciones (Grappelli)
     fieldsets = (
-        ("Identificación", {
-            "fields": ("user", "main_developer_role"),
+        ("Identification", {
+            "fields": ("user", "main_developer_role", "nationality"),
         }),
-        ("Contacto", {
+        ("Contact", {
             "classes": ("grp-collapse", "grp-open"),  # abierto por defecto
             "fields": ("telephone_number", "linkedin", "github", "personal_website"),
         }),
-        ("Ubicación", {
+        ("Location", {
             "classes": ("grp-collapse", "grp-closed"),  # colapsado por defecto
-            "fields": ("country_living_in", "nationality"),
+            "fields": ("country_living_in",),
         }),
-        ("Educación", {
+        ("Education", {
             "classes": ("grp-collapse", "grp-closed"),
             "fields": ("university_education", "education_certificates"),
         }),
-        ("Experiencia / Proyectos", {
+        ("Experience / Proyects", {
             "classes": ("grp-collapse", "grp-closed"),
             "fields": ("experience", "projects", "volunteering"),
         }),
