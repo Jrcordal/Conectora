@@ -28,7 +28,7 @@ from .models import DeveloperProfile
 from .decorators import authorized_required
 from .tasks import fill_developer_fields
 import logging
-
+from apps.users.models import TIMEZONE_CHOICES
 logger = logging.getLogger(__name__)
 
 
@@ -83,6 +83,7 @@ def settings_view(request):
         # valores que llegan del formulario (checkboxes)
         new_open_to_work  = request.POST.get('is_open_to_work') == 'on'
         new_open_to_teach = request.POST.get('is_open_to_teach') == 'on'
+        tz_name = (request.POST.get('timezone') or '').strip()   # 👈 NO llames a esto "timezone"
 
         # solo actualiza el timestamp si hubo un cambio
         if new_open_to_work != profile.is_open_to_work:
@@ -92,6 +93,14 @@ def settings_view(request):
         if new_open_to_teach != profile.is_open_to_teach:
             profile.is_open_to_teach = new_open_to_teach
             profile.is_open_to_teach_changed_at = timezone.now()
+
+        # ⬇️ actualizar el timezone del usuario
+        if tz_name and tz_name in dict(TIMEZONE_CHOICES):
+            if tz_name != request.user.timezone:
+                request.user.timezone = tz_name
+                request.user.save(update_fields=['timezone'])
+        
+
 
         profile.save()
         messages.success(request, 'Your profile visibility has been updated.')
