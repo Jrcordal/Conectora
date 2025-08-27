@@ -132,15 +132,7 @@ class DeveloperProfile(models.Model):
 
     def __str__(self):
         return self.user.username
-    
-    def clean_cv_file(self):
-        file = self.cleaned_data.get('cv_file')
-        if file:
-            ext= os.path.splitext(file.name)[1].lower()
-            if ext not in ['.pdf', '.docx']:
-                raise ValidationError("Only PDF and DOCX files are allowed.")
-            return file
-        return None
+
     
     def save(self, *args, **kwargs):
         self.has_cv = bool(self.cv_file)  # se autocalcula siempre
