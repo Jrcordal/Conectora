@@ -192,7 +192,7 @@ def list_upload_cv(request):
             messages.warning(request, "CV saved, but background processing could not be queued.")
 
         messages.success(request, 'CV fields have been updated correctly.')
-        return redirect('list_upload_cv')
+        return redirect('developers:list_upload_cv')
 
     return render(request, 'developers/list.html', {'profiles': profiles})
 
