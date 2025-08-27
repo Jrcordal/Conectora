@@ -33,7 +33,7 @@ class JSONTextarea(forms.Textarea):
 @admin.register(DeveloperProfile) 
 class DeveloperProfileAdmin(admin.ModelAdmin):
     # muestra columnas básicas (evita meter JSON enormes en la lista)
-    list_display = ("user", "main_developer_role", "country_living_in", "nationality", "cv_file", "has_cv")
+    list_display = ("user", "main_developer_role", "country_living_in", "nationality", "cv_file", "has_cv","is_open_to_work","is_open_to_teach")
     search_fields = ("user__username", "user__email", "main_developer_role")
     list_filter = ("country_living_in", "nationality")
     autocomplete_fields = ["user"]
