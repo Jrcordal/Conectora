@@ -97,7 +97,8 @@ def settings_view(request):
         messages.success(request, 'Your profile visibility has been updated.')
         return redirect('developers:settings_view')
 
-    return render(request, 'developers/settings_view.html', {'profile': profile})
+    return render(request, 'developers/settings_view.html', {'profile': profile, "is_open_to_work": profile.is_open_to_work,
+        "is_open_to_teach": profile.is_open_to_teach,})
 
 
 @authorized_required

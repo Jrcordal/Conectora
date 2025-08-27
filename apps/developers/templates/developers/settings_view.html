@@ -48,7 +48,14 @@
                 </p>
               </div>
               <div class="toggle-switch">
-                <input type="checkbox" class="toggle-input" id="is_open_to_work" name="is_open_to_work">
+                <input 
+                type="checkbox" 
+                class="toggle-input" 
+                id="is_open_to_work" 
+                name="is_open_to_work"
+                {% if is_open_to_work %}checked{% endif %}
+              />
+
                 <label for="is_open_to_work" class="toggle-label">
                   <span class="toggle-slider"></span>
                 </label>
@@ -83,7 +90,14 @@
                 </p>
               </div>
               <div class="toggle-switch">
-                <input type="checkbox" class="toggle-input" id="is_open_to_teach" name="is_open_to_teach">
+                <input 
+                type="checkbox" 
+                class="toggle-input" 
+                id="is_open_to_teach" 
+                name="is_open_to_teach"
+                {% if is_open_to_teach %}checked{% endif %}
+              />
+
                 <label for="is_open_to_teach" class="toggle-label">
                   <span class="toggle-slider"></span>
                 </label>
