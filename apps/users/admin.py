@@ -4,7 +4,8 @@ from django.contrib.auth.admin import UserAdmin
 from .forms import CustomUserAdminCreationForm, CustomUserAdminChangeForm
 from .tasks import create_missing_developer_profiles
 from apps.developers.models import DeveloperProfile
-
+from apps.developers.models import DeveloperProfile
+from django.db.models import Exists, OuterRef
 
 # Register your models here.
 @admin.action(description="Create developer profile")
@@ -26,6 +27,8 @@ class CustomUserAdmin(UserAdmin):
     add_form = CustomUserAdminCreationForm
     form = CustomUserAdminChangeForm
     model = CustomUser
+    list_select_related = ("devprofile",)  # evita N+1 si accedes user.profile
+
     list_display = [
         "email",
         "username",
@@ -44,7 +47,19 @@ class CustomUserAdmin(UserAdmin):
     )
     actions = [create_dev_profile_action]
     inlines = [DeveloperProfileInline]   # <- ahora sí aparece el perfil debajo del usuario
+    def get_queryset(self, request):
+            qs = super().get_queryset(request)
+            # Anota si existe perfil (1 query eficiente)
+            return qs.annotate(
+                _has_profile=Exists(
+                    DeveloperProfile.objects.filter(user_id=OuterRef("pk"))
+                )
+            )
 
+    @admin.display(boolean=True, description="Has profile", ordering="_has_profile")
+    def has_profile_display(self, obj):
+            # Si ya vino con select_related('profile'), hasattr no hace query extra
+            return getattr(obj, "_has_profile", hasattr(obj, "profile"))
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
