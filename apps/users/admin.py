@@ -59,7 +59,7 @@ class CustomUserAdmin(UserAdmin):
     @admin.display(boolean=True, description="Has profile", ordering="_has_profile")
     def has_profile_display(self, obj):
             # Si ya vino con select_related('profile'), hasattr no hace query extra
-            return getattr(obj, "_has_profile", hasattr(obj, "profile"))
+            return getattr(obj, "_has_profile", hasattr(obj, "devprofile"))
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
