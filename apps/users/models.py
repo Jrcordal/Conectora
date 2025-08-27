@@ -84,7 +84,10 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
-
+    @property
+    def has_profile(self) -> bool:
+        # NO hace query si antes hiciste select_related('profile')
+        return hasattr(self, 'devprofile')
 
 
 

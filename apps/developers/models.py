@@ -67,12 +67,13 @@ def cv_upload_path(instance, filename):
         raise ValidationError("Only PDF and DOCX files are allowed.")
 
 class DeveloperProfile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True,related_name='developerprofile')
     consent_promotional_use = models.BooleanField(null=True, blank=True)
     consent_given_at = models.DateTimeField(null=True, blank=True)
     is_open_to_work = models.BooleanField(default=True)
     is_open_to_teach = models.BooleanField(default=True)
-
+    has_cv = models.BooleanField(default=False)
+    
     # ---- Archivo CV y texto original extraído ---- (CV file and original extracted text)
     cv_file = models.FileField(upload_to=cv_upload_path, blank=False, null=False, storage=CVStorage())
     cv_raw_text = models.TextField(blank=True, null=True)
@@ -140,6 +141,10 @@ class DeveloperProfile(models.Model):
                 raise ValidationError("Only PDF and DOCX files are allowed.")
             return file
         return None
+    
+    def save(self, *args, **kwargs):
+        self.has_cv = bool(self.cv_file)  # se autocalcula siempre
+        super().save(*args, **kwargs)
         
     @property
     def cv_filename(self):
