@@ -38,7 +38,7 @@
           {% endif %}
         </td>
         <td>
-          <form method="post" enctype="multipart/form-data" action="{% url 'list_upload_cv' %}">
+          <form method="post" enctype="multipart/form-data" action="{% url 'developers:list_upload_cv' %}">
             {% csrf_token %}
             <input type="hidden" name="profile_id" value="{{ profile.pk }}">
             <input type="file" name="cv_file" accept=".pdf,.doc,.docx" required class="form-control form-control-sm mb-2">
