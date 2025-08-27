@@ -622,6 +622,36 @@
     min-width: auto;
   }
 }
+
+/* Asegura que las secciones y tarjetas participen en el apilado */
+.form-section,
+.preference-item {
+  position: relative;
+  overflow: visible; /* por si acaso */
+}
+
+/* Cuando algo dentro tiene foco (el select), súbela por encima de las demás */
+.form-section:focus-within,
+.preference-item:focus-within {
+  z-index: 9999;
+}
+
+/* El wrapper del select con z-index alto basta; no hace falta z-index en el <select> */
+.select-wrapper {
+  position: relative;
+  z-index: 10000;
+}
+
+/* (Opcional) Quita z-index exagerados en el propio select para evitar contextos raros */
+.preference-select {
+  position: relative; /* ok */
+  z-index: auto;      /* o elimínalo si lo tenías */
+}
+
+
+
+
+
 </style>
 
 <script>
