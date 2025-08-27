@@ -27,7 +27,7 @@ class CustomUserAdmin(UserAdmin):
     add_form = CustomUserAdminCreationForm
     form = CustomUserAdminChangeForm
     model = CustomUser
-    list_select_related = ("devprofile",)  # evita N+1 si accedes user.profile
+    list_select_related = ("developerprofile",)  # evita N+1 si accedes user.profile
 
     list_display = [
         "email",
@@ -59,7 +59,7 @@ class CustomUserAdmin(UserAdmin):
     @admin.display(boolean=True, description="Has profile", ordering="_has_profile")
     def has_profile_display(self, obj):
             # Si ya vino con select_related('profile'), hasattr no hace query extra
-            return getattr(obj, "_has_profile", hasattr(obj, "devprofile"))
+            return getattr(obj, "_has_profile", hasattr(obj, "developerprofile"))
 
 
 admin.site.register(CustomUser, CustomUserAdmin)

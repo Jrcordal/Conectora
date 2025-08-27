@@ -73,7 +73,7 @@ class DeveloperProfile(models.Model):
     is_open_to_work = models.BooleanField(default=True)
     is_open_to_teach = models.BooleanField(default=True)
     has_cv = models.BooleanField(default=False)
-    related_name='devprofile',
+    related_name='developerprofile',
     # ---- Archivo CV y texto original extraído ---- (CV file and original extracted text)
     cv_file = models.FileField(upload_to=cv_upload_path, blank=False, null=False, storage=CVStorage())
     cv_raw_text = models.TextField(blank=True, null=True)
