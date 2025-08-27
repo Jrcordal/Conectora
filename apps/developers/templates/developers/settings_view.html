@@ -221,7 +221,7 @@
   background: white;
   border-radius: 16px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .form-header {
@@ -274,6 +274,7 @@
   border-radius: 12px;
   padding: 1.5rem;
   background: #fafafa;
+  overflow: visible;
 }
 
 .section-header {
@@ -410,6 +411,8 @@
 
 .select-wrapper {
   position: relative;
+  z-index: 10; /* asegura la capa por encima del resto */
+
 }
 
 .preference-select {
