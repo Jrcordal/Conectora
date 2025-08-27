@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from .models import DeveloperProfile
 from django_countries.fields import CountryField
 from .models import CURRENCY_CHOICES, validate_phone
-
+import os
 #def validate_phone(value):
 #    try:
 #        phone_number = phonenumbers.parse(str(value))
@@ -92,7 +92,15 @@ class DeveloperProfileForm(forms.ModelForm):
             'currency'
         ]
 
-
+    
+    def clean_cv_file(self):
+        file = self.cleaned_data.get('cv_file')
+        if file:
+            ext= os.path.splitext(file.name)[1].lower()
+            if ext not in ['.pdf', '.docx']:
+                raise ValidationError("Only PDF and DOCX files are allowed.")
+            return file
+        return None
     #def clean_phone(self):
     #    return validate_phone(self.cleaned_data.get('phone'))
 
