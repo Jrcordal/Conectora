@@ -152,6 +152,51 @@ def profile_form(request):
         'profile': profile,
     })
 
+@staff_member_required
+def list_upload_cv(request):
+    profiles = DeveloperProfile.objects.all().select_related("user")
+
+    if request.method == 'POST':
+        profile_id = request.POST.get('profile_id')
+        if not profile_id:
+            messages.error(request, "Need profile ID")
+            return redirect('list_upload_cv')
+
+        profile_instance = get_object_or_404(DeveloperProfile, pk=profile_id)
+
+        cv_file = request.FILES.get('cv_file')
+        if not cv_file:
+            messages.error(request, "You did not upload any file")
+            return redirect('list_upload_cv')
+
+        # (Opcional) eliminar CV previo para evitar archivos huérfanos
+        if profile_instance.cv_file:
+            try:
+                profile_instance.cv_file.delete(save=False)
+            except Exception as e:
+                logger.warning(f"Could not delete previous CV for user {profile_instance.user_id}: {e}")
+
+        # Guardar nuevo archivo + metadatos
+        profile_instance.cv_file = cv_file
+        profile_instance.cv_original_name = cv_file.name
+        profile_instance.cv_size = cv_file.size
+        profile_instance.cv_uploaded_at = timezone.now()
+        profile_instance.save(update_fields=["cv_file", "cv_original_name", "cv_size", "cv_uploaded_at"])
+
+        # Disparar la task después de guardar
+        try:
+            logger.info(f"Triggering CV processing task for user {profile_instance.user_id}")
+            fill_developer_fields.delay(profile_instance.user_id)
+        except Exception as e:
+            logger.error(f"Error queuing CV task for user {profile_instance.user_id}: {e}")
+            messages.warning(request, "CV saved, but background processing could not be queued.")
+
+        messages.success(request, 'CV fields have been updated correctly.')
+        return redirect('list_upload_cv')
+
+    return render(request, 'developers/list_upload_cv.html', {'profiles': profiles})
+
+
 """
 @staff_member_required
 def cv_pdf(request, id):
