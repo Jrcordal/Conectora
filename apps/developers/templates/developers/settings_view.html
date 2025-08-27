@@ -107,7 +107,7 @@
         </div>
 
         <!-- Timezone Section -->
-        <div class="form-section">
+        <div class="form-section timezone-section">
           <div class="section-header">
             <div class="section-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -221,6 +221,7 @@
   background: white;
   border-radius: 16px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  /* Changed from overflow: hidden to overflow: visible */
   overflow: visible;
 }
 
@@ -261,6 +262,8 @@
 
 .form-card {
   padding: 2.5rem 2rem;
+  /* Ensure form card doesn't clip content */
+  overflow: visible;
 }
 
 .preferences-form {
@@ -274,6 +277,14 @@
   border-radius: 12px;
   padding: 1.5rem;
   background: #fafafa;
+  /* Allow content to overflow for dropdowns */
+  overflow: visible;
+}
+
+/* Special handling for timezone section */
+.timezone-section {
+  position: relative;
+  z-index: 100;
   overflow: visible;
 }
 
@@ -315,6 +326,8 @@
   padding: 1.5rem;
   border: 1px solid #e5e7eb;
   transition: all 0.2s ease;
+  /* Allow content to overflow */
+  overflow: visible;
 }
 
 .preference-item:hover {
@@ -407,12 +420,14 @@
 .preference-control {
   flex-shrink: 0;
   min-width: 200px;
+  position: relative;
+  z-index: 200;
 }
 
 .select-wrapper {
   position: relative;
-  z-index: 10; /* asegura la capa por encima del resto */
-
+  /* Increased z-index to ensure dropdown appears above other elements */
+  z-index: 300;
 }
 
 .preference-select {
@@ -428,16 +443,37 @@
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
+  position: relative;
+  z-index: 400;
 }
 
 .preference-select:focus {
   outline: none;
   border-color: #00a99d;
   box-shadow: 0 0 0 3px rgba(0, 169, 157, 0.1);
+  position: relative;
+  z-index: 500;
 }
 
 .preference-select:hover {
   border-color: #00a99d;
+}
+
+/* Style the dropdown options */
+.preference-select option {
+  background: white;
+  color: #333;
+  padding: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.preference-select option:hover {
+  background: rgba(0, 169, 157, 0.1);
+}
+
+.preference-select option:checked {
+  background: #00a99d;
+  color: white;
 }
 
 .select-arrow {
@@ -448,6 +484,7 @@
   color: #6b7280;
   pointer-events: none;
   transition: color 0.2s ease;
+  z-index: 10;
 }
 
 .select-arrow svg {
@@ -641,6 +678,16 @@ document.addEventListener('DOMContentLoaded', function() {
         preferenceItem.style.borderColor = '#e5e7eb';
         preferenceItem.style.backgroundColor = 'white';
       }, 2000);
+    });
+    
+    // Debug: Log when dropdown is clicked
+    timezoneSelect.addEventListener('click', function() {
+      console.log('Timezone dropdown clicked');
+    });
+    
+    // Debug: Log when dropdown is focused
+    timezoneSelect.addEventListener('focus', function() {
+      console.log('Timezone dropdown focused');
     });
   }
 });
