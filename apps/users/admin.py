@@ -38,6 +38,7 @@ class CustomUserAdmin(UserAdmin):
         "is_staff",
         "is_active",
         "role",
+        "has_profile_display"
     ]
     fieldsets = (
         (None, {"fields": ("email", "password")}),
