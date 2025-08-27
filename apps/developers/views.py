@@ -194,7 +194,7 @@ def list_upload_cv(request):
         messages.success(request, 'CV fields have been updated correctly.')
         return redirect('list_upload_cv')
 
-    return render(request, 'developers/list_upload_cv.html', {'profiles': profiles})
+    return render(request, 'developers/list.html', {'profiles': profiles})
 
 
 """
