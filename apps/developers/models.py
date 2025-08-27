@@ -1,12 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
-from django.core.validators import MinValueValidator
 import phonenumbers
 from django.core.exceptions import ValidationError
 from django.conf import settings
-from django.utils import timezone
-import uuid
-from datetime import timedelta
 from django_countries.fields import CountryField
 from datetime import datetime
 from storages.backends.s3boto3 import S3Boto3Storage
@@ -141,18 +137,3 @@ class DeveloperProfile(models.Model):
     @property
     def cv_filename(self):
         return os.path.basename(self.cv_file.name)
-"""
-class MagicToken(models.Model):
-    token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    email = models.EmailField()  # Siempre requerido
-    created_at = models.DateTimeField(auto_now_add=True)
-    used = models.BooleanField(default=False)  # De un solo uso
-
-    def is_valid(self):
-        expiration_period = timedelta(days=7)  # 7 días de validez
-        return not self.used and timezone.now() - self.created_at < expiration_period
-
-    def mark_used(self):
-        self.used = True
-        self.save(update_fields=["used"])
-"""
