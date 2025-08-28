@@ -9,7 +9,7 @@
       <div class="header-icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="3"></circle>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
         </svg>
       </div>
       <h1 class="form-title">Settings</h1>
@@ -135,11 +135,58 @@
               <div class="preference-control">
                 <div class="select-wrapper">
                   <select id="timezone" name="timezone" class="preference-select">
-                    {% for value, label in TIMEZONE_CHOICES %}
-                      <option value="{{ value }}" {% if request.user.timezone == value %}selected{% endif %}>
-                        {{ label }}
-                      </option>
-                    {% endfor %}
+                    <!-- Django timezone choices if available -->
+                    {% if TIMEZONE_CHOICES %}
+                      {% for value, label in TIMEZONE_CHOICES %}
+                        <option value="{{ value }}" {% if request.user.timezone == value %}selected{% endif %}>
+                          {{ label }}
+                        </option>
+                      {% endfor %}
+                    {% else %}
+                      <!-- Fallback timezone options -->
+                      <option value="">Select your timezone</option>
+                      <optgroup label="Popular Timezones">
+                        <option value="UTC" {% if request.user.timezone == 'UTC' %}selected{% endif %}>UTC (Coordinated Universal Time)</option>
+                        <option value="America/New_York" {% if request.user.timezone == 'America/New_York' %}selected{% endif %}>Eastern Time (US & Canada)</option>
+                        <option value="America/Chicago" {% if request.user.timezone == 'America/Chicago' %}selected{% endif %}>Central Time (US & Canada)</option>
+                        <option value="America/Denver" {% if request.user.timezone == 'America/Denver' %}selected{% endif %}>Mountain Time (US & Canada)</option>
+                        <option value="America/Los_Angeles" {% if request.user.timezone == 'America/Los_Angeles' %}selected{% endif %}>Pacific Time (US & Canada)</option>
+                        <option value="Europe/London" {% if request.user.timezone == 'Europe/London' %}selected{% endif %}>London (GMT/BST)</option>
+                        <option value="Europe/Paris" {% if request.user.timezone == 'Europe/Paris' %}selected{% endif %}>Paris (CET/CEST)</option>
+                        <option value="Europe/Berlin" {% if request.user.timezone == 'Europe/Berlin' %}selected{% endif %}>Berlin (CET/CEST)</option>
+                        <option value="Asia/Tokyo" {% if request.user.timezone == 'Asia/Tokyo' %}selected{% endif %}>Tokyo (JST)</option>
+                        <option value="Asia/Shanghai" {% if request.user.timezone == 'Asia/Shanghai' %}selected{% endif %}>Shanghai (CST)</option>
+                        <option value="Australia/Sydney" {% if request.user.timezone == 'Australia/Sydney' %}selected{% endif %}>Sydney (AEST/AEDT)</option>
+                      </optgroup>
+                      <optgroup label="Americas">
+                        <option value="America/Anchorage">Alaska Time</option>
+                        <option value="America/Phoenix">Arizona Time</option>
+                        <option value="America/Toronto">Toronto (EST/EDT)</option>
+                        <option value="America/Vancouver">Vancouver (PST/PDT)</option>
+                        <option value="America/Mexico_City">Mexico City (CST/CDT)</option>
+                        <option value="America/Sao_Paulo">São Paulo (BRT/BRST)</option>
+                        <option value="America/Argentina/Buenos_Aires">Buenos Aires (ART)</option>
+                      </optgroup>
+                      <optgroup label="Europe & Africa">
+                        <option value="Europe/Madrid">Madrid (CET/CEST)</option>
+                        <option value="Europe/Rome">Rome (CET/CEST)</option>
+                        <option value="Europe/Amsterdam">Amsterdam (CET/CEST)</option>
+                        <option value="Europe/Stockholm">Stockholm (CET/CEST)</option>
+                        <option value="Europe/Moscow">Moscow (MSK)</option>
+                        <option value="Africa/Cairo">Cairo (EET/EEST)</option>
+                        <option value="Africa/Johannesburg">Johannesburg (SAST)</option>
+                      </optgroup>
+                      <optgroup label="Asia & Pacific">
+                        <option value="Asia/Dubai">Dubai (GST)</option>
+                        <option value="Asia/Kolkata">Mumbai/Delhi (IST)</option>
+                        <option value="Asia/Bangkok">Bangkok (ICT)</option>
+                        <option value="Asia/Singapore">Singapore (SGT)</option>
+                        <option value="Asia/Hong_Kong">Hong Kong (HKT)</option>
+                        <option value="Asia/Seoul">Seoul (KST)</option>
+                        <option value="Australia/Melbourne">Melbourne (AEST/AEDT)</option>
+                        <option value="Pacific/Auckland">Auckland (NZST/NZDT)</option>
+                      </optgroup>
+                    {% endif %}
                   </select>
                   <div class="select-arrow">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -209,327 +256,492 @@
     </div>
   </div>
 </div>
+
 <style>
-  /* ====== Layout base ====== */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.form-wrapper {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  overflow: visible;
+}
+
+.form-header {
+  background: linear-gradient(135deg, #00a99d, #00c4b6);
+  color: white;
+  padding: 2.5rem 2rem;
+  text-align: center;
+}
+
+.header-icon {
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+.header-icon svg {
+  width: 30px;
+  height: 30px;
+}
+
+.form-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+
+.form-subtitle {
+  font-size: 1.125rem;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.form-card {
+  padding: 2.5rem 2rem;
+  overflow: visible;
+  position: relative;
+  isolation: isolate;
+}
+
+.preferences-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.form-section {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  background: #fafafa;
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+}
+
+.timezone-section {
+  z-index: 10;
+}
+
+.timezone-section.is-front {
+  z-index: 9999 !important;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.section-icon {
+  width: 40px;
+  height: 40px;
+  background: #00a99d;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.section-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.preference-item {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+  transition: all 0.2s ease;
+  overflow: visible;
+  position: relative;
+}
+
+.preference-item:hover {
+  border-color: #00a99d;
+  box-shadow: 0 2px 8px rgba(0, 169, 157, 0.1);
+}
+
+.preference-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.preference-text {
+  flex: 1;
+}
+
+.preference-label {
+  font-weight: 600;
+  color: #333;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+}
+
+.preference-icon {
+  width: 18px;
+  height: 18px;
+  color: #00a99d;
+}
+
+.preference-description {
+  color: #6b7280;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.toggle-switch {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.toggle-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-label {
+  display: block;
+  width: 50px;
+  height: 28px;
+  background: #e5e7eb;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  position: relative;
+}
+
+.toggle-slider {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-input:checked + .toggle-label {
+  background: #00a99d;
+}
+
+.toggle-input:checked + .toggle-label .toggle-slider {
+  transform: translateX(22px);
+}
+
+.toggle-input:focus + .toggle-label {
+  box-shadow: 0 0 0 3px rgba(0, 169, 157, 0.2);
+}
+
+.preference-control {
+  flex-shrink: 0;
+  min-width: 200px;
+  position: relative;
+}
+
+.select-wrapper {
+  position: relative;
+}
+
+.preference-select {
+  width: 100%;
+  padding: 0.75rem 2.5rem 0.75rem 0.875rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  background: white;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  position: relative;
+}
+
+.preference-select:focus {
+  outline: none;
+  border-color: #00a99d;
+  box-shadow: 0 0 0 3px rgba(0, 169, 157, 0.1);
+}
+
+.preference-select:hover {
+  border-color: #00a99d;
+}
+
+.preference-select option {
+  background: white;
+  color: #333;
+  font-size: 0.875rem;
+  padding: 0.5rem;
+}
+
+.preference-select optgroup {
+  font-weight: bold;
+  color: #00a99d;
+  background: #f8f9fa;
+}
+
+.preference-select optgroup option {
+  font-weight: normal;
+  color: #333;
+  padding-left: 1rem;
+}
+
+.select-arrow {
+  position: absolute;
+  right: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+  pointer-events: none;
+  transition: color 0.2s ease;
+}
+
+.select-arrow svg {
+  width: 16px;
+  height: 16px;
+}
+
+.preference-select:focus + .select-arrow {
+  color: #00a99d;
+}
+
+.form-actions {
+  text-align: center;
+  padding-top: 1rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #00a99d, #00c4b6);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 1.125rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 169, 157, 0.3);
+  min-width: 180px;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 169, 157, 0.4);
+}
+
+.btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.btn-loading {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.security-item {
+  border: 1px solid #f59e0b;
+  background: rgba(245, 158, 11, 0.02);
+}
+
+.security-item:hover {
+  border-color: #f59e0b;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.1);
+}
+
+.action-button {
+  flex-shrink: 0;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+.btn-secondary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+  color: white;
+  text-decoration: none;
+}
+
+.btn-secondary svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
   .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem 1rem;
-  }
-  
-  .form-wrapper {
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-    overflow: visible; /* no recortar dropdowns */
+    padding: 1rem;
   }
   
   .form-header {
-    background: linear-gradient(135deg, #00a99d, #00c4b6);
-    color: white;
-    padding: 2.5rem 2rem;
-    text-align: center;
+    padding: 2rem 1.5rem;
   }
   
-  .header-icon {
-    width: 60px;
-    height: 60px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1rem;
+  .form-title {
+    font-size: 2rem;
   }
   
-  .header-icon svg { width: 30px; height: 30px; }
-  
-  .form-title { font-size: 2.5rem; font-weight: 700; margin: 0 0 0.5rem; }
-  .form-subtitle { font-size: 1.125rem; opacity: 0.9; margin: 0; }
-  
-  /* ====== Card del formulario (stacking context) ====== */
   .form-card {
-    padding: 2.5rem 2rem;
-    overflow: visible;
-    position: relative;
-    isolation: isolate; /* clave para controlar z-index internos */
+    padding: 2rem 1.5rem;
   }
   
-  .preferences-form {
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-  }
-  
-  /* ====== Secciones ====== */
   .form-section {
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 1.5rem;
-    background: #fafafa;
-    overflow: visible;
-    position: relative;
-    z-index: 1; /* capa base de secciones */
-  }
-  
-  /* Sección de Timezone: por encima de las demás */
-  .timezone-section {
-    z-index: 2;
-  }
-  .timezone-section.is-front {
-    z-index: 2147483647 !important; /* traerla al frente cuando el select está abierto */
-  }
-  
-  .section-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid #e5e7eb;
-  }
-  
-  .section-icon {
-    width: 40px;
-    height: 40px;
-    background: #00a99d;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-  }
-  .section-icon svg { width: 20px; height: 20px; }
-  
-  .section-title { font-size: 1.25rem; font-weight: 600; color: #333; margin: 0; }
-  
-  /* ====== Items ====== */
-  .preference-item {
-    background: white;
-    border-radius: 8px;
-    padding: 1.5rem;
-    border: 1px solid #e5e7eb;
-    transition: all 0.2s ease;
-    overflow: visible;
-    position: relative;
-  }
-  
-  .preference-item:hover {
-    border-color: #00a99d;
-    box-shadow: 0 2px 8px rgba(0, 169, 157, 0.1);
+    padding: 1rem;
   }
   
   .preference-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: flex-start;
     gap: 1rem;
   }
   
-  .preference-text { flex: 1; }
-  
-  .preference-label {
-    font-weight: 600;
-    color: #333;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-    cursor: pointer;
+  .toggle-switch {
+    align-self: flex-end;
   }
   
-  .preference-icon { width: 18px; height: 18px; color: #00a99d; }
-  .preference-description { color: #6b7280; font-size: 0.875rem; line-height: 1.4; margin: 0; }
-  
-  /* ====== Toggle ====== */
-  .toggle-switch { position: relative; flex-shrink: 0; }
-  .toggle-input { position: absolute; opacity: 0; width: 0; height: 0; }
-  
-  .toggle-label {
-    display: block;
-    width: 50px; height: 28px;
-    background: #e5e7eb;
-    border-radius: 14px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    position: relative;
+  .preference-control {
+    align-self: stretch;
+    min-width: auto;
   }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('preferencesForm');
+  const submitBtn = form.querySelector('button[type="submit"]');
+  const btnText = submitBtn.querySelector('.btn-text');
+  const btnIcon = submitBtn.querySelector('.btn-icon');
   
-  .toggle-slider {
-    position: absolute; top: 2px; left: 2px;
-    width: 24px; height: 24px;
-    background: white; border-radius: 50%;
-    transition: transform 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  }
-  
-  .toggle-input:checked + .toggle-label { background: #00a99d; }
-  .toggle-input:checked + .toggle-label .toggle-slider { transform: translateX(22px); }
-  .toggle-input:focus + .toggle-label { box-shadow: 0 0 0 3px rgba(0, 169, 157, 0.2); }
-  
-  /* ====== Select ====== */
-  .preference-control { flex-shrink: 0; min-width: 200px; position: relative; }
-  .select-wrapper { position: relative; } /* sin z-index exagerados */
-  
-  .preference-select {
-    width: 100%;
-    padding: 0.75rem 2.5rem 0.75rem 0.875rem;
-    border: 2px solid #e5e7eb;
-    border-radius: 8px;
-    font-size: 0.875rem;
-    background: white;
-    color: #333;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    position: relative;
-  }
-  
-  .preference-select:focus {
-    outline: none;
-    border-color: #00a99d;
-    box-shadow: 0 0 0 3px rgba(0, 169, 157, 0.1);
-  }
-  
-  .preference-select:hover { border-color: #00a99d; }
-  
-  /* Nota: los estilos de <option> no siempre aplican en menús nativos */
-  .preference-select option { background: white; color: #333; font-size: 0.875rem; }
-  
-  .select-arrow {
-    position: absolute;
-    right: 0.875rem; top: 50%;
-    transform: translateY(-50%);
-    color: #6b7280;
-    pointer-events: none;
-    transition: color 0.2s ease;
-  }
-  .select-arrow svg { width: 16px; height: 16px; }
-  .preference-select:focus + .select-arrow { color: #00a99d; }
-  
-  /* ====== Botones ====== */
-  .form-actions { text-align: center; padding-top: 1rem; }
-  
-  .btn {
-    display: inline-flex;
-    align-items: center; justify-content: center;
-    gap: 0.5rem;
-    padding: 1rem 2rem;
-    background: linear-gradient(135deg, #00a99d, #00c4b6);
-    color: white; border: none; border-radius: 10px;
-    font-weight: 600; font-size: 1.125rem;
-    cursor: pointer; transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 169, 157, 0.3);
-    min-width: 180px;
-  }
-  
-  .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 169, 157, 0.4); }
-  .btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
-  .btn-icon { width: 18px; height: 18px; }
-  .btn-loading { animation: spin 1s linear infinite; }
-  
-  @keyframes spin { from { transform: rotate(0deg);} to { transform: rotate(360deg);} }
-  
-  /* ====== Security callout ====== */
-  .security-item { border: 1px solid #f59e0b; background: rgba(245, 158, 11, 0.02); }
-  .security-item:hover { border-color: #f59e0b; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.1); }
-  
-  /* ====== Secondary button ====== */
-  .action-button { flex-shrink: 0; }
-  
-  .btn-secondary {
-    display: inline-flex; align-items: center; gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    background: linear-gradient(135deg, #f59e0b, #f97316);
-    color: white; text-decoration: none; border-radius: 8px;
-    font-weight: 600; font-size: 0.875rem; transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
-  }
-  .btn-secondary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4); color: white; text-decoration: none; }
-  .btn-secondary svg { width: 16px; height: 16px; }
-  
-  /* ====== Responsive ====== */
-  @media (max-width: 768px) {
-    .container { padding: 1rem; }
-    .form-header { padding: 2rem 1.5rem; }
-    .form-title { font-size: 2rem; }
-    .form-card { padding: 2rem 1.5rem; }
-    .form-section { padding: 1rem; }
-    .preference-content { flex-direction: column; align-items: flex-start; gap: 1rem; }
-    .toggle-switch { align-self: flex-end; }
-    .preference-control { align-self: stretch; min-width: auto; }
-  }
-  </style>
-  
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const form = document.getElementById('preferencesForm');
-      const submitBtn = form.querySelector('button[type="submit"]');
-      const btnText = submitBtn.querySelector('.btn-text');
-      const btnIcon = submitBtn.querySelector('.btn-icon');
+  form.addEventListener('submit', function(e) {
+    btnIcon.classList.add('btn-loading');
+    btnText.textContent = 'Saving...';
+    submitBtn.disabled = true;
     
-      /* Feedback de guardado (demo) */
-      form.addEventListener('submit', function () {
-        btnIcon.classList.add('btn-loading');
-        btnText.textContent = 'Saving...';
-        submitBtn.disabled = true;
-    
-        setTimeout(() => {
-          btnIcon.classList.remove('btn-loading');
-          btnText.textContent = 'Saved!';
-          setTimeout(() => {
-            btnText.textContent = 'Save Preferences';
-            submitBtn.disabled = false;
-          }, 1500);
-        }, 1000);
-      });
-    
-      /* Estética al cambiar toggles */
-      document.querySelectorAll('.toggle-input').forEach(input => {
-        input.addEventListener('change', function () {
-          const item = this.closest('.preference-item');
-          if (this.checked) {
-            item.style.borderColor = '#00a99d';
-            item.style.backgroundColor = 'rgba(0, 169, 157, 0.02)';
-          } else {
-            item.style.borderColor = '#e5e7eb';
-            item.style.backgroundColor = 'white';
-          }
-        });
-      });
-    
-      /* ---- FIX de apilado para el select de Timezone ---- */
-      const tzSection = document.querySelector('.timezone-section');
-      const tzSelect  = document.getElementById('timezone');
-    
-      if (tzSection && tzSelect) {
-        const bringFront = () => tzSection.classList.add('is-front');
-        const sendBack   = () => tzSection.classList.remove('is-front');
-    
-        // Al abrir/focus del select, traemos la sección al frente
-        tzSelect.addEventListener('focus', bringFront);
-        // Muchos navegadores no disparan blur al cerrar; capturamos clics fuera
-        document.addEventListener('click', (e) => {
-          if (!tzSection.contains(e.target)) sendBack();
-        });
-        // Si el navegador sí emite blur, bajamos la sección
-        tzSelect.addEventListener('blur', sendBack);
-    
-        // Realce visual breve al cambiar
-        tzSelect.addEventListener('change', function () {
-          const item = this.closest('.preference-item');
-          item.style.borderColor = '#00a99d';
-          item.style.backgroundColor = 'rgba(0, 169, 157, 0.02)';
-          setTimeout(() => {
-            item.style.borderColor = '#e5e7eb';
-            item.style.backgroundColor = 'white';
-          }, 2000);
-        });
+    setTimeout(() => {
+      btnIcon.classList.remove('btn-loading');
+      btnText.textContent = 'Saved!';
+      
+      setTimeout(() => {
+        btnIcon.classList.remove('btn-loading');
+        btnText.textContent = 'Save Preferences';
+        submitBtn.disabled = false;
+      }, 1500);
+    }, 1000);
+  });
+  
+  // Add smooth toggle animations
+  const toggleInputs = document.querySelectorAll('.toggle-input');
+  toggleInputs.forEach(input => {
+    input.addEventListener('change', function() {
+      const preferenceItem = this.closest('.preference-item');
+      if (this.checked) {
+        preferenceItem.style.borderColor = '#00a99d';
+        preferenceItem.style.backgroundColor = 'rgba(0, 169, 157, 0.02)';
+      } else {
+        preferenceItem.style.borderColor = '#e5e7eb';
+        preferenceItem.style.backgroundColor = 'white';
       }
     });
-    </script>
+  });
+  
+  // Timezone dropdown handling
+  const tzSection = document.querySelector('.timezone-section');
+  const tzSelect = document.getElementById('timezone');
+  
+  if (tzSection && tzSelect) {
+    const bringFront = () => tzSection.classList.add('is-front');
+    const sendBack = () => tzSection.classList.remove('is-front');
     
+    tzSelect.addEventListener('focus', bringFront);
+    tzSelect.addEventListener('blur', sendBack);
+    
+    document.addEventListener('click', (e) => {
+      if (!tzSection.contains(e.target)) {
+        sendBack();
+      }
+    });
+    
+    tzSelect.addEventListener('change', function() {
+      const preferenceItem = this.closest('.preference-item');
+      preferenceItem.style.borderColor = '#00a99d';
+      preferenceItem.style.backgroundColor = 'rgba(0, 169, 157, 0.02)';
+      
+      setTimeout(() => {
+        preferenceItem.style.borderColor = '#e5e7eb';
+        preferenceItem.style.backgroundColor = 'white';
+      }, 2000);
+      
+      console.log('Timezone changed to:', this.value);
+    });
+    
+    // Debug logging
+    tzSelect.addEventListener('click', function() {
+      console.log('Timezone dropdown clicked, options count:', this.options.length);
+    });
+  }
+});
+</script>
 {% endblock %}
