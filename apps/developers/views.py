@@ -30,6 +30,7 @@ from .tasks import fill_developer_fields
 import logging
 from apps.users.models import TIMEZONE_CHOICES
 logger = logging.getLogger(__name__)
+from django.utils import timezone as dj_timezone  # evita sombrear
 
 
 @authorized_required
@@ -79,35 +80,43 @@ def terms_and_conditions(request):
 def settings_view(request):
     profile = DeveloperProfile.objects.get(user=request.user)
 
+    # Normaliza a lista de tuplas y set de valores para validar rápido
+    tz_choices = list(TIMEZONE_CHOICES)
+    tz_allowed_values = {value for value, _label in tz_choices}
+
     if request.method == 'POST':
-        # valores que llegan del formulario (checkboxes)
         new_open_to_work  = request.POST.get('is_open_to_work') == 'on'
         new_open_to_teach = request.POST.get('is_open_to_teach') == 'on'
-        tz_name = (request.POST.get('timezone') or '').strip()   # 👈 NO llames a esto "timezone"
+        tz_name = (request.POST.get('timezone') or '').strip()  # 👈 no lo llames "timezone"
 
-        # solo actualiza el timestamp si hubo un cambio
+        # Actualiza flags y timestamps solo si cambian
         if new_open_to_work != profile.is_open_to_work:
             profile.is_open_to_work = new_open_to_work
-            profile.is_open_to_work_changed_at = timezone.now()
+            profile.is_open_to_work_changed_at = dj_timezone.now()
 
         if new_open_to_teach != profile.is_open_to_teach:
             profile.is_open_to_teach = new_open_to_teach
-            profile.is_open_to_teach_changed_at = timezone.now()
+            profile.is_open_to_teach_changed_at = dj_timezone.now()
 
-        # ⬇️ actualizar el timezone del usuario
-        if tz_name and tz_name in dict(TIMEZONE_CHOICES):
-            if tz_name != request.user.timezone:
-                request.user.timezone = tz_name
-                request.user.save(update_fields=['timezone'])
-        
-
+        # Actualiza timezone si es uno permitido
+        if tz_name and tz_name in tz_allowed_values and tz_name != request.user.timezone:
+            request.user.timezone = tz_name
+            request.user.save(update_fields=['timezone'])
 
         profile.save()
-        messages.success(request, 'Your profile visibility has been updated.')
+        messages.success(request, 'Your settings have been updated.')
         return redirect('developers:settings_view')
 
-    return render(request, 'developers/settings_view.html', {'profile': profile, "is_open_to_work": profile.is_open_to_work,
-        "is_open_to_teach": profile.is_open_to_teach,})
+    return render(
+        request,
+        'developers/settings_view.html',
+        {
+            'profile': profile,
+            'is_open_to_work': profile.is_open_to_work,
+            'is_open_to_teach': profile.is_open_to_teach,
+            'TIMEZONE_CHOICES': tz_choices,  # <- pásalo al template
+        }
+    )
 
 
 @authorized_required
