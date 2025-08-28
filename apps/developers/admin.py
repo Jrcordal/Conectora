@@ -3,8 +3,6 @@ from .models import DeveloperProfile, AuthorizedEmail
 from .tasks import fill_developer_fields
 from django.db.models import JSONField
 import json
-from django.urls import reverse
-from django.utils.html import format_html
 
 from django import forms
 
@@ -82,11 +80,7 @@ class DeveloperProfileAdmin(admin.ModelAdmin):
     formfield_overrides = {
         JSONField: {"widget": JSONTextarea(attrs={"rows": 12, "style": "font-family:monospace"})}
     }
-    def upload_cv_button(self, obj):
-        url = reverse("list_upload_cv")  # 👈 tu url con name="list_upload_cv"
-        return format_html('<a class="button" href="{}">📂 Upload CVs</a>', url)
 
-    upload_cv_button.short_description = "CV Manager"
 
 @admin.register(AuthorizedEmail)
 class AuthorizedEmailAdmin(admin.ModelAdmin):

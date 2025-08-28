@@ -1,0 +1,19 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+    {{ block.super }}
+
+    <div style="margin: 2em 0; text-align:center;">
+        <a href="{% url 'list_upload_cv' %}" class="button" style="
+            display:inline-block;
+            padding:10px 20px;
+            background:#00a99d;
+            color:#fff;
+            border-radius:6px;
+            text-decoration:none;
+            font-weight:bold;
+        ">
+            📄 Upload CVs
+        </a>
+    </div>
+{% endblock %}
