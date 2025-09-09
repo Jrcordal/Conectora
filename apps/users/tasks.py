@@ -245,7 +245,7 @@ def create_user_and_devprofile_from_cv(self, batch_id: int, uf_id: int):
         raise ValueError("Missing AWS configuration")
 
     text_cv = load_cv_from_s3(bucket, s3_key)
-    filename = uploaded_cv.file.name
+    filename =s3_key
 
     try:
         parsed = parse_cv_with_llm(text_cv, filename)

@@ -147,7 +147,6 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -180,13 +179,20 @@ EMAIL_USE_SSL = env('EMAIL_USE_SSL')
 #DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL')
 
 USE_S3 = env.bool("USE_S3", default=False)
-
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    }
+}
 if USE_S3:
     # Configuración real de S3
     AWS_STORAGE_BUCKET_NAME = env("AWS_STORAGE_BUCKET_NAME")
     AWS_ACCESS_KEY_ID = env("AWS_ACCESS_KEY_ID")
     AWS_SECRET_ACCESS_KEY = env("AWS_SECRET_ACCESS_KEY")
     AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME", default="eu-west-1")
+    STORAGES["default"] = {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+    }
 else:
     # Carpeta local para pruebas
     LOCAL_CV_DIR = os.path.join(BASE_DIR, "tmp", "cvs")
