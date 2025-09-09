@@ -184,6 +184,7 @@ def fill_developer_fields(self, profile_id):
         {draft_text}
         """)
         ])
+        
 
         prompt_input = chat_prompt.format(draft_text=cv_text)
         
