@@ -137,14 +137,11 @@ from django.core.files import File                     # Envuelve un archivo sub
 def boostrapped_devs_from_cvs(request):                 # Definición de la vista; manejará el upload batch de CVs.
     if request.method == "POST":                        # Solo procesamos lógica de guardado si llega un POST (formulario enviado).
         form = MultipleCvsUploadForm(request.POST, request.FILES)  # Instanciamos el form con datos y archivos subidos.
-        if not form.is_valid():                         # Validamos el formulario (campos requeridos, tipos, etc.).
-            messages.error(request, "Check the form")  # Si no es válido, mostramos error...
-            return redirect("admin")                    # ... y redirigimos a una ruta (por ejemplo, el dashboard admin).
 
         files = request.FILES.getlist("files")          # Obtenemos la lista de archivos del input múltiple "files".
         if not files:                                   # Si no hay ningún archivo...
             messages.error(request, "Upload at least a file")  # ... avisamos al usuario...
-            return redirect("admin")                    # ... y redirigimos.
+            return redirect("admin:index")                    # ... y redirigimos.
 
         with transaction.atomic():                      # Iniciamos una transacción: o se crea todo el batch con sus files o nada.
             batch = UploadBatch.objects.create(         # Creamos el registro padre del lote (batch) en BD.
