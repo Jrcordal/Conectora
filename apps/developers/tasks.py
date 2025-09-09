@@ -177,6 +177,7 @@ def fill_developer_fields(self, profile_id):
         - Return the dates in the format YYYY-MM-DD. If no date day is present, assume the 1st day of the month. If the end date is the present day, output null.
         - Ignore Primary and Secondary school education for the university_education field and the education_certificates field.
         - Rephrase the descriptions of each field to make them comprehensive and clear.
+        - Any information in a language other than English should be translated to English first.
         
 
         DRAFT:

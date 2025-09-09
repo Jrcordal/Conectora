@@ -24,7 +24,7 @@ class DeveloperProfileForm(forms.ModelForm):
         required=True,
         widget=forms.FileInput(attrs={
             'class': 'form-control',
-            'accept': '.pdf,.doc,.docx,.txt'
+            'accept': '.pdf,.docx'
         })
     )
 

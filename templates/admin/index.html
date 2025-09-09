@@ -4,6 +4,7 @@
     {{ block.super }}
 
     <div style="margin: 2em 0; text-align:center;">
+        <!-- Botón original -->
         <a href="{% url 'developers:list_upload_cv' %}" class="button" style="
             display:inline-block;
             padding:10px 20px;
@@ -12,8 +13,22 @@
             border-radius:6px;
             text-decoration:none;
             font-weight:bold;
+            margin-right: 1em;
         ">
             📄 Upload CVs
+        </a>
+
+        <!-- Botón nuevo -->
+        <a href="{% url 'users:admin_uploadcv' %}" class="button" style="
+            display:inline-block;
+            padding:10px 20px;
+            background:#0077cc;
+            color:#fff;
+            border-radius:6px;
+            text-decoration:none;
+            font-weight:bold;
+        ">
+            🚀 Upload CVs to bootstrap users
         </a>
     </div>
 {% endblock %}

@@ -3,6 +3,11 @@ from django.conf import settings
 from django.utils import timezone
 import uuid
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from apps.developers.models import CVStorage
+from django.core.exceptions import ValidationError
+from datetime import datetime
+
+
 # Create your models here.
 TIMEZONE_CHOICES = [
     ('UTC-12:00', 'UTC-12:00'),
@@ -40,7 +45,17 @@ ROLE_CHOICES = [
 ]
 
 
-    
+
+def cv_upload_path_batches(instance, filename):
+    ext = filename.split('.')[-1].lower()
+    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+
+    if ext not in ['pdf', 'docx']:
+        raise ValidationError("Only PDF and DOCX files are allowed.")
+
+    # ejemplo: batches_cvs/batch_12/3_20250902-120312.pdf
+    return f"batches_cvs/batch_{instance.batch.id}/{instance.number_file}/{timestamp}.{ext}"
+
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, username, password=None, **extra_fields):
@@ -93,7 +108,30 @@ class CustomUser(AbstractUser):
 
 
 
+class UploadBatch(models.Model):
+    created_by = models.ForeignKey(CustomUser, on_delete=models.PROTECT, related_name="upload_batches")
+    created_at = models.DateTimeField(auto_now_add=True)
+    total_files = models.PositiveIntegerField(default=0)
+    processed_files = models.PositiveIntegerField(default=0)
 
 
+    def __str__(self):
+        return f"Batch #{self.id}"
+    # Propiedades de conveniencia (no columnas)
+    @property
+    def files_without_email(self):
+        return self.files.filter(status="error", error_code="invalid_email")
 
+    @property
+    def files_with_existing_email(self):
+        return self.files.filter(status="error", error_code="existing_email")
+
+class UploadFile(models.Model):
+    STATUS = [("pending","Pending"),("processing","Processing"),("done","Done"),("error","Error")]
+    error_code = models.CharField(max_length=64, blank=True)  # p.ej. "invalid_email" | "existing_email"
+    batch = models.ForeignKey(UploadBatch, on_delete=models.CASCADE, related_name="files")
+    file = models.FileField(upload_to=cv_upload_path_batches)
+    created_at = models.DateTimeField(auto_now_add=True)
+    number_file = models.PositiveIntegerField(default=0)
+    status = models.CharField(max_length=12, choices=STATUS, default="pending")
 

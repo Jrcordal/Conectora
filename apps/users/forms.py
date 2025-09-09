@@ -7,6 +7,7 @@ from django.contrib.auth.forms import AdminUserCreationForm, UserChangeForm
 from .models import CustomUser, TIMEZONE_CHOICES, ROLE_CHOICES
 import logging
 from django.contrib.auth import authenticate
+from django.forms.widgets import ClearableFileInput
 
 class CustomUserAdminCreationForm(AdminUserCreationForm):
 
@@ -84,3 +85,11 @@ class CustomAuthenticationForm(AuthenticationForm):
                 raise forms.ValidationError("Email o contraseña incorrectos.")
 
         return self.cleaned_data
+    
+
+
+class MultipleCvsUploadForm(forms.Form):
+    files = forms.FileField(
+        widget=ClearableFileInput(attrs={"multiple": True, 'accept':'.pdf,.docx'}),
+        allow_empty_file=False
+    )

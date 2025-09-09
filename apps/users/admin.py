@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CustomUser
+from .models import CustomUser, UploadBatch, UploadFile
 from django.contrib.auth.admin import UserAdmin
 from .forms import CustomUserAdminCreationForm, CustomUserAdminChangeForm
 from .tasks import create_missing_developer_profiles
@@ -64,6 +64,8 @@ class CustomUserAdmin(UserAdmin):
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(UploadBatch)
+admin.site.register(UploadFile)
 
     
 """

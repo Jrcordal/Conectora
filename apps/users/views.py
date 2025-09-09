@@ -14,12 +14,12 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.forms import PasswordResetForm
-from apps.users.models import CustomUser
+from apps.users.models import CustomUser, UploadBatch, UploadFile
 from django.core.mail import EmailMultiAlternatives
 from django.template import loader
 from apps.developers.models import DeveloperProfile
-
-
+from apps.users.forms import MultipleCvsUploadForm
+from .tasks import create_user_and_devprofile_from_cv
 from django.urls import reverse_lazy
 
 from django.utils import timezone
@@ -127,4 +127,58 @@ def dashboard(request):
         return redirect('developers:consent_form')
     
     return render(request, 'users/dashboard.html')
+
+
+
+
+from django.core.files import File                     # Envuelve un archivo subido para poder asignarle un nombre nuevo al guardarlo (FileField).
+
+@staff_member_required                                  # Solo personal del admin puede acceder a esta vista.
+def boostrapped_devs_from_cvs(request):                 # Definición de la vista; manejará el upload batch de CVs.
+    if request.method == "POST":                        # Solo procesamos lógica de guardado si llega un POST (formulario enviado).
+        form = MultipleCvsUploadForm(request.POST, request.FILES)  # Instanciamos el form con datos y archivos subidos.
+        if not form.is_valid():                         # Validamos el formulario (campos requeridos, tipos, etc.).
+            messages.error(request, "Check the form")  # Si no es válido, mostramos error...
+            return redirect("admin")                    # ... y redirigimos a una ruta (por ejemplo, el dashboard admin).
+
+        files = request.FILES.getlist("files")          # Obtenemos la lista de archivos del input múltiple "files".
+        if not files:                                   # Si no hay ningún archivo...
+            messages.error(request, "Upload at least a file")  # ... avisamos al usuario...
+            return redirect("admin")                    # ... y redirigimos.
+
+        with transaction.atomic():                      # Iniciamos una transacción: o se crea todo el batch con sus files o nada.
+            batch = UploadBatch.objects.create(         # Creamos el registro padre del lote (batch) en BD.
+                created_by=request.user,
+                created_at=timezone.now(),                # Guardamos quién creó el batch.
+                total_files=len(files),   
+                status='pending',              # Guardamos cuántos archivos incluye el batch.
+            )
+
+            upload_file_ids = []                        # Acumularemos aquí los IDs de UploadFile para encolar tasks al final.
+            for idx, f in enumerate(files, start=1):    # Iteramos los archivos con un contador 1..N (número de archivo).
+                ext = f.name.split(".")[-1].lower()     # Sacamos la extensión original (pdf, docx, etc.), en minúsculas.
+
+                upload_file = UploadFile.objects.create(  # Creamos un registro por archivo (hijo del batch).
+                    batch=batch,                         # Relacionamos este archivo con el batch creado.
+                    status='pending',
+                    number_file=idx,                     # Guardamos el número de archivo dentro del batch (1..N).
+                    file=f,  
+                )
+                upload_file_ids.append(upload_file.id)   # Guardamos el ID para usarlo en la task luego.
+
+            # Importante: encolamos tasks solo después de confirmar la transacción.
+            def enqueue_tasks():                         # Definimos una función que se ejecutará tras el commit.
+                for uf_id in upload_file_ids:            # Recorremos los IDs de archivos creados...
+                    create_user_and_devprofile_from_cv.delay(batch.id, uf_id)  # ... y lanzamos la task Celery con IDs (nada de objetos).
+
+            transaction.on_commit(enqueue_tasks)         # Registramos la función para que se ejecute tras commit exitoso.
+
+        messages.success(request, f"Upload created (batch #{batch.id})")      # Fuera del atomic, si todo fue bien, mostramos mensaje de éxito.
+        return redirect("admin")                # Redirigimos a la lista de batches o pantalla de resultados.
+
+    else:                                                # Si el método NO es POST...
+        form = MultipleCvsUploadForm()                   # ...mostramos el formulario vacío para subir archivos.
+
+    return render(request, "users/admin_upload_cvs_to_bootstrapp.html", {"form": form})  # Renderizamos la plantilla con el form.
+
 
