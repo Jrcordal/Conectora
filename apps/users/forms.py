@@ -88,8 +88,14 @@ class CustomAuthenticationForm(AuthenticationForm):
     
 
 
+class MultipleFileInput(forms.ClearableFileInput):
+    # Habilita múltiples ficheros
+    allow_multiple_selected = True
+
 class MultipleCvsUploadForm(forms.Form):
     files = forms.FileField(
-        widget=ClearableFileInput(attrs={"multiple": True, 'accept':'.pdf,.docx'}),
-        allow_empty_file=False
+        label="CV files",
+        widget=MultipleFileInput(attrs={"accept": ".pdf,.docx"}),
+        required=True,
+        help_text="Puedes seleccionar varios .pdf o .docx."
     )
