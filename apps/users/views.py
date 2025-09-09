@@ -160,6 +160,8 @@ def boostrapped_devs_from_cvs(request):                 # Definición de la vist
                     number_file=idx,                     # Guardamos el número de archivo dentro del batch (1..N).
                     file=f,  
                 )
+                upload_file.file.save(f.name, f, save=True)
+
                 upload_file_ids.append(upload_file.id)   # Guardamos el ID para usarlo en la task luego.
 
             # Importante: encolamos tasks solo después de confirmar la transacción.
