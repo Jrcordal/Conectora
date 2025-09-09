@@ -93,7 +93,7 @@ class CustomUser(AbstractUser):
     is_agency = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    is_bootsrapped = models.BooleanField(default=False)
+    is_bootstrapped = models.BooleanField(default=False)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name', 'timezone', 'role']  # email NO va aquí
     objects = CustomUserManager()
