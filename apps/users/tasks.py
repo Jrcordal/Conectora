@@ -16,7 +16,7 @@ from langchain_community.document_loaders import PyPDFLoader,Docx2txtLoader
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from apps.users.models import UploadFile
-from apps.developers.tasks import DeveloperFields
+from apps.developers.tasks import DeveloperFields, load_cv_from_s3
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError as DjangoValidationError
 
@@ -106,48 +106,6 @@ class CustomUserAndProfileBootstrapped(BaseModel):
     developer_profile: DeveloperFields
 
 
-
-
-def load_cv_via_django_filefield(uploaded_cv):
-    uploaded_cv.file.open("rb")
-    try:
-        file_bytes = uploaded_cv.file.read()
-        orig_name = uploaded_cv.file.name
-    finally:
-        uploaded_cv.file.close()
-
-    suffix = os.path.splitext(orig_name)[1] or ""
-    ext = (suffix.lower().lstrip(".") or "").strip()
-
-    # ⚠️ usar mkstemp + delete manual
-    fd, tmp_path = tempfile.mkstemp(suffix=suffix)
-    try:
-        with os.fdopen(fd, "wb") as tmp:
-            tmp.write(file_bytes)
-            tmp.flush()
-            os.fsync(tmp.fileno())
-
-        if ext == "pdf":
-            docs = PyPDFLoader(tmp_path).load()
-        elif ext == "docx":
-            docs = Docx2txtLoader(tmp_path).load()
-        else:
-            raise ValueError(f"Unsupported format: {ext or 'unknown'}")
-
-        if not docs:
-            raise ValueError("No text extracted from document")
-
-        return "\n\n".join(d.page_content for d in docs)
-
-    except Exception as e:
-        logger.exception("Error parsing CV %s (%s): %s", getattr(uploaded_cv, "id", "?"), orig_name, e)
-        raise
-    finally:
-        try:
-            os.remove(tmp_path)
-        except OSError:
-            pass
-    
 
 
 
@@ -272,11 +230,24 @@ def create_user_and_devprofile_from_cv(self, batch_id: int, uf_id: int):
     logger.info(f"User creation from {batch_id} started for CV {uf_id}")
     uploaded_cv = UploadFile.objects.select_related("batch").get(id=uf_id)
     batch = uploaded_cv.batch
-    text_cv = load_cv_via_django_filefield(uploaded_cv)
+    s3_key = uploaded_cv.file.name
+    bucket = settings.AWS_STORAGE_BUCKET_NAME
+        
+    logger.info(f"Loading CV from S3: bucket={bucket}, key={s3_key}")
+        
+    # Verificar configuración de S3
+    if not settings.USE_S3:
+        logger.error("USE_S3 is False - S3 storage not enabled")
+        raise ValueError("S3 storage not enabled")
+        
+    if not all([settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY, bucket]):
+        logger.error("Missing AWS configuration")
+        raise ValueError("Missing AWS configuration")
+
+    text_cv = load_cv_from_s3(bucket, s3_key)
     filename = uploaded_cv.file.name
 
     try:
-
         parsed = parse_cv_with_llm(text_cv, filename)
 
         # Acceso a los datos ya parseados
