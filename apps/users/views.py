@@ -170,7 +170,7 @@ def boostrapped_devs_from_cvs(request):                 # Definición de la vist
             transaction.on_commit(enqueue_tasks)         # Registramos la función para que se ejecute tras commit exitoso.
 
         messages.success(request, f"Upload created (batch #{batch.id})")      # Fuera del atomic, si todo fue bien, mostramos mensaje de éxito.
-        return redirect("admin")                # Redirigimos a la lista de batches o pantalla de resultados.
+        return redirect("admin:index")                # Redirigimos a la lista de batches o pantalla de resultados.
 
     else:                                                # Si el método NO es POST...
         form = MultipleCvsUploadForm()                   # ...mostramos el formulario vacío para subir archivos.
