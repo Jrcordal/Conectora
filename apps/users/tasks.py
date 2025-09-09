@@ -109,35 +109,44 @@ class CustomUserAndProfileBootstrapped(BaseModel):
 
 
 def load_cv_via_django_filefield(uploaded_cv):
-    # best to use this rather than the function in profiles to load cvs, since here it uses
-    # django storages directly.
-    """
-    uploaded_cv: instancia de UploadFile (o similar) con campo FileField -> .file
-    Devuelve el texto extraído del CV.
-    """
-    # 1) Abrir el stream desde S3 vía FileField
     uploaded_cv.file.open("rb")
     try:
         file_bytes = uploaded_cv.file.read()
-        orig_name = uploaded_cv.file.name  # p.ej. "batches_cvs/batch_7/2_2025-09-04.pdf"
+        orig_name = uploaded_cv.file.name
     finally:
         uploaded_cv.file.close()
 
-    # 2) Volcar a un archivo temporal si tu loader necesita ruta
     suffix = os.path.splitext(orig_name)[1] or ""
-    with tempfile.NamedTemporaryFile(suffix=suffix, delete=True) as tmp: #mientras este el with abierto, temp file existe.
-        tmp.write(file_bytes)
-        tmp.flush()
+    ext = (suffix.lower().lstrip(".") or "").strip()
 
-        ext = suffix.lower().lstrip(".")
+    # ⚠️ usar mkstemp + delete manual
+    fd, tmp_path = tempfile.mkstemp(suffix=suffix)
+    try:
+        with os.fdopen(fd, "wb") as tmp:
+            tmp.write(file_bytes)
+            tmp.flush()
+            os.fsync(tmp.fileno())
+
         if ext == "pdf":
-            docs = PyPDFLoader(tmp.name).load()
+            docs = PyPDFLoader(tmp_path).load()
         elif ext == "docx":
-            docs = Docx2txtLoader(tmp.name).load()
+            docs = Docx2txtLoader(tmp_path).load()
         else:
-            raise ValueError(f"Unsupported format: {ext}")
+            raise ValueError(f"Unsupported format: {ext or 'unknown'}")
+
+        if not docs:
+            raise ValueError("No text extracted from document")
 
         return "\n\n".join(d.page_content for d in docs)
+
+    except Exception as e:
+        logger.exception("Error parsing CV %s (%s): %s", getattr(uploaded_cv, "id", "?"), orig_name, e)
+        raise
+    finally:
+        try:
+            os.remove(tmp_path)
+        except OSError:
+            pass
     
 
 
