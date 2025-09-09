@@ -259,7 +259,7 @@ def update_profile_fields(profile,parsed_response):
 
 
 @shared_task(bind=True)
-def create_user_and_devprofile_from_cv(batch_id: int, uf_id: int):
+def create_user_and_devprofile_from_cv(self, batch_id: int, uf_id: int):
     logger.info(f"User creation from {batch_id} started for CV {uf_id}")
     uploaded_cv = UploadFile.objects.select_related("batch").get(id=uf_id)
     batch = uploaded_cv.batch
