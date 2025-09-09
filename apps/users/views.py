@@ -148,7 +148,6 @@ def boostrapped_devs_from_cvs(request):                 # Definición de la vist
                 created_by=request.user,
                 created_at=timezone.now(),                # Guardamos quién creó el batch.
                 total_files=len(files),   
-                status='pending',              # Guardamos cuántos archivos incluye el batch.
             )
 
             upload_file_ids = []                        # Acumularemos aquí los IDs de UploadFile para encolar tasks al final.
