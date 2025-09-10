@@ -118,6 +118,7 @@ def parse_cv_with_llm(text_cv,filename):
         Based on the following CV, extract the information and structure it into the fields of a user and developer profile. Leave fields empty if no information is found. 
 
         - The username is the email.
+        - If there is no email leave the field of email empty.
         - Return the dates in the format YYYY-MM-DD. If no date day is present, assume the 1st day of the month. If the end date is the present day, output null.
         - Ignore Primary and Secondary school education for the university_education field and the education_certificates field.
         - Rephrase the descriptions of each field to make them comprehensive and clear.
