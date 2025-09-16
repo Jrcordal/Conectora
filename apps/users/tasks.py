@@ -323,6 +323,15 @@ def create_user_and_devprofile_from_cv(self, batch_id: int, uf_id: int):
 
                 developer_profile_block = parsed.get("developer_profile", {}) or {}
                 msg = update_profile_fields(profile, developer_profile_block)
+                
+                
+                        # Guardar nuevo archivo + metadatos
+                profile.cv_file = uploaded_cv.file
+                profile.cv_original_name = uploaded_cv.file.name
+                profile.cv_size = uploaded_cv.file.size
+                profile.cv_uploaded_at = timezone.now()
+                profile.save(update_fields=["cv_file", "cv_original_name", "cv_size", "cv_uploaded_at"])
+
                 logger.info(msg)
 
         except IntegrityError as e:
