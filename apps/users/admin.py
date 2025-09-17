@@ -39,7 +39,8 @@ class CustomUserAdmin(UserAdmin):
         "is_active",
         "role",
         "has_profile_display",
-        "is_bootstrapped"
+        "is_bootstrapped",
+        "created_at",
     ]
     fieldsets = (
         (None, {"fields": ("email", "password", 'is_bootstrapped')}),
