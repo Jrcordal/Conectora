@@ -64,9 +64,16 @@ class CustomUserAdmin(UserAdmin):
             return getattr(obj, "_has_profile", hasattr(obj, "developerprofile"))
 
 
+
+class UploadFileAdmin(admin.ModelAdmin):
+    list_display = ("id", "number_file", "file", "status", "error_code", "batch", "created_at")
+    list_filter = ("status", "created_at", "batch")
+    search_fields = ("file", "error_code")
+    ordering = ("-created_at",)
+
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(UploadBatch)
-admin.site.register(UploadFile)
+admin.site.register(UploadFile, UploadFileAdmin)
 
     
 """
