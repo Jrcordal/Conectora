@@ -297,6 +297,7 @@ def create_user_and_devprofile_from_cv(self, batch_id: int, uf_id: int):
                         timezone=timezone_val,
                         role="developer",
                         is_active=True,
+                        is_bootstrapped= True,
                     )
                 )
                 if not created:
