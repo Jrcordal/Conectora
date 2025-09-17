@@ -107,32 +107,89 @@ class CustomUser(AbstractUser):
 
 
 
+class UploadStatus(models.TextChoices):
+    PENDING    = "pending",    "Pending"
+    PROCESSING = "processing", "Processing"
+    DONE       = "done",       "Done"
+    SKIPPED    = "skipped",    "Skipped"   # <— NUEVO (lo usa tu task)
+    ERROR      = "error",      "Error"
 
+class UploadErrorCode(models.TextChoices):
+    NONE                 = "",                        "-"
+    NO_EMAIL_EXTRACTED   = "no_email_extracted",      "No email extracted"
+    INVALID_EMAIL_FORMAT = "invalid_email_format",     "Invalid email format"
+    EMAIL_ALREADY_EXISTS = "email_already_registered", "Email already registered"
+    INTEGRITY_ERROR      = "integrity_error",          "Integrity error"
+    VALIDATION_ERROR     = "validation_error",         "Validation error"
+    UNEXPECTED_ERROR     = "unexpected_error",         "Unexpected error"
 
 class UploadBatch(models.Model):
-    created_by = models.ForeignKey(CustomUser, on_delete=models.PROTECT, related_name="upload_batches")
+    created_by = models.ForeignKey("users.CustomUser", on_delete=models.PROTECT, related_name="upload_batches")
     created_at = models.DateTimeField(auto_now_add=True)
     total_files = models.PositiveIntegerField(default=0)
     processed_files = models.PositiveIntegerField(default=0)
 
-
     def __str__(self):
         return f"Batch #{self.id}"
-    # Propiedades de conveniencia (no columnas)
+
+    # Actualiza para los nuevos códigos:
     @property
     def files_without_email(self):
-        return self.files.filter(status="error", error_code="invalid_email")
+        return self.files.filter(status=UploadStatus.ERROR, error_code=UploadErrorCode.NO_EMAIL_EXTRACTED)
 
     @property
     def files_with_existing_email(self):
-        return self.files.filter(status="error", error_code="existing_email")
+        return self.files.filter(status__in=[UploadStatus.ERROR, UploadStatus.SKIPPED],
+                                 error_code=UploadErrorCode.EMAIL_ALREADY_EXISTS)
+
 
 class UploadFile(models.Model):
-    STATUS = [("pending","Pending"),("processing","Processing"),("done","Done"),("error","Error")]
-    error_code = models.CharField(max_length=64, blank=True)  # p.ej. "invalid_email" | "existing_email"
+    STATUS = UploadStatus.choices
+
     batch = models.ForeignKey(UploadBatch, on_delete=models.CASCADE, related_name="files")
     file = models.FileField(upload_to=cv_upload_path_batches)
     created_at = models.DateTimeField(auto_now_add=True)
     number_file = models.PositiveIntegerField(default=0)
-    status = models.CharField(max_length=12, choices=STATUS, default="pending")
 
+    status = models.CharField(max_length=12, choices=STATUS, default=UploadStatus.PENDING)
+    error_code = models.CharField(max_length=64, blank=True, default=UploadErrorCode.NONE)
+    error_message = models.TextField(blank=True, default="")  # <— NUEVO
+
+    processing_started_at = models.DateTimeField(null=True, blank=True)  # <— NUEVO
+    processed_at = models.DateTimeField(null=True, blank=True)           # <— NUEVO
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["batch", "status"]),
+            models.Index(fields=["status", "error_code"]),
+            models.Index(fields=["created_at"]),
+        ]
+        constraints = [
+            # Descomenta si quieres garantizar unicidad por batch+número
+            models.UniqueConstraint(fields=["batch", "number_file"], name="uniq_batch_numberfile"),
+        ]
+
+    def mark_processing(self):
+        self.status = UploadStatus.PROCESSING
+        self.processing_started_at = timezone.now()
+        self.error_code = UploadErrorCode.NONE
+        self.error_message = ""
+        self.save(update_fields=["status", "processing_started_at", "error_code", "error_message"])
+
+    def mark_done(self):
+        self.status = UploadStatus.DONE
+        self.processed_at = timezone.now()
+        self.save(update_fields=["status", "processed_at"])
+
+    def mark_skipped(self, code=UploadErrorCode.EMAIL_ALREADY_EXISTS, msg=""):
+        self.status = UploadStatus.SKIPPED
+        self.error_code = code
+        self.error_message = msg
+        self.processed_at = timezone.now()
+        self.save(update_fields=["status", "error_code", "error_message", "processed_at"])
+
+    def mark_error(self, code, msg=""):
+        self.status = UploadStatus.ERROR
+        self.error_code = code
+        self.error_message = msg[:500]
+        self.save(update_fields=["status", "error_code", "error_message"])

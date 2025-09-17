@@ -8,6 +8,7 @@ from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from django.conf import settings
 from pydantic import ValidationError
+from celery.exceptions import SoftTimeLimitExceeded
 
 import boto3
 import tempfile
@@ -15,7 +16,7 @@ import os
 from langchain_community.document_loaders import PyPDFLoader,Docx2txtLoader
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
-from apps.users.models import UploadFile
+from apps.users.models import UploadFile, UploadBatch, UploadErrorCode, UploadStatus
 from apps.developers.tasks import DeveloperFields, load_cv_from_s3
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError as DjangoValidationError
@@ -367,3 +368,168 @@ def create_user_and_devprofile_from_cv(self, batch_id: int, uf_id: int):
         uploaded_cv.save(update_fields=["status", "error_code"])
         logger.exception(f"Unexpected error for CV {filename} (batch {batch.id}): {e}")
 
+@shared_task(
+    bind=True,
+    acks_late=True,                 # ACK al terminar, no al recibir
+    reject_on_worker_lost=True,     # si el worker muere, la tarea se reencola
+    autoretry_for=(ConnectionError, TimeoutError),
+    retry_backoff=True,
+    retry_backoff_max=600,
+    retry_jitter=True,
+    max_retries=5,
+    soft_time_limit=840,            # 14 min
+    time_limit=900                  # 15 min
+)
+def create_user_and_devprofile_from_cv(self, batch_id: int, uf_id: int):
+    logger.info(f"User creation from {batch_id} started for CV {uf_id}")
+
+    # ===== 0) Tomar el UploadFile con lock y marcar 'processing' (ventana corta) =====
+    with transaction.atomic():
+        uploaded_cv = (
+            UploadFile.objects
+            .select_related("batch")
+            .select_for_update(skip_locked=True)
+            .filter(id=uf_id)
+            .first()
+        )
+        if uploaded_cv is None:
+            logger.info(f"[uf={uf_id}] Locked/processing in another worker; skipping")
+            return {"status": "busy", "uf_id": uf_id}
+
+        if uploaded_cv.status in {UploadStatus.DONE, UploadStatus.SKIPPED}:
+            logger.info(f"[batch={uploaded_cv.batch_id} uf={uf_id}] Already {uploaded_cv.status}, nothing to do")
+            return {"status": uploaded_cv.status, "uf_id": uf_id}
+
+        # Marca processing y limpia errores previos
+        uploaded_cv.mark_processing()
+
+        batch = uploaded_cv.batch
+        s3_key = uploaded_cv.file.name
+
+    bucket = settings.AWS_STORAGE_BUCKET_NAME
+    logger.info(f"Loading CV from S3: bucket={bucket}, key={s3_key}")
+
+    # ===== 1) Validaciones de S3 (fuera del lock) =====
+    if not settings.USE_S3:
+        uploaded_cv.mark_error(UploadErrorCode.UNEXPECTED_ERROR, "S3 storage not enabled")
+        logger.error("USE_S3 is False - S3 storage not enabled")
+        return {"status": "error", "error_code": UploadErrorCode.UNEXPECTED_ERROR, "uf_id": uf_id}
+
+    if not all([settings.AWS_ACCESS_KEY_ID, settings.AWS_SECRET_ACCESS_KEY, bucket]):
+        uploaded_cv.mark_error(UploadErrorCode.UNEXPECTED_ERROR, "Missing AWS configuration")
+        logger.error("Missing AWS configuration")
+        return {"status": "error", "error_code": UploadErrorCode.UNEXPECTED_ERROR, "uf_id": uf_id}
+
+    # ===== 2) Carga CV + parseo con LLM (trabajo pesado, fuera de lock) =====
+    try:
+        text_cv = load_cv_from_s3(bucket, s3_key)
+        filename = s3_key
+
+        parsed = parse_cv_with_llm(text_cv, filename)
+
+        # --- Extraer datos del user ---
+        user_block = parsed.get("user", {}) or {}
+        email = (user_block.get("email") or "").strip().lower()
+
+        # Email vacío
+        if not email:
+            uploaded_cv.mark_error(UploadErrorCode.NO_EMAIL_EXTRACTED, "LLM did not return a valid email.")
+            logger.warning(f"[batch={batch.id} uf={uf_id}] No email in {filename}")
+            return {"status": "error", "error_code": UploadErrorCode.NO_EMAIL_EXTRACTED, "uf_id": uf_id}
+
+        # Email inválido
+        try:
+            # si usas django.core.validators.validate_email
+            from django.core.validators import validate_email
+            validate_email(email)
+        except DjangoValidationError:
+            uploaded_cv.mark_error(UploadErrorCode.INVALID_EMAIL_FORMAT, f"Invalid email: {email}")
+            logger.warning(f"[batch={batch.id} uf={uf_id}] Invalid email '{email}' in {filename}")
+            return {"status": "error", "error_code": UploadErrorCode.INVALID_EMAIL_FORMAT, "uf_id": uf_id}
+
+        first_name = (user_block.get("first_name") or "").strip()
+        last_name  = (user_block.get("last_name") or "").strip()
+        timezone_val = user_block.get("timezone") or TimezoneEnum.UTC_PLUS_02
+
+        # ===== 3) Efectos en DB: crear/actualizar user + profile (ventana corta) =====
+        try:
+            with transaction.atomic():
+                # Política: si ya existe el email, saltamos (o podrías actualizar perfil si prefieres)
+                if CustomUser.objects.filter(email=email).exists():
+                    uploaded_cv.mark_skipped(UploadErrorCode.EMAIL_ALREADY_EXISTS, "Email already registered")
+                    logger.info(f"[batch={batch.id} uf={uf_id}] Email exists: {email}. Skipping.")
+                    return {"status": "skipped", "reason": "email_exists", "email": email, "uf_id": uf_id}
+
+                user, created = CustomUser.objects.get_or_create(
+                    email=email,
+                    defaults=dict(
+                        username=email,
+                        first_name=first_name,
+                        last_name=last_name,
+                        timezone=timezone_val,
+                        role="developer",
+                        is_active=True,
+                        is_bootstrapped=True,
+                    )
+                )
+
+                if not created:
+                    # Carrera: alguien lo insertó en medio → política: SKIP
+                    uploaded_cv.mark_skipped(
+                        UploadErrorCode.EMAIL_ALREADY_EXISTS,
+                        "User appeared during creation window; no updates performed."
+                    )
+                    logger.info(f"[batch={batch.id} uf={uf_id}] Race condition: {email}. Skipping.")
+                    return {"status": "skipped", "reason": "race_email_exists", "email": email, "uf_id": uf_id}
+
+                logger.info(f"CustomUser created (id={user.id}, email={email})")
+
+                # Perfil developer y update de campos del perfil
+                profile, prof_created, reason = ensure_developer_profile(user)
+                if profile is None:
+                    uploaded_cv.mark_error(UploadErrorCode.UNEXPECTED_ERROR, f"ensure_developer_profile failed: {reason}")
+                    logger.error(f"[batch={batch.id} uf={uf_id}] ensure_developer_profile failed for {email}: {reason}")
+                    return {"status": "error", "error_code": UploadErrorCode.UNEXPECTED_ERROR, "uf_id": uf_id}
+
+                developer_profile_block = parsed.get("developer_profile", {}) or {}
+                msg = update_profile_fields(profile, developer_profile_block)
+
+                # Adjuntar CV al perfil
+                profile.cv_file = uploaded_cv.file
+                profile.cv_name = uploaded_cv.file.name
+                profile.cv_size = uploaded_cv.file.size
+                profile.cv_uploaded_at = timezone.now()
+                profile.save(update_fields=["cv_file", "cv_name", "cv_size", "cv_uploaded_at"])
+
+                logger.info(msg)
+
+        except IntegrityError as e:
+            uploaded_cv.mark_error(UploadErrorCode.INTEGRITY_ERROR, str(e))
+            logger.warning(f"[batch={batch.id} uf={uf_id}] IntegrityError for CV {filename}: {e}")
+            return {"status": "error", "error_code": UploadErrorCode.INTEGRITY_ERROR, "uf_id": uf_id}
+
+        # ===== 4) Éxito =====
+        uploaded_cv.mark_done()
+        logger.info(f"[batch={batch.id} uf={uf_id}] Processed OK for {email}")
+        return {
+            "status": "done",
+            "email": email,
+            "user_id": user.id,
+            "profile_id": profile.pk,
+            "uf_id": uf_id,
+        }
+
+    except SoftTimeLimitExceeded:
+        logger.warning(f"[batch={batch_id} uf={uf_id}] Soft time limit exceeded; will retry")
+        raise  # deja que Celery reintente
+
+    except DjangoValidationError as ve:
+        uploaded_cv.mark_error(UploadErrorCode.VALIDATION_ERROR, str(ve))
+        logger.error(f"ValidationError parsing CV {filename} (batch {batch_id}): {ve}")
+        return {"status": "error", "error_code": UploadErrorCode.VALIDATION_ERROR, "uf_id": uf_id}
+
+    except Exception as e:
+        # Importante: marca error pero reintenta (decorador) para fallos transitorios
+        uploaded_cv.mark_error(UploadErrorCode.UNEXPECTED_ERROR, str(e))
+        logger.exception(f"Unexpected error for CV {filename} (batch {batch_id}): {e}")
+        raise
