@@ -119,7 +119,7 @@ class DeveloperProfile(models.Model):
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
 
     # Metadata (CV)
-    cv_original_name = models.CharField(max_length=255, blank=True, null=True)
+    cv_name = models.CharField(max_length=255, blank=True, null=True)
     cv_size = models.PositiveIntegerField(blank=True, null=True)  # en bytes
     cv_uploaded_at = models.DateTimeField(auto_now_add=True)
 

@@ -31,7 +31,7 @@
         <td>{{ profile.user.first_name }} {{ profile.user.last_name }}</td>
         <td>
           {% if profile.cv_file %}
-            <a href="{{ profile.cv_file.url }}" target="_blank">{{ profile.cv_original_name|default:"See CV" }}</a><br>
+            <a href="{{ profile.cv_file.url }}" target="_blank">{{ profile.cv_name|default:"See CV" }}</a><br>
             <small>{{ profile.cv_uploaded_at|date:"d/m/Y H:i" }}</small>
           {% else %}
             <em>No CV</em>

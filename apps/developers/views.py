@@ -142,7 +142,7 @@ def profile_form(request):
             
             if cv_file:
                 profile_instance.cv_file = cv_file
-                profile_instance.cv_original_name = cv_file.name
+                profile_instance.cv_name = cv_file.name
                 profile_instance.cv_size = cv_file.size
                 profile_instance.cv_uploaded_at = timezone.now()
                 cv_uploaded = True
@@ -197,10 +197,10 @@ def list_upload_cv(request):
 
         # Guardar nuevo archivo + metadatos
         profile_instance.cv_file = cv_file
-        profile_instance.cv_original_name = cv_file.name
+        profile_instance.cv_name = cv_file.name
         profile_instance.cv_size = cv_file.size
         profile_instance.cv_uploaded_at = timezone.now()
-        profile_instance.save(update_fields=["cv_file", "cv_original_name", "cv_size", "cv_uploaded_at"])
+        profile_instance.save(update_fields=["cv_file", "cv_name", "cv_size", "cv_uploaded_at"])
 
         # Disparar la task después de guardar
         try:
