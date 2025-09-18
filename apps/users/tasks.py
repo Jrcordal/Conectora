@@ -299,6 +299,7 @@ def create_user_and_devprofile_from_cv(self, batch_id: int, uf_id: int):
                         role="developer",
                         is_active=True,
                         is_bootstrapped= True,
+                        has_cv=True,
                     )
                 )
                 if not created:
