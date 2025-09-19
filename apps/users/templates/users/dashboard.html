@@ -24,7 +24,7 @@
   </div>
 
   <div class="dashboard-container">
-    <div class="dashboard-block clients-block disabled">
+    <a href="{% url 'clients/dashboard' %}" class="dashboard-block clients-block">
       <div class="block-content">
         <div class="block-icon">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -35,14 +35,10 @@
           </svg>
         </div>
         <h2 class="block-title">Clients</h2>
-        <div class="progress-badge">
-          <svg class="progress-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="12,6 12,12 16,14"></polyline>
-          </svg>
-          <span>In Progress</span>
-        </div>
       </div>
+      <div class="shine-effect"></div>
+    </a>
+  </div>
 
     </div>
     
