@@ -29,6 +29,7 @@ env = environ.Env(
 env_file = f".env.{os.environ.get('DJANGO_ENV', 'local')}"
 env.read_env(BASE_DIR / env_file)
 
+AUTHORIZE_CLIENTS_BY_LIST = True
 
 SECRET_KEY = env('SECRET_KEY')
 

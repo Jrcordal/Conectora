@@ -1,28 +1,9 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm
 from django. contrib import messages
-from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.http import HttpResponse
-from django.template import loader
-import io
-from django.db import transaction
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
-from django.core.exceptions import PermissionDenied
-from django.core.exceptions import ValidationError
-from django.http import Http404
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User
 from django.contrib.admin.views.decorators import staff_member_required
-import platform
-import os
-from django.urls import reverse_lazy
-from .models import AuthorizedEmail
 from django.utils import timezone
-from django.contrib.auth.views import LoginView
-from django.core.mail import send_mail
-from django.conf import settings
-from django.http import HttpResponseForbidden
 from .forms import DeveloperProfileForm
 from .models import DeveloperProfile
 from .decorators import authorized_required

@@ -1,5 +1,3 @@
-from django.http import HttpResponseForbidden
-from django.contrib.auth.decorators import user_passes_test
 from .models import AuthorizedEmail
 from django.shortcuts import render
 
