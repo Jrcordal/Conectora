@@ -6,12 +6,8 @@ from django.contrib.auth.decorators import login_required
 
 import io
 from django.db import transaction
-from django.shortcuts import get_object_or_404
-from django.core.exceptions import PermissionDenied
 from django.core.exceptions import ValidationError
-from django.http import Http404
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.forms import PasswordResetForm
 from apps.users.models import CustomUser, UploadBatch, UploadFile
