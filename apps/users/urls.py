@@ -23,4 +23,5 @@ urlpatterns = [
     path('password_reset/confirm/<uidb64>/<token>/',auth_views.PasswordResetConfirmView.as_view(success_url=reverse_lazy('users:password_reset_complete'),template_name='registration/password_reset_confirm.html'), name='password_reset_confirm'),
     path('password_reset/complete/',auth_views.PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html'), name='password_reset_complete'),
     path('admin_uploadcv/', users_views.boostrapped_devs_from_cvs, name='admin_uploadcv'),
+    path('settings/', users_views.settings_view, name='settings_view'),
     ]
