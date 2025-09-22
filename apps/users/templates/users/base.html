@@ -114,26 +114,17 @@
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <a href="{% url 'developers:dashboard' %}" class="nav-link">
+                            <a href="{% url 'users:dashboard' %}" class="nav-link">
                                 <i class="fas fa-home me-1"></i> Dashboard
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="{% url 'developers:profile_form' %}" class="nav-link">
-                                <i class="fas fa-edit me-1"></i> Edit Profile
-                            </a>
-                        </li>
+
                         <li class="nav-item">
                             <a href="{% url 'developers:settings_view' %}" class="nav-link">
                                 <i class="fas fa-cog me-1"></i> Settings
                             </a>
                         </li>
- 
-                        <li class="nav-item">
-                            <a href="{% url 'developers:terms_and_conditions' %}" class="nav-link">
-                                <i class="fas fa-file-alt me-1"></i> Terms and Conditions
-                            </a>
-                        </li>
+
                         <li class="nav-item">
                             <a href="{% url 'users:logout_view' %}" class="nav-link">
                                 <i class="fas fa-sign-out-alt me-1"></i> Logout
