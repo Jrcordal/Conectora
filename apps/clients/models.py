@@ -25,7 +25,7 @@ class ClientProfile(models.Model):
 
 
 class Project(models.Model):
-    client = models.ForeignKey(ClientProfile, on_delete=models.CASCADE, primary_key=True,related_name='clientproject')
+    client = models.ForeignKey(ClientProfile, on_delete=models.CASCADE, related_name='clientproject')
     initial_ask = models.JSONField(blank=True)
     proposal_draft = models.JSONField(blank=True)
     tech_stack_draft = models.JSONField(blank=True)
