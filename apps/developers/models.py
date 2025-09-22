@@ -98,7 +98,7 @@ class DeveloperProfile(models.Model):
     testing_qa = models.JSONField(blank=True, null=True, default=None)              # Ej: ["Pytest", "Selenium"]
     devops_ci_cd = models.JSONField(blank=True, null=True, default=None)            # Ej: ["Jenkins", "GitHub Actions"]
     containerization = models.JSONField(blank=True, null=True, default=None)        # Ej: ["Docker", "Kubernetes"]
-    data_skills = models.JSONField(blank=True, null=True, default=None)          # Ej: ["Pandas", "TensorFlow"]
+    data_skills = models.JSONField(blank=True, null=True, default=None)             # Ej: ["Pandas", "TensorFlow"]
     frontend_technologies = models.JSONField(blank=True, null=True, default=None)   # Ej: ["HTML", "CSS", "Tailwind"]
     mobile_development = models.JSONField(blank=True, null=True, default=None)      # Ej: ["SwiftUI", "Flutter"]
     apis_integrations = models.JSONField(blank=True, null=True, default=None)       # Ej: ["REST", "GraphQL"]

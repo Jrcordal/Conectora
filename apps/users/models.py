@@ -1,9 +1,6 @@
 from django.db import models
-from django.conf import settings
 from django.utils import timezone
-import uuid
 from django.contrib.auth.models import AbstractUser, BaseUserManager
-from apps.developers.models import CVStorage
 from django.core.exceptions import ValidationError
 from datetime import datetime
 
@@ -104,6 +101,9 @@ class CustomUser(AbstractUser):
     def has_profile(self) -> bool:
         # NO hace query si antes hiciste select_related('profile')
         return hasattr(self, 'devprofile')
+    #@property
+    #def is_client(self) -> bool:
+    #    return hasattr(self,'clientprofile')
 
 
 
