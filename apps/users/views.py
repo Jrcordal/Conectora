@@ -184,10 +184,20 @@ def settings_view(request):
 
     if request.method == 'POST':
 
-        tz_name = (request.POST.get('timezone') or '').strip()  # 👈 no lo llames "timezone"
-
+        tz_name = (request.POST.get('timezone') or '').strip()  
 
         # Actualiza timezone si es uno permitido
         if tz_name and tz_name in tz_allowed_values and tz_name != request.user.timezone:
             request.user.timezone = tz_name
             request.user.save(update_fields=['timezone'])
+
+        return redirect('users:settings_view')
+
+    return render(
+        request,
+        'users/settings_view.html',
+        {
+
+            'TIMEZONE_CHOICES': tz_choices,  # <- pásalo al template
+        }
+    )
