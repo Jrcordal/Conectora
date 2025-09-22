@@ -3,8 +3,8 @@ from django. contrib import messages
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
-
-import io
+from django.utils import timezone 
+from .models import TIMEZONE_CHOICES
 from django.db import transaction
 from django.core.exceptions import ValidationError
 from django.contrib.auth import authenticate, login
@@ -175,3 +175,19 @@ def boostrapped_devs_from_cvs(request):                 # Definición de la vist
     return render(request, "users/admin_upload_cvs_to_bootstrapp.html", {"form": form})  # Renderizamos la plantilla con el form.
 
 
+@login_required
+def settings_view(request):
+
+    # Normaliza a lista de tuplas y set de valores para validar rápido
+    tz_choices = list(TIMEZONE_CHOICES)
+    tz_allowed_values = {value for value, _label in tz_choices}
+
+    if request.method == 'POST':
+
+        tz_name = (request.POST.get('timezone') or '').strip()  # 👈 no lo llames "timezone"
+
+
+        # Actualiza timezone si es uno permitido
+        if tz_name and tz_name in tz_allowed_values and tz_name != request.user.timezone:
+            request.user.timezone = tz_name
+            request.user.save(update_fields=['timezone'])

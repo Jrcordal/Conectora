@@ -11,7 +11,6 @@ from .tasks import fill_developer_fields
 import logging
 from apps.users.models import TIMEZONE_CHOICES
 logger = logging.getLogger(__name__)
-from django.utils import timezone as dj_timezone  # evita sombrear
 
 
 @authorized_required
@@ -73,11 +72,11 @@ def settings_view(request):
         # Actualiza flags y timestamps solo si cambian
         if new_open_to_work != profile.is_open_to_work:
             profile.is_open_to_work = new_open_to_work
-            profile.is_open_to_work_changed_at = dj_timezone.now()
+            profile.is_open_to_work_changed_at = timezone.now()
 
         if new_open_to_teach != profile.is_open_to_teach:
             profile.is_open_to_teach = new_open_to_teach
-            profile.is_open_to_teach_changed_at = dj_timezone.now()
+            profile.is_open_to_teach_changed_at = timezone.now()
 
         # Actualiza timezone si es uno permitido
         if tz_name and tz_name in tz_allowed_values and tz_name != request.user.timezone:
