@@ -15,6 +15,9 @@ class ClientProfile(models.Model):
     website = models.URLField(blank=True, null=True)
     currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, blank=True, null=True)
     role_in_company = models.CharField(max_length=20, blank = True)
+    completed_projects = models.IntegerField(blank=True, default=0)
+    active_projects = models.IntegerField(blank=True, default=0)
+    total_candidates_matched = models.IntegerField(blank=True, default=0)
     
     def __str__(self):
         return self.user.username
