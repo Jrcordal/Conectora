@@ -36,7 +36,13 @@ class ClientProfileForm(forms.ModelForm):
         choices=CURRENCY_CHOICES,
         widget=forms.Select(attrs={'class': 'form-control'})
     )
-
+    role_in_company = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'placeholder': 'CEO, Founder, Project Manager',
+            'class': 'form-control'
+        })
+    )
 
     class Meta:
         model = ClientProfile
@@ -44,7 +50,8 @@ class ClientProfileForm(forms.ModelForm):
             'telephone_number',
             'linkedin',
             'website',
-            'currency'
+            'currency',
+            'role_in_company'
         ]
 
 
