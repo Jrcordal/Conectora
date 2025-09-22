@@ -14,10 +14,22 @@ class ClientProfile(models.Model):
     linkedin = models.URLField(blank=True, null=True)
     website = models.URLField(blank=True, null=True)
     currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, blank=True, null=True)
-    role_in_company = models.CharField(max_length=20, blank = True)
+    role_in_company = models.CharField(max_length=50, blank = True)
     completed_projects = models.IntegerField(blank=True, default=0)
     active_projects = models.IntegerField(blank=True, default=0)
     total_candidates_matched = models.IntegerField(blank=True, default=0)
+    search_limit = models.PositiveIntegerField(blank=True, default=3)
     
     def __str__(self):
         return self.user.username
+
+
+class Project(models.Model):
+    client = models.ForeignKey(ClientProfile, on_delete=models.CASCADE, primary_key=True,related_name='clientproject')
+    initial_ask = models.JSONField(blank=True)
+    proposal_draft = models.JSONField(blank=True)
+    tech_stack_draft = models.JSONField(blank=True)
+    potential_candidates = models.JSONField(blank=True)
+    selected_candidates = models.JSONField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
