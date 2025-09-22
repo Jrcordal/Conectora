@@ -11,7 +11,7 @@ urlpatterns = [
     path('terms-and-conditions/', developer_views.terms_and_conditions, name='terms_and_conditions'),
     path('dashboard/', developer_views.dashboard, name='dashboard'),
     path('settings/', developer_views.settings_view, name='settings_view'),
-    path('admin_uploadcv/', developer_views.list_upload_cv, name='list_upload_cv')
+    path('admin_uploadcv/', developer_views.list_upload_cv, name='list_upload_cv'),
     ]
 
 
