@@ -2,7 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from .models import ClientProfile
 from apps.developers.models import CURRENCY_CHOICES, validate_phone
-from apps.developers.forms import MultipleFileInput
+from apps.users.forms import MultipleFileInput
 
 
 

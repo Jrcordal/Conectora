@@ -81,7 +81,7 @@ class Intake(models.Model):
     recommended_stack = models.TextField(blank=True, null=True)
     other_info = models.TextField(blank=True, null=True)
     # Mantén un campo de texto libre para links/notas
-    existing_docs = models.MultipleFile
+    #existing_docs = models.MultipleFile
 
     def __str__(self):
         return f"Intake for Project #{self.project_id}"
@@ -102,7 +102,7 @@ def intake_upload_path(instance, filename):
 
 class Document(models.Model):
     intake = models.ForeignKey(Intake, on_delete=models.CASCADE, related_name="documents")
-    file = models.FileField(upload_to=intake_upload_path, blank=False, null = False, sotrage=CVStorage())
+    file = models.FileField(upload_to=intake_upload_path, blank=False, null = False, storage=CVStorage())
     original_name = models.CharField(max_length=255, blank=True)
     size_bytes = models.BigIntegerField(blank=True, null=True)
     pages = models.IntegerField(blank=True, null=True)
@@ -111,13 +111,3 @@ class Document(models.Model):
 
 
 
-
-
-class DeveloperProfile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True,related_name='developerprofile')
-    consent_promotional_use = models.BooleanField(null=True, blank=True)
-    consent_given_at = models.DateTimeField(null=True, blank=True)
-    is_open_to_work = models.BooleanField(default=True)
-    is_open_to_teach = models.BooleanField(default=True)
-    has_cv = models.BooleanField(default=False)
-    
