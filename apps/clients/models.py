@@ -1,7 +1,7 @@
 from django.db import models
 from django.conf import settings
 from apps.developers.models import validate_phone,CURRENCY_CHOICES
-
+from django.utils import timezone
 # Create your models here.
 class AuthorizedClientEmail(models.Model):
     email = models.EmailField(unique=True)
@@ -52,3 +52,13 @@ class Project(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     status_intake = models.CharField(max_length=20, choices=IntakeStage.choices, default=IntakeStage.INTAKE_REQUIREMENTS)
     status_project = models.CharField(max_length=30, choices=ProjectStatus.choices, default=ProjectStatus.AI_INTAKE)
+
+
+    def projects_in_month(self, year=None, month=None):
+        if not year or not month:
+            today = timezone.now()
+            year, month = today.year, today.month
+        return self.clientproject.filter(
+            created_at__year=year,
+            created_at__month=month
+        ).count()
