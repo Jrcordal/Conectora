@@ -1,6 +1,5 @@
 from celery import shared_task
 from django.conf import settings
-from apps.developers.models import DeveloperProfile
 import boto3
 import tempfile
 from langchain_community.document_loaders import PyPDFLoader,Docx2txtLoader
@@ -8,7 +7,6 @@ from langchain_community.document_loaders import PyPDFLoader,Docx2txtLoader
 import os
 import tempfile
 from pydantic import BaseModel, Field
-from datetime import datetime
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 

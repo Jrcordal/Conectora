@@ -2,6 +2,10 @@ from django.db import models
 from django.conf import settings
 from apps.developers.models import validate_phone,CURRENCY_CHOICES
 from django.utils import timezone
+from datetime import datetime
+from django.core.exceptions import ValidationError
+from apps.developers.models import CVStorage
+
 # Create your models here.
 class AuthorizedClientEmail(models.Model):
     email = models.EmailField(unique=True)
@@ -62,3 +66,58 @@ class Project(models.Model):
             created_at__year=year,
             created_at__month=month
         ).count()
+
+
+
+class Intake(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="intake")
+    client_description = models.TextField(blank=True, null=True)
+    problem = models.TextField(blank=True, null=True)
+    end_user = models.TextField(blank=True, null=True)
+    end_goal = models.TextField(blank=True, null=True)
+    must_features = models.TextField(blank=True, null=True)
+    required_workflows = models.TextField(blank=True, null=True)
+    must_not_do = models.TextField(blank=True, null=True)
+    recommended_stack = models.TextField(blank=True, null=True)
+    other_info = models.TextField(blank=True, null=True)
+    # Mantén un campo de texto libre para links/notas
+    existing_docs = models.MultipleFile
+
+    def __str__(self):
+        return f"Intake for Project #{self.project_id}"
+
+def intake_upload_path(instance, filename):
+    return f"intakes/{instance.intake.project_id}/{filename}"
+
+
+def intake_upload_path(instance, filename):
+    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    if filename.endswith('.pdf'):
+        return f"cvs/{instance.user.id}/{timestamp}.pdf"  # ya no pones 'cvs/' porque lo pone storage
+    elif filename.endswith('.docx'):
+        return f"cvs/{instance.user.id}/{timestamp}.docx"  # ya no pones 'cvs/' porque lo pone storage
+    else:
+        raise ValidationError("Only PDF and DOCX files are allowed.")
+
+
+class Document(models.Model):
+    intake = models.ForeignKey(Intake, on_delete=models.CASCADE, related_name="documents")
+    file = models.FileField(upload_to=intake_upload_path, blank=False, null = False, sotrage=CVStorage())
+    original_name = models.CharField(max_length=255, blank=True)
+    size_bytes = models.BigIntegerField(blank=True, null=True)
+    pages = models.IntegerField(blank=True, null=True)
+    extracted_text = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)    
+
+
+
+
+
+class DeveloperProfile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True,related_name='developerprofile')
+    consent_promotional_use = models.BooleanField(null=True, blank=True)
+    consent_given_at = models.DateTimeField(null=True, blank=True)
+    is_open_to_work = models.BooleanField(default=True)
+    is_open_to_teach = models.BooleanField(default=True)
+    has_cv = models.BooleanField(default=False)
+    

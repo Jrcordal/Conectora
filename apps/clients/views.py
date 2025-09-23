@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 
 
 
-
+@login_required
 @authorized_required
 def dashboard(request):
  

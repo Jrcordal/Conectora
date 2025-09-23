@@ -97,5 +97,5 @@ class MultipleCvsUploadForm(forms.Form):
         label="CV files",
         widget=MultipleFileInput(attrs={"accept": ".pdf,.docx"}),
         required=True,
-        help_text="Puedes seleccionar varios .pdf o .docx."
+        help_text="You can select several .pdf or .docx"
     )
