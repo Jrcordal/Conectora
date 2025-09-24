@@ -44,4 +44,4 @@ def profile_form(request):
 @authorized_required
 def intake(request):
  
-    return render(request, 'clients/intake.html')
+    return render(request, 'clients/intake_form.html')
