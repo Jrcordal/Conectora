@@ -70,7 +70,7 @@ class Project(models.Model):
 
 
 class Intake(models.Model):
-    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="intake")
+    project = models.OneToOneField(Project, on_delete=models.CASCADE, related_name="intake")
     client_description = models.TextField(blank=True, null=True)
     problem = models.TextField(blank=True, null=True)
     end_user = models.TextField(blank=True, null=True)
@@ -80,22 +80,19 @@ class Intake(models.Model):
     must_not_do = models.TextField(blank=True, null=True)
     recommended_stack = models.TextField(blank=True, null=True)
     other_info = models.TextField(blank=True, null=True)
-    # Mantén un campo de texto libre para links/notas
-    #existing_docs = models.MultipleFile
+
 
     def __str__(self):
         return f"Intake for Project #{self.project_id}"
 
-def intake_upload_path(instance, filename):
-    return f"intakes/{instance.intake.project_id}/{filename}"
 
 
 def intake_upload_path(instance, filename):
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     if filename.endswith('.pdf'):
-        return f"cvs/{instance.user.id}/{timestamp}.pdf"  # ya no pones 'cvs/' porque lo pone storage
+        return f"intake/{instance.user.id}/{timestamp}.pdf"  # ya no pones 'cvs/' porque lo pone storage
     elif filename.endswith('.docx'):
-        return f"cvs/{instance.user.id}/{timestamp}.docx"  # ya no pones 'cvs/' porque lo pone storage
+        return f"intake/{instance.user.id}/{timestamp}.docx"  # ya no pones 'cvs/' porque lo pone storage
     else:
         raise ValidationError("Only PDF and DOCX files are allowed.")
 

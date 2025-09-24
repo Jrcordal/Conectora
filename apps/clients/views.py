@@ -38,3 +38,10 @@ def profile_form(request):
         'form': form,
         'profile': profile,
     })
+
+
+@login_required
+@authorized_required
+def intake(request):
+ 
+    return render(request, 'clients/intake.html')
