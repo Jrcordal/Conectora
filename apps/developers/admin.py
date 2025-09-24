@@ -42,7 +42,7 @@ class DeveloperProfileAdmin(admin.ModelAdmin):
     # Colapsables por secciones (Grappelli)
     fieldsets = (
         ("General fields", {
-            "fields": ("user", "main_developer_role", "nationality", "has_cv","hourly_rate","currency"),
+            "fields": ("user", "main_developer_role", "nationality", "has_cv","hourly_rate","currency","is_open_to_work","is_open_to_teach"),
         }),
         ("Contact", {
             "classes": ("grp-collapse", "grp-open"),  # abierto por defecto
