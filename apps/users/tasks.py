@@ -5,7 +5,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from apps.users.models import CustomUser
 from pydantic import BaseModel, EmailStr
-from datetime import datetime
 from django.conf import settings
 from pydantic import ValidationError
 from celery.exceptions import SoftTimeLimitExceeded

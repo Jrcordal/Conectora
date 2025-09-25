@@ -25,6 +25,16 @@ class ClientProfile(models.Model):
     
     def __str__(self):
         return self.user.username
+    
+    
+    def projects_in_month(self, year=None, month=None):
+        if not year or not month:
+            today = timezone.now()
+            year, month = today.year, today.month
+        return self.clientproject.filter(
+            created_at__year=year,
+            created_at__month=month
+        ).count()
 
 
 
@@ -54,23 +64,16 @@ class Project(models.Model):
     selected_candidates = models.JSONField(blank=True,  null=True, default=None)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    status_intake = models.CharField(max_length=20, choices=IntakeStage.choices, default=IntakeStage.INTAKE_REQUIREMENTS)
     status_project = models.CharField(max_length=30, choices=ProjectStatus.choices, default=ProjectStatus.AI_INTAKE)
 
 
-    def projects_in_month(self, year=None, month=None):
-        if not year or not month:
-            today = timezone.now()
-            year, month = today.year, today.month
-        return self.clientproject.filter(
-            created_at__year=year,
-            created_at__month=month
-        ).count()
+
 
 
 
 class Intake(models.Model):
-    project = models.OneToOneField(Project, on_delete=models.CASCADE, related_name="intake")
+    project = models.OneToOneField(Project, on_delete=models.SET_NULL,null=True, blank=True, related_name="project_intake")
+    status = models.CharField(max_length=20, choices=IntakeStage.choices, default=IntakeStage.INTAKE_REQUIREMENTS)
     client_description = models.TextField(blank=True, null=True)
     problem = models.TextField(blank=True, null=True)
     end_user = models.TextField(blank=True, null=True)
@@ -80,25 +83,33 @@ class Intake(models.Model):
     must_not_do = models.TextField(blank=True, null=True)
     recommended_stack = models.TextField(blank=True, null=True)
     other_info = models.TextField(blank=True, null=True)
-
+    client = models.ForeignKey('clients.ClientProfile', on_delete=models.PROTECT, related_name='intakes', db_index=True,)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='created_intakes',)
 
     def __str__(self):
         return f"Intake for Project #{self.project_id}"
 
 
 
+
 def intake_upload_path(instance, filename):
+    # instance es Document
     timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    if filename.endswith('.pdf'):
-        return f"intake/{instance.user.id}/{timestamp}.pdf"  # ya no pones 'cvs/' porque lo pone storage
-    elif filename.endswith('.docx'):
-        return f"intake/{instance.user.id}/{timestamp}.docx"  # ya no pones 'cvs/' porque lo pone storage
+    # el "dueño" real es el cliente/usuario del intake
+    user_id = instance.intake.client.user_id  # o instance.intake.created_by_id como prefieras
+
+    name = filename.lower()
+    if name.endswith('.pdf'):
+        ext = 'pdf'
+    elif name.endswith('.docx'):
+        ext = 'docx'
     else:
         raise ValidationError("Only PDF and DOCX files are allowed.")
 
+    return f"intake/{user_id}/{timestamp}.{ext}"
 
-class Document(models.Model):
-    intake = models.ForeignKey(Intake, on_delete=models.CASCADE, related_name="documents")
+class IntakeDocument(models.Model):
+    intake = models.ForeignKey(Intake, on_delete=models.CASCADE, related_name="intakedocuments")
     file = models.FileField(upload_to=intake_upload_path, blank=False, null = False, storage=CVStorage())
     original_name = models.CharField(max_length=255, blank=True)
     size_bytes = models.BigIntegerField(blank=True, null=True)

@@ -22,8 +22,6 @@
     <div class="form-card">
       <form method="POST" enctype="multipart/form-data" id="intakeForm" class="intake-form">
         {% csrf_token %}
-        
-         Document Upload Section 
         <div class="form-section">
           <div class="section-header">
             <div class="section-icon">
@@ -49,8 +47,7 @@
                 </svg>
               </div>
               <h4 class="upload-title">Drop files here or click to browse</h4>
-              <p class="upload-description">Supports PDF and DOCX files up to 10MB each</p>
-              <input type="file" id="files" name="files" multiple accept=".pdf,.docx" class="file-input" required>
+              <input type="file" id="files" name="intakedocuments" multiple accept=".pdf,.docx" class="file-input" required>
               <button type="button" class="browse-btn" onclick="document.getElementById('files').click()">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -64,7 +61,6 @@
           </div>
         </div>
 
-         Project Requirements Section 
         <div class="form-section">
           <div class="section-header">
             <div class="section-icon">
@@ -740,29 +736,13 @@ document.addEventListener('DOMContentLoaded', function() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   }
 
-  // Form submission
   form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    btnIcon.classList.add('btn-loading');
-    btnText.textContent = 'Submitting...';
-    submitBtn.disabled = true;
-    
-    // Simulate form submission
-    setTimeout(() => {
-      btnIcon.classList.remove('btn-loading');
-      btnText.textContent = 'Submitted!';
-      
-      setTimeout(() => {
-        btnIcon.classList.remove('btn-loading');
-        btnText.textContent = 'Submit Project Intake';
-        submitBtn.disabled = false;
-        
-        // Here you would normally submit the form
-        // form.submit();
-      }, 2000);
-    }, 2000);
-  });
+  // No hacemos preventDefault; dejamos que el form se envíe.
+  btnIcon.classList.add('btn-loading');
+  btnText.textContent = 'Submitting...';
+  submitBtn.disabled = true;
+  // el navegador enviará el form y la vista redirigirá
+});
 
   // Auto-resize textareas
   const textareas = document.querySelectorAll('.form-textarea');

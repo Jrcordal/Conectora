@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import ClientProfile
+from .models import ClientProfile, Intake
 from apps.developers.models import CURRENCY_CHOICES, validate_phone
 from apps.users.forms import MultipleFileInput
 
@@ -140,7 +140,19 @@ class IntakeForm(forms.ModelForm):
         })
     )
 
-
+    class Meta:
+        model = Intake
+        fields = [
+            'client_description',
+            'problem',
+            'end_user',
+            'end_goal',
+            'must_features',
+            'required_workflows',
+            'must_not_do',
+            'recommended_stack',
+            'other_info'
+        ]
 
 
 
