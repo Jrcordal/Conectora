@@ -77,6 +77,9 @@ def intake_create(request):
                     )
 
             messages.success(request, "Intake created correctly.")
+
+
+            
             return redirect('clients:dashboard')
             #return redirect("projects:detail", project_id=project.id)
     else:
