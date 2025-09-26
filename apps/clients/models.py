@@ -83,7 +83,7 @@ class Intake(models.Model):
     must_not_do = models.TextField(blank=True, null=True)
     recommended_stack = models.TextField(blank=True, null=True)
     other_info = models.TextField(blank=True, null=True)
-    client = models.ForeignKey('clients.ClientProfile', on_delete=models.PROTECT, related_name='intakes', db_index=True,)
+    client = models.ForeignKey('clients.ClientProfile', on_delete=models.SET_NULL, related_name='intakes', db_index=True,null=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='created_intakes',)
 
     def __str__(self):
