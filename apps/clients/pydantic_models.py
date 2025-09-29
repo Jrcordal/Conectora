@@ -118,8 +118,27 @@ class TeamMember(BaseModel):
     rationale: str = Field(description="The rationale for the team member for the particular role")
     tech_stack: TechStack = Field(description="The tech stack required for the team member")
         
-class TeamRequirements(BaseModel):
+class TeamRecommendation(BaseModel):
     project_team: list[TeamMember]
     overview: str = Field(description="General description of the proposed team")
     rationale: str = Field(description="Why this team composition was chosen")
     total_members: int = Field(description="Total number of members in the team")
+
+
+class CandidateMatch(BaseModel):
+    user_id: int = Field(description="The user id of the professional")
+    main_developer_role: str = Field(description="The main developer role of the professional")
+    recommended_role: str = Field(description="The role recommended by the matching pipeline as it is")
+class TemporaryCandidateRoleMatching(BaseModel):
+    matches: List[CandidateMatch] = Field(
+        description="List of professionals that match any role in the recommended team profiles list"
+    )
+
+class SelectedCandidate(BaseModel):
+    id: int
+    role: str
+    seniority: int
+    tech_stack: list[str] 
+    related_projects: list[str] = Field(description="The projects that the candidate has worked on and are related to the project")
+    summary_profile: str = Field(description="Summary of the profile")
+    rationale: str = Field(description="The rationale for the selection of the candidate")

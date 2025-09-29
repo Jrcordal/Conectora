@@ -70,7 +70,7 @@ class DeveloperProfile(models.Model):
     has_cv = models.BooleanField(default=False)
     
     # ---- Archivo CV y texto original extraído ---- (CV file and original extracted text)
-    cv_file = models.FileField(upload_to=cv_upload_path, blank=False, null=False, storage=CVStorage())
+    cv_file = models.FileField(upload_to=cv_upload_path, blank=True, null=False, storage=CVStorage())
     cv_raw_text = models.TextField(blank=True, null=True)
 
     # ---- Educación ---- (Education)
