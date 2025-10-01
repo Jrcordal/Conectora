@@ -449,7 +449,7 @@ def set_matching_status(project: Project, stage: str, *, progress: int | None = 
 def matching_pipeline(intake_id: int, project_id: int):
     intake = Intake.objects.get(pk=intake_id)
     project = Project.objects.get(pk=project_id)
-
+    logger.info(f"Matching pipeline started for project {project_id}, intake {intake_id}")
 
 
     # 1) Requirements
@@ -459,6 +459,7 @@ def matching_pipeline(intake_id: int, project_id: int):
         project, "proposal_draft", progress=25,
         extra={"proposal_draft": structured_req.model_dump(mode="json")}
     )
+    logger.info(f"Requirements structured for project {project_id}")
 
     # 2) Tech stack
 
@@ -469,7 +470,7 @@ def matching_pipeline(intake_id: int, project_id: int):
         project, "tech_stack_draft", progress=45,
         extra={"tech_stack_draft": structured_stack.model_dump(mode="json")}
     )
-
+    logger.info(f"Tech stack structured for project {project_id}")
     # 3) Team recommendation 
     team_rec = structure_team_profiles(
         json.dumps(structured_req.model_dump(mode="json"), ensure_ascii=False, indent=2),
@@ -480,6 +481,7 @@ def matching_pipeline(intake_id: int, project_id: int):
         project, "team_recommendation", progress=60,
         extra={"team_recommendation": team_rec.model_dump(mode="json")}
     )
+    logger.info(f"Team recommendation structured for project {project_id}")
 
 
     # 4) Potenciales candidatos
@@ -491,7 +493,7 @@ def matching_pipeline(intake_id: int, project_id: int):
         project, "potential_candidates", progress=80,
         extra={"potential_candidates_per_role": potential}
     )
-
+    logger.info(f"Potential candidates structured for project {project_id}")
     # 5) Selección final
     selected_by_role = alpha_select_candidates_sync(
         roles_dict=role_json_map,
@@ -507,7 +509,8 @@ def matching_pipeline(intake_id: int, project_id: int):
         project, "selected_candidates", progress=100,
         extra={"selected_candidates": selected_by_role_json, "status": "presale"}
     )
-    print("selected_by_role", selected_by_role)
+    logger.info(f"Selected candidates structured for project {project_id}")
+    logger.info(f"Selected candidates: {selected_by_role}")
     return {"selected_by_role": selected_by_role}
 
 
