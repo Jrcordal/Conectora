@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import ClientProfile, Project, IntakeDocument
 from .forms import ClientProfileForm, IntakeForm
-from .decorators import authorized_required
+from .decorators import authorized_required, prompt_limit_reached_required
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
@@ -44,6 +44,7 @@ def profile_form(request):
 
 @login_required
 @authorized_required
+@prompt_limit_reached_required
 def intake_create(request):
     from .tasks import matching_pipeline  #
     client = get_object_or_404(ClientProfile, user=request.user)
