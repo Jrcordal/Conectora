@@ -221,7 +221,7 @@ def match_candidates(structured_team) -> Dict[str, List[int]]:
                 })
             return json.dumps(data, indent=2, ensure_ascii=False)
         #####
-        structured_team_json = structured_team(json.dumps(structured_team.model_dump(), indent=2, ensure_ascii=False))
+        structured_team_json = json.dumps(structured_team.model_dump(), indent=2, ensure_ascii=False)
         candidates_dictionary = serialize_freelancers(all_freelancers_open_to_work)
         prompt_role_matching = ChatPromptTemplate.from_messages([
             ("system", "You are a software requirements analyst and project manager."),
