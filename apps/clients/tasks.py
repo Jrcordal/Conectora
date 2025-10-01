@@ -481,7 +481,7 @@ def matching_pipeline(intake_id: int, project_id: int):
         project, "team_recommendation", progress=60,
         extra={"team_recommendation": team_rec.model_dump(mode="json")}
     )
-    logger.info(f"Potential candidates structured for project {project_id}")
+    logger.info(f"Team recommendation structured for project {project_id}")
 
 
     # 4) Potenciales candidatos
@@ -493,8 +493,7 @@ def matching_pipeline(intake_id: int, project_id: int):
         project, "potential_candidates", progress=80,
         extra={"potential_candidates_per_role": potential}
     )
-    logger.info(f"Selected candidates structured for project {project_id}")
-
+    logger.info(f"Potential candidates structured for project {project_id}")
     # 5) Selección final
     selected_by_role = alpha_select_candidates_sync(
         roles_dict=role_json_map,
@@ -510,7 +509,8 @@ def matching_pipeline(intake_id: int, project_id: int):
         project, "selected_candidates", progress=100,
         extra={"selected_candidates": selected_by_role_json, "status": "presale"}
     )
-    print("selected_by_role", selected_by_role)
+    logger.info(f"Selected candidates structured for project {project_id}")
+    logger.info(f"Selected candidates: {selected_by_role}")
     return {"selected_by_role": selected_by_role}
 
 
