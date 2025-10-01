@@ -342,12 +342,8 @@ def build_candidates_json_per_role(matches_by_role):
 
             # Convertimos el modelo en dict, excluyendo campos no importantes
             item = model_to_dict(dp, exclude=EXCLUDE_FIELDS)
+            item["id"] = dp.user_id
 
-            # Añadimos datos básicos del usuario (User asociado al perfil)
-            if hasattr(dp, "user"):
-                item["user"] = {
-                    "id": dp.user_id,
-                }
 
             candidates.append(item)
 
