@@ -339,7 +339,7 @@ def build_candidates_json_per_role(matches_by_role):
             candidates.append(item)
 
         # Dumpeamos la lista de candidatos a JSON string (uno por rol)
-        candidate_lists_per_role_json[role] = json.dumps(candidates, cls=DjangoJSONEncoder, ensure_ascii=False, indent=2)
+        candidate_lists_per_role_json[role] = json.dumps(candidates, cls=DjangoJSONEncoder,default=str ,ensure_ascii=False, indent=2)
         
     return candidate_lists_per_role_json
 
