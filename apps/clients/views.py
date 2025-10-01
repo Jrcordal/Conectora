@@ -6,6 +6,8 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.contrib import messages
+from django.db.models import F
+
 # Create your views here.
 
 
@@ -76,8 +78,11 @@ def intake_create(request):
                         original_name=getattr(f, 'name', ''),
                         size_bytes = getattr(f,'size',None),
                     )
-
-                # 4) Encolar la task DESPUÉS del commit
+# 🔹 4) Reducir el search_limit en 1
+                client.search_limit = F("search_limit") - 1
+                client.save(update_fields=["search_limit"])
+                client.refresh_from_db()  # Para tener el valor actualizado en memoria
+                # 5) Encolar la task DESPUÉS del commit
                 transaction.on_commit(
                     lambda: matching_pipeline.delay(intake.id, project.id)
                 )
