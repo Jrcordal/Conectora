@@ -480,7 +480,6 @@ def matching_pipeline(intake_id: int, project_id: int):
         json.dumps(structured_req.model_dump(mode="json"), ensure_ascii=False, indent=2),
         json.dumps(structured_stack.model_dump(mode="json"), ensure_ascii=False, indent=2)
     )
-    logger.info(f"Team recommendation structured for project {project_id}")
     set_matching_status(
         project, "team_recommendation", progress=60,
         extra={"team_recommendation": team_rec.model_dump(mode="json")}
