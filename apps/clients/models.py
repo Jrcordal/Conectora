@@ -21,7 +21,7 @@ class ClientProfile(models.Model):
     role_in_company = models.CharField(max_length=50, blank = True)
     number_of_projects = models.IntegerField(blank=True, default=0)
     total_candidates_matched = models.IntegerField(blank=True, default=0)
-    search_limit = models.PositiveIntegerField(blank=True, default=3)
+    search_limit = models.PositiveIntegerField(blank=True, default=0)
     created_at = models.DateTimeField(default=timezone.now, editable=False)
 
     def __str__(self):

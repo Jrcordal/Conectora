@@ -1,0 +1,275 @@
+{% extends "users/base.html" %}
+
+{% block title %}Intake Limit Reached{% endblock %}
+
+{% block body %}
+<div class="container">
+  <div class="error-card">
+    <div class="error-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <path d="M15 9l-6 6"></path>
+        <path d="M9 9l6 6"></path>
+      </svg>
+    </div>
+    
+    <div class="error-content">
+      <h2 class="error-title">Intake Limit Reached</h2>
+      <p class="error-message">
+        You don't have enough intake requests to continue.
+      </p>
+      <p class="error-description">
+        Please ask the admin to increase your intake limit.
+      </p>
+    </div>
+
+    <div class="error-actions">
+      <a href="mailto:julioraulcordal@artificialtech.io" class="btn btn-primary">
+        <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+          <polyline points="22,6 12,13 2,6"></polyline>
+        </svg>
+        Contact Admin
+      </a>
+      
+      <a href="{% url 'users:dashboard' %}" class="btn btn-secondary">
+        <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9,22 9,12 15,12 15,22"></polyline>
+        </svg>
+        Back to Dashboard
+      </a>
+    </div>
+
+    <div class="help-section">
+      <div class="help-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      </div>
+      <div class="help-content">
+        <h4>Need Help?</h4>
+        <p>Common reasons for intake restrictions:</p>
+        <ul>
+          <li>You don't have enough intake requests to continue</li>
+          <li>Please ask the admin to increase your intake limit</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .container {
+    max-width: 600px;
+    margin: 3rem auto;
+    padding: 0 1rem;
+  }
+  
+  .error-card {
+    background: white;
+    border-radius: 16px;
+    padding: 3rem 2rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border-top: 6px solid #dc2626;
+    text-align: center;
+  }
+  
+  .error-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #dc2626, #b91c1c);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 2rem;
+    color: white;
+    animation: shake 0.6s ease-out;
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.3);
+  }
+  
+  .error-icon svg {
+    width: 40px;
+    height: 40px;
+  }
+  
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+  
+  .error-content {
+    margin-bottom: 2.5rem;
+  }
+  
+  .error-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 1rem;
+    animation: fadeInUp 0.6s ease-out 0.2s both;
+  }
+  
+  .error-message {
+    color: #dc2626;
+    font-size: 1.125rem;
+    font-weight: 500;
+    margin: 0 0 1rem;
+    animation: fadeInUp 0.6s ease-out 0.4s both;
+  }
+  
+  .error-description {
+    color: #6b7280;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0;
+    animation: fadeInUp 0.6s ease-out 0.6s both;
+  }
+  
+  @keyframes fadeInUp {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .error-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    animation: fadeInUp 0.6s ease-out 0.8s both;
+  }
+  
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    flex: 1;
+  }
+  
+  .btn-primary {
+    background: linear-gradient(135deg, #00a99d, #00c4b6);
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 169, 157, 0.3);
+  }
+  
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 169, 157, 0.4);
+  }
+  
+  .btn-secondary {
+    background: transparent;
+    color: #6b7280;
+    border-color: #d1d5db;
+  }
+  
+  .btn-secondary:hover {
+    background: #f9fafb;
+    border-color: #9ca3af;
+    transform: translateY(-2px);
+  }
+  
+  .btn-icon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .help-section {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    text-align: left;
+    animation: fadeInUp 0.6s ease-out 1s both;
+  }
+  
+  .help-icon {
+    color: #00a99d;
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+  }
+  
+  .help-icon svg {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .help-content h4 {
+    color: #374151;
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 0.75rem;
+  }
+  
+  .help-content p {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin: 0 0 0.5rem;
+  }
+  
+  .help-content ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    color: #6b7280;
+    font-size: 0.875rem;
+  }
+  
+  .help-content li {
+    margin-bottom: 0.25rem;
+    line-height: 1.4;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 640px) {
+    .container {
+      margin: 2rem auto;
+    }
+    
+    .error-card {
+      padding: 2.5rem 1.5rem;
+    }
+    
+    .error-title {
+      font-size: 1.75rem;
+    }
+    
+    .error-icon {
+      width: 70px;
+      height: 70px;
+    }
+    
+    .error-icon svg {
+      width: 35px;
+      height: 35px;
+    }
+    
+    .error-actions {
+      flex-direction: column;
+    }
+    
+    .help-section {
+      flex-direction: column;
+      text-align: center;
+    }
+  }
+</style>
+{% endblock %}
