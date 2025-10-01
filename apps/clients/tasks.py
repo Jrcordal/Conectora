@@ -221,8 +221,7 @@ def match_candidates(structured_team) -> Dict[str, List[int]]:
                 })
             return json.dumps(data, indent=2, ensure_ascii=False)
         #####
-        structured_team_json = structured_team.model_dump_json(indent=2, ensure_ascii=False)
-
+        structured_team_json = structured_team(json.dumps(structured_team.model_dump(), indent=2, ensure_ascii=False))
         candidates_dictionary = serialize_freelancers(all_freelancers_open_to_work)
         prompt_role_matching = ChatPromptTemplate.from_messages([
             ("system", "You are a software requirements analyst and project manager."),
@@ -382,8 +381,7 @@ def alpha_select_candidates_sync(roles_dict: dict, sw, stack, team) -> dict:
     def _to_json_str(x) -> str:
         # acepta Pydantic, dict, str
         try:
-            if hasattr(x, "model_dump_json"):
-                return x.model_dump_json(indent=2, ensure_ascii=False)
+
             if hasattr(x, "model_dump"):
                 return json.dumps(x.model_dump(), ensure_ascii=False, indent=2)
             if isinstance(x, (dict, list)):
@@ -463,14 +461,21 @@ def matching_pipeline(intake_id: int, project_id: int):
     )
 
     # 2) Tech stack
-    structured_stack = structure_tech_stack(structured_req.model_dump_json(indent=2, ensure_ascii=False))
+
+    structured_stack = structure_tech_stack(
+        json.dumps(structured_req.model_dump(mode="json"), ensure_ascii=False, indent=2)
+    )
     set_matching_status(
         project, "tech_stack_draft", progress=45,
         extra={"tech_stack_draft": structured_stack.model_dump(mode="json")}
     )
 
     # 3) Team recommendation 
-    team_rec = structure_team_profiles(structured_req.model_dump_json(indent=2, ensure_ascii=False), structured_stack.model_dump_json(indent=2, ensure_ascii=False))
+    team_rec = structure_team_profiles(
+        json.dumps(structured_req.model_dump(mode="json"), ensure_ascii=False, indent=2),
+        json.dumps(structured_stack.model_dump(mode="json"), ensure_ascii=False, indent=2)
+    )
+
     set_matching_status(
         project, "team_recommendation", progress=60,
         extra={"team_recommendation": team_rec.model_dump(mode="json")}
