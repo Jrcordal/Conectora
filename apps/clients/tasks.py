@@ -9,37 +9,39 @@ import os
 import tempfile
 from .pydantic_models import SoftwareRequirements, StackRecommendation, TeamRecommendation, TemporaryCandidateRoleMatching, SelectedCandidate
 from langchain_core.prompts import ChatPromptTemplate,PromptTemplate
-from .tools import get_experience_in_range
 from django.forms.models import model_to_dict
 import logging
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 from typing import Dict, List
-
-
+import asyncio
+from .models import Intake, Project
+from django.utils import timezone
 
 
 logger = logging.getLogger(__name__)
 
 
-def load_doc_from_s3(bucket: str, key: str):
-    s3_client = boto3.client("s3")
-    fd, tmp_path = tempfile.mkstemp(suffix=os.path.splitext(key)[1])
-    os.close(fd)
-    s3_client.download_file(bucket, key, tmp_path)
 
-    ext = tmp_path.lower().split(".")[-1]
-    if ext == "pdf":
-        docs = PyPDFLoader(tmp_path).load()
-    elif ext == "docx":
-        docs = Docx2txtLoader(tmp_path).load()
-    else:
-        raise ValueError(f"Unsupported format: {ext}")
-
-    os.remove(tmp_path)
-    return "\n\n".join(d.page_content for d in docs)
 
 def structure_requirements(intake_instance):
+
+    def load_doc_from_s3(bucket: str, key: str):
+        s3_client = boto3.client("s3")
+        fd, tmp_path = tempfile.mkstemp(suffix=os.path.splitext(key)[1])
+        os.close(fd)
+        s3_client.download_file(bucket, key, tmp_path)
+
+        ext = tmp_path.lower().split(".")[-1]
+        if ext == "pdf":
+            docs = PyPDFLoader(tmp_path).load()
+        elif ext == "docx":
+            docs = Docx2txtLoader(tmp_path).load()
+        else:
+            raise ValueError(f"Unsupported format: {ext}")
+
+        os.remove(tmp_path)
+        return "\n\n".join(d.page_content for d in docs)
 
     # first requirements draft
     instructions_template = """
@@ -125,9 +127,8 @@ def structure_requirements(intake_instance):
     prompt_to_structure_requirements = prompt_to_structure_requirements.format(draft_text=draft_requirements_clean)
 
     structured_requirements = llm_requirements_structured.invoke(prompt_to_structure_requirements)
-    structured_requirements_json = structured_requirements.model_dump_json()
 
-    return structured_requirements_json
+    return structured_requirements  # Pydantic object
 
 def structure_tech_stack(structured_requirements):
 
@@ -161,9 +162,8 @@ def structure_tech_stack(structured_requirements):
 
     stack_recommendation_structured = llm_stack_recommendation_structured.invoke(prompt_structure_stack)
 
-    stack_recommendation_structured_json = stack_recommendation_structured.model_dump_json()
 
-    return stack_recommendation_structured_json
+    return stack_recommendation_structured # Pydantic object
 
 def structure_team_profiles(structured_requirements,structured_tech_stack):
 
@@ -201,71 +201,68 @@ def structure_team_profiles(structured_requirements,structured_tech_stack):
 
     team_recommendation_structured = llm_team_recommendation_structured.invoke(prompt_strucure_team)
 
-    team_recommendation_structured_json = team_recommendation_structured.model_dump_json()
 
-    return team_recommendation_structured_json
+    return team_recommendation_structured #Pydantic object
 
-def alpha_version_role_matching(all_freelancers_open_to_work, structured_team):
-    # This function will be deprecated as it does not scale
+def match_candidates(structured_team) -> Dict[str, List[int]]:
 
-    def serialize_freelancers(all_freelancers_open_to_work):
-        import json
 
-        """
-        Convierte un queryset o lista de objetos de freelancer en un JSON
-        con los campos que le interesan al prompt.
-        """
-        data = []
-        for f in all_freelancers_open_to_work:
-            data.append({
-                "user_id": f.user.id,
-                "main_developer_role": f.main_developer_role,
-            })
-        return json.dumps(data, indent=2)
+    def alpha_version_role_matching(all_freelancers_open_to_work, structured_team):
+        # This function will be deprecated as it does not scale
+        def serialize_freelancers(all_freelancers_open_to_work):
+            import json
+
+            """
+            Convierte un queryset o lista de objetos de freelancer en un JSON
+            con los campos que le interesan al prompt.
+            """
+            data = []
+            for f in all_freelancers_open_to_work:
+                data.append({
+                    "user_id": f.user_id,
+                    "main_developer_role": f.main_developer_role,
+                })
+            return json.dumps(data, indent=2, ensure_ascii=False)
+        #####
+        structured_team_json = structured_team.model_dump_json(indent=2, ensure_ascii=False)
+
+        candidates_dictionary = serialize_freelancers(all_freelancers_open_to_work)
+        prompt_role_matching = ChatPromptTemplate.from_messages([
+            ("system", "You are a software requirements analyst and project manager."),
+            ("human", 
+            """
+        Based on the team profiles recommendation and the candidates dictionary, generate a json with the user_ids and main_developer_role values that match approximately the role being asked.
+        - Consider synonyms/abbreviations (backend engineer ≈ backend, ML Engineer/Data Scientist ≈ data scientist).
+        - Ignore seniority markers (jr/sr), 'dev', 'developer', 'engineer'.
+        - If a candidate mentions multiple roles, pick the closest among the required roles.
+        - 'recommended_role' MUST BE EXACTLY one of the required roles provided.
+        - If none is a reasonable match, EXCLUDE the candidate (do not include it in 'matches').
+        Schema:
+        {
+        "matches":[
+            {"user_id": int, "main_developer_role": str, "recommended_role": str}
+        ]
+        }
+        
+        Team Profiles Recommendation (allowed values for 'recommended_role'):
+        {structured_team_input}
+
+        Candidates Dictionary (list of {{user_id, main_developer_role}}):
+        {candidates_dictionary_input}
+        """)
+        ])
+        prompt_role_matching = prompt_role_matching.format(candidates_dictionary_input=candidates_dictionary,structured_team_input=structured_team_json)
+        llm_temporary_matching_roles = llm_01_temperature.with_structured_output(TemporaryCandidateRoleMatching)
+
+        return llm_temporary_matching_roles.invoke(prompt_role_matching)  # Pydantic object
+
+
     
-    candidates_dictionary = serialize_freelancers(all_freelancers_open_to_work)
-    prompt_role_matching = ChatPromptTemplate.from_messages([
-        ("system", "You are a software requirements analyst and project manager."),
-        ("human", 
-        """
-    Based on the team profiles recommendation and the candidates dictionary, generate a json with the user_ids and main_developer_role values that match approximately the role being asked.
-    - Consider synonyms/abbreviations (backend engineer ≈ backend, ML Engineer/Data Scientist ≈ data scientist).
-    - Ignore seniority markers (jr/sr), 'dev', 'developer', 'engineer'.
-    - If a candidate mentions multiple roles, pick the closest among the required roles.
-    - 'recommended_role' MUST BE EXACTLY one of the required roles provided.
-    - If none is a reasonable match, EXCLUDE the candidate (do not include it in 'matches').
-    Schema:
-    {
-    "matches":[
-        {"user_id": int, "main_developer_role": str, "recommended_role": str}
-    ]
-    }
-    
-    Team Profiles Recommendation (allowed values for 'recommended_role'):
-    {structured_team_input}
-
-    Candidates Dictionary (list of {{user_id, main_developer_role}}):
-    {candidates_dictionary_input}
-    """)
-    ])
-    prompt_role_matching = prompt_role_matching.format(candidates_dictionary_input=candidates_dictionary,structured_team_input=structured_team)
-    llm_temporary_matching_roles = llm_01_temperature.with_structured_output(TemporaryCandidateRoleMatching)
-
-    temporary_roles_matched = llm_temporary_matching_roles.invoke(prompt_role_matching)
-
-    temporary_roles_matched_json = temporary_roles_matched.model_dump_json()
-
-    return temporary_roles_matched_json
-
-
-
-def extract_required_roles(team_recommendation: TeamRecommendation) -> list[str]:
-    return list({member.role for member in team_recommendation.project_team})
-
-
-def match_candidates(structured_team: TeamRecommendation) -> Dict[str, List[int]]:
-    all_freelancers_open_to_work = DeveloperProfile.objects.filter(open_to_work=True)
-
+    all_freelancers_open_to_work = (
+        DeveloperProfile.objects
+        .filter(open_to_work=True)
+        .only("user_id", "main_developer_role")
+    )
     matched: TemporaryCandidateRoleMatching = alpha_version_role_matching(
         all_freelancers_open_to_work,
         structured_team
@@ -277,6 +274,19 @@ def match_candidates(structured_team: TeamRecommendation) -> Dict[str, List[int]
     for cand in matched.matches:
         if cand.recommended_role in matches_by_role:
             matches_by_role[cand.recommended_role].append(cand.user_id)
+
+
+
+
+    # Deduplicado por rol preservando orden (higiene, sin perder multirole)
+    for role, uids in matches_by_role.items():
+        seen = set()
+        ordered = []
+        for uid in uids:
+            if uid not in seen:
+                seen.add(uid)
+                ordered.append(uid)
+        matches_by_role[role] = ordered
 
     return matches_by_role
 # Campos que no queremos serializar porque no son relevantes o son pesados/sensibles
@@ -290,22 +300,25 @@ EXCLUDE_FIELDS = [
     "cv_raw_text",
 ]
 
+
+
 def build_candidates_json_per_role(matches_by_role):
     """
     Crea un JSON por cada rol con la información de todos los candidatos.
     Devuelve {role: json_string}.
     """
     # 1) Recolectar TODOS los user_ids de todos los roles
-    all_user_ids = [uid for uids in matches_by_role.values() for uid in uids]
+    all_user_ids_open_to_work = [uid for uids in matches_by_role.values() for uid in uids]
 
-    if not all_user_ids:
+    if not all_user_ids_open_to_work:
         # Si no hay candidatos, devolvemos un JSON vacío por cada rol
-        return logger("No candidates")
+        logger.info("No candidates")
+        return {} 
     # 2) Traer de la base de datos TODOS los perfiles de una sola vez
 
     qs = (
         DeveloperProfile.objects
-        .filter(user_id__in=all_user_ids)
+        .filter(user_id__in=all_user_ids_open_to_work)
         .select_related("user")  # trae también la info del usuario (JOIN)
     )
     # 3) Crear un diccionario en memoria {user_id: DeveloperProfile}
@@ -315,7 +328,7 @@ def build_candidates_json_per_role(matches_by_role):
     # 4) Construir la salida por rol
     # ----------------------------------------------------------------------
     # Para cada rol, vamos a crear un JSON con todos los candidatos asignados a ese rol.
-    candidate_lists_per_role_json = {}
+    candidate_lists_per_role_json: Dict[str, str] = {}
     for role, user_ids in matches_by_role.items():
         candidates = []
         for uid in user_ids:
@@ -339,35 +352,177 @@ def build_candidates_json_per_role(matches_by_role):
         
     return candidate_lists_per_role_json
 
-def select_candidate(candidate_lists_per_role_json, software_requirements, tech_stack,structured_team):
-    select_candidates_prompt = []
-    for role in candidate_lists_per_role_json:
-        select_candidates_prompt[role] = ChatPromptTemplate.from_messages([
-                ("system", "You are a software requirements analyst and project manager."),
-                (f"human", 
-                f"""
-            Based on the following software requirements, tech stack, team profiles recommendation, candidates recommendation for the {role} role and curriculums vitae of the candidates, select the best candidate for the {role} role.
+# 1) Define el prompt UNA VEZ y reúsalo
+SELECT_CANDIDATES_PROMPT = ChatPromptTemplate.from_messages([
+    ("system", "You are a software requirements analyst and project manager."),
+    ("human",
+     """
+Based on the following software requirements, tech stack, team profiles recommendation,
+candidates recommendation for the {role} role and curriculums vitae of the candidates,
+select the best candidate for the {role} role.
 
-            You can leave some roles empty if you think that the candidates are not suitable for the role.
+You can leave some roles empty if you think that the candidates are not suitable for the role.
 
-            Software Requirements:
-            {software_requirements} 
+Software Requirements:
+{software_requirements}
 
-            Tech Stack:
-            {tech_stack}
+Tech Stack:
+{tech_stack}
 
-            Team Profiles Recommendation:
-            {structured_team}
+Team Profiles Recommendation:
+{structured_team}
 
-            Candidates Recommendation:
-            {candidate_lists_per_role_json[role]}
+Candidates Recommendation for Role {role}:
+{candidates_json}
+""")
+])
 
-            """)
-            ])
-
-        llm_select_candidate = llm_06_temperature.with_structured_output(SelectedCandidate)
-
-        selected_role = llm_select_candidate.invoke(select_candidates_prompt)
+# 2) Prepara la chain estructurada una vez
+chain_select_candidate = SELECT_CANDIDATES_PROMPT | llm_06_temperature.with_structured_output(SelectedCandidate)
 
 
+def alpha_select_candidates_sync(roles_dict: dict, sw, stack, team) -> dict:
+    def _to_json_str(x) -> str:
+        # acepta Pydantic, dict, str
+        try:
+            if hasattr(x, "model_dump_json"):
+                return x.model_dump_json(indent=2, ensure_ascii=False)
+            if hasattr(x, "model_dump"):
+                return json.dumps(x.model_dump(), ensure_ascii=False, indent=2)
+            if isinstance(x, (dict, list)):
+                return json.dumps(x, ensure_ascii=False, indent=2)
+            if isinstance(x, str):
+                return x
+        except Exception:
+            pass
+        # último recurso: str(x)
+        return str(x)
+    """
+    roles_dict: {role: '<json string de candidatos>'}  (lo que devuelve build_candidates_json_per_role)
+    sw/stack/team: Pydantic o str; se normalizan a JSON string.
+    """
 
+    sw_str    = _to_json_str(sw)
+    stack_str = _to_json_str(stack)
+    team_str  = _to_json_str(team)
+
+    async def alpha_select_candidate(role, sw_req, stack, team, cand_json):
+        return await chain_select_candidate.ainvoke({
+            "role": role,
+            "software_requirements": sw_req,
+            "tech_stack": stack,
+            "structured_team": team,
+            "candidates_json": cand_json,
+        })
+
+    async def alpha_run_parallel_unbounded(roles_dict, sw_txt, stack_txt, team_txt):
+        coros = [
+            alpha_select_candidate(role, sw_txt, stack_txt, team_txt, cand_json)
+            for role, cand_json in roles_dict.items()
+        ]
+        outs = await asyncio.gather(*coros)
+        return dict(zip(roles_dict.keys(), outs))
+
+    return asyncio.run(alpha_run_parallel_unbounded(roles_dict, sw_str, stack_str, team_str))
+
+
+
+
+
+PROGRESS_BY_STATUS = {
+    "intake_requirements": 0,
+    "proposal_draft": 20,
+    "tech_stack_draft": 40,
+    "team_recommendation": 60,
+    "potential_candidates": 80,
+    "selected_candidates": 100,
+}
+
+
+def set_matching_status(project: Project, stage: str, *, progress: int | None = None, extra: dict | None = None):
+    project.matching_status = stage
+    project.matching_status_changed_at = timezone.now()
+    project.processing_progress = progress if progress is not None else PROGRESS_BY_STATUS.get(stage, project.processing_progress)
+    update_fields = ["matching_status", "matching_status_changed_at", "processing_progress", "updated_at"]
+    if extra:
+        for k, v in extra.items():
+            setattr(project, k, v)
+        update_fields += list(extra.keys())
+    project.save(update_fields=update_fields)
+
+@shared_task
+def matching_pipeline(intake_id: int, project_id: int):
+    intake = Intake.objects.get(pk=intake_id)
+    project = Project.objects.get(pk=project_id)
+
+
+
+    # 1) Requirements
+    set_matching_status(project, "intake_requirements", progress=10)
+    structured_req = structure_requirements(intake)
+    set_matching_status(
+        project, "proposal_draft", progress=25,
+        extra={"proposal_draft": structured_req.model_dump(mode="json")}
+    )
+
+    # 2) Tech stack
+    structured_stack = structure_tech_stack(structured_req.model_dump_json(indent=2, ensure_ascii=False))
+    set_matching_status(
+        project, "tech_stack_draft", progress=45,
+        extra={"tech_stack_draft": structured_stack.model_dump(mode="json")}
+    )
+
+    # 3) Team recommendation 
+    team_rec = structure_team_profiles(structured_req.model_dump_json(indent=2, ensure_ascii=False), structured_stack.model_dump_json(indent=2, ensure_ascii=False))
+    set_matching_status(
+        project, "team_recommendation", progress=60,
+        extra={"team_recommendation": team_rec.model_dump(mode="json")}
+    )
+
+
+    # 4) Potenciales candidatos
+    matches_by_role = match_candidates(team_rec)
+    # build_candidates_json_per_role espera un dict {role: [user_ids]}
+    role_json_map = build_candidates_json_per_role(matches_by_role)  # {role: '<json str>'}
+    potential = {r: json.loads(s) for r, s in role_json_map.items()}
+    set_matching_status(
+        project, "potential_candidates", progress=80,
+        extra={"potential_candidates_per_role": potential}
+    )
+
+    # 5) Selección final
+    selected_by_role = alpha_select_candidates_sync(
+        roles_dict=role_json_map,
+        sw=structured_req,
+        stack=structured_stack,
+        team=team_rec,
+    )
+    selected_by_role_json = {
+        role: (obj.model_dump() if hasattr(obj, "model_dump") else obj)
+        for role, obj in selected_by_role.items()
+    }
+    set_matching_status(
+        project, "selected_candidates", progress=100,
+        extra={"selected_candidates": selected_by_role_json, "status": "presale"}
+    )
+    print("selected_by_role", selected_by_role)
+    return {"selected_by_role": selected_by_role}
+
+
+
+
+
+
+# Limitar concurrencia:
+"""
+async def run_parallel_bounded(roles_dict, sw, stack, team, max_concurrency=6):
+    sem = asyncio.Semaphore(max_concurrency)
+
+    async def _one(role, cand_json):
+        async with sem:
+            return role, await alpha_select_candidate(role, sw, stack, team, cand_json)
+
+    tasks = [asyncio.create_task(_one(role, cj)) for role, cj in roles_dict.items()]
+    pairs = await asyncio.gather(*tasks)
+    return {role: out for role, out in pairs}
+"""

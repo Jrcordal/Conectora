@@ -6,7 +6,6 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.contrib import messages
-
 # Create your views here.
 
 
@@ -46,6 +45,7 @@ def profile_form(request):
 @login_required
 @authorized_required
 def intake_create(request):
+    from .tasks import matching_pipeline  #
     client = get_object_or_404(ClientProfile, user=request.user)
 
     if request.method == "POST":
@@ -76,10 +76,15 @@ def intake_create(request):
                         size_bytes = getattr(f,'size',None),
                     )
 
-            messages.success(request, "Intake created correctly.")
+                # 4) Encolar la task DESPUÉS del commit
+                transaction.on_commit(
+                    lambda: matching_pipeline.delay(intake.id, project.id)
+                )
 
-
-            
+            messages.success(
+                request,
+                "Intake created correctly. Matching being processed in the background"
+            )
             return redirect('clients:dashboard')
             #return redirect("projects:detail", project_id=project.id)
     else:

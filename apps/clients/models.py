@@ -22,7 +22,8 @@ class ClientProfile(models.Model):
     number_of_projects = models.IntegerField(blank=True, default=0)
     total_candidates_matched = models.IntegerField(blank=True, default=0)
     search_limit = models.PositiveIntegerField(blank=True, default=3)
-    
+    created_at = models.DateTimeField(default=timezone.now, editable=False)
+
     def __str__(self):
         return self.user.username
     
@@ -38,10 +39,11 @@ class ClientProfile(models.Model):
 
 
 
-class IntakeStage(models.TextChoices):
+class MatchingStatus(models.TextChoices):
     INTAKE_REQUIREMENTS    = "intake_requirements",    "Requirements received"
     PROPOSAL_DRAFT   = "proposal_draft",  "AI-made proposal draft"
     TECH_STACK_DRAFT      = "tech_stack_draft",     "Created a tech stack draft"
+    TEAM_RECOMMENDATION = "team_recommendation", "Created a team recommendation"
     POTENTIAL_CANDIDATES     = "potential_candidates",    "Searched for potential candidates"
     SELECTED_CANDIDATES  = "selected_candidates", "Selected final candidates"
 
@@ -57,15 +59,17 @@ class ProjectStatus(models.TextChoices):
 
 class Project(models.Model):
     client = models.ForeignKey(ClientProfile, on_delete=models.CASCADE, related_name='clientproject')
-    intake_requirements = models.JSONField(blank=True, null=True, default=None)
     proposal_draft = models.JSONField(blank=True,  null=True, default=None)
     tech_stack_draft = models.JSONField(blank=True,  null=True, default=None)
-    potential_candidates = models.JSONField(blank=True,  null=True, default=None)
+    team_recommendation = models.JSONField(blank=True,  null=True, default=None)
+    potential_candidates_per_role = models.JSONField(blank=True,  null=True, default=None)
     selected_candidates = models.JSONField(blank=True,  null=True, default=None)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
-    status_project = models.CharField(max_length=30, choices=ProjectStatus.choices, default=ProjectStatus.AI_INTAKE)
-
+    status = models.CharField(max_length=30, choices=ProjectStatus.choices, default=ProjectStatus.AI_INTAKE)
+    matching_status = models.CharField(max_length=40, choices=MatchingStatus.choices, default=MatchingStatus.INTAKE_REQUIREMENTS)
+    matching_status_changed_at = models.DateTimeField(blank=True, null=True)
+    processing_progress = models.PositiveSmallIntegerField(default=0)  # <-- NUEVO
 
 
 
@@ -73,7 +77,6 @@ class Project(models.Model):
 
 class Intake(models.Model):
     project = models.OneToOneField(Project, on_delete=models.SET_NULL,null=True, blank=True, related_name="project_intake")
-    status = models.CharField(max_length=20, choices=IntakeStage.choices, default=IntakeStage.INTAKE_REQUIREMENTS)
     client_description = models.TextField(blank=True, null=True)
     problem = models.TextField(blank=True, null=True)
     end_user = models.TextField(blank=True, null=True)
@@ -84,6 +87,7 @@ class Intake(models.Model):
     recommended_stack = models.TextField(blank=True, null=True)
     other_info = models.TextField(blank=True, null=True)
     client = models.ForeignKey('clients.ClientProfile', on_delete=models.SET_NULL, related_name='intakes', db_index=True,null=True)
+    created_at = models.DateTimeField(default=timezone.now, editable=False)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='created_intakes',)
 
     def __str__(self):
@@ -115,7 +119,7 @@ class IntakeDocument(models.Model):
     size_bytes = models.BigIntegerField(blank=True, null=True)
     pages = models.IntegerField(blank=True, null=True)
     extracted_text = models.TextField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)    
+    created_at = models.DateTimeField(default=timezone.now, editable=False)
 
 
 

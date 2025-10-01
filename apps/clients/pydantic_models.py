@@ -135,7 +135,7 @@ class TemporaryCandidateRoleMatching(BaseModel):
     )
 
 class SelectedCandidate(BaseModel):
-    id: int
+    user_id: int
     role: str
     seniority: int
     tech_stack: list[str] 
