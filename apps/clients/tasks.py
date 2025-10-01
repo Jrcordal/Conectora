@@ -59,12 +59,10 @@ def structure_requirements(intake_instance):
     input_template = """
     Who are you and what do you do?
     {client_description}
-    What do you need?
-    {need}
     What problem are you trying to solve?
     {problem}
     Who are the end users?
-    {end_users}
+    {end_user}
     What do you hope to achieve with this project as end goal? 
     {end_goal}
     What features do you think the solution must definitely include?
@@ -93,9 +91,8 @@ def structure_requirements(intake_instance):
     ]
     prompt_for_requirements_draft = prompt_for_requirements_draft.format(
         client_description=intake_instance.client_description,
-        need=intake_instance.need,
         problem=intake_instance.problem,
-        end_users=intake_instance.end_users,
+        end_user=intake_instance.end_user,
         end_goal=intake_instance.end_goal,
         must_features=intake_instance.must_features,
         required_workflows=intake_instance.required_workflows,
