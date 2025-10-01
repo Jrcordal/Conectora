@@ -12,7 +12,7 @@ class MultipleDocsUploadForm(forms.Form):
     files = forms.FileField(
         label="Relevant docs for the proposal",
         widget=MultipleFileInput(attrs={"accept": ".pdf,.docx"}),
-        required=True,
+        required=False,
         help_text="You can select several .pdf or .docx"
     )
 
