@@ -282,6 +282,7 @@ def match_candidates(structured_team) -> Dict[str, List[int]]:
     return matches_by_role
 # Campos que no queremos serializar porque no son relevantes o son pesados/sensibles
 EXCLUDE_FIELDS = [
+    "user",
     "consent_promotional_use",
     "consent_given_at",
     "is_open_to_work",
@@ -289,6 +290,18 @@ EXCLUDE_FIELDS = [
     "has_cv",
     "cv_file",
     "cv_raw_text",
+    "cv_name",
+    "cv_size",
+    "cv_uploaded_at",
+    "schema_version",
+    "created_at",
+    "hourly_rate",
+    "currency",
+    "profile_picture",
+    "linkedin",
+    "github",
+    "personal_website",
+    "telephone_number",
 ]
 
 
@@ -506,7 +519,7 @@ def matching_pipeline(intake_id: int, project_id: int):
     )
     logger.info(f"Selected candidates structured for project {project_id}")
     logger.info(f"Selected candidates: {selected_by_role}")
-    return {"selected_by_role": selected_by_role}
+    return 
 
 
 
