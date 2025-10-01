@@ -113,7 +113,7 @@ def structure_requirements(intake_instance):
     ("system", "You are a software requirements analyst and project manager."),
     ("human", 
     """
-    Based on the following draft description, structure it into the fields of a software requirements specification. Use the predefined schema and leave fields empty if no information is found.
+    Based on the following draft description, structure it into the fields of a software requirements specification. Leave fields empty if no information is found.
 
     DRAFT:
     {draft_text}
@@ -233,12 +233,7 @@ def match_candidates(structured_team) -> Dict[str, List[int]]:
         - If a candidate mentions multiple roles, pick the closest among the required roles.
         - 'recommended_role' MUST BE EXACTLY one of the required roles provided.
         - If none is a reasonable match, EXCLUDE the candidate (do not include it in 'matches').
-        Schema:
-        {
-        "matches":[
-            {"user_id": int, "main_developer_role": str, "recommended_role": str}
-        ]
-        }
+        
         
         Team Profiles Recommendation (allowed values for 'recommended_role'):
         {structured_team_input}
