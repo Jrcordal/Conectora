@@ -256,7 +256,7 @@ def match_candidates(structured_team) -> Dict[str, List[int]]:
     
     all_freelancers_open_to_work = (
         DeveloperProfile.objects
-        .filter(open_to_work=True)
+        .filter(is_open_to_work=True)
         .only("user_id", "main_developer_role")
     )
     matched: TemporaryCandidateRoleMatching = alpha_version_role_matching(
