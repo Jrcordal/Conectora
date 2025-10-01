@@ -58,7 +58,7 @@ def structure_requirements(intake_instance):
     """
     input_template = """
     Who are you and what do you do?
-    {company_description}
+    {client_description}
     What do you need?
     {need}
     What problem are you trying to solve?
@@ -92,7 +92,7 @@ def structure_requirements(intake_instance):
         for i, doc in enumerate(intake_instance.intakedocuments.all())
     ]
     prompt_for_requirements_draft = prompt_for_requirements_draft.format(
-        company_description=intake_instance.company_description,
+        client_description=intake_instance.client_description,
         need=intake_instance.need,
         problem=intake_instance.problem,
         end_users=intake_instance.end_users,
