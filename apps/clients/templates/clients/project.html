@@ -1,5 +1,8 @@
 {% extends 'users/base.html' %}
 
+{% load static %}
+{% load json_script from django.core.serializers.json %}
+
 {% block title %}Project #{{ project.id }} - Details{% endblock %}
 
 {% block body %}
@@ -292,7 +295,8 @@
                 Copy JSON
               </button>
             </div>
-            <div id="proposal-display" class="data-display" data-json="{{ project.proposal_draft|escapejs }}"></div>
+            {{ project.proposal_draft|json_script:"proposal-json-data" }}
+            <div id="proposal-display" class="data-display"></div>
           </div>
           {% else %}
           <div class="empty-state">
@@ -328,7 +332,8 @@
                 Copy JSON
               </button>
             </div>
-            <div id="techstack-display" class="data-display" data-json="{{ project.tech_stack_draft|escapejs }}"></div>
+            {{ project.tech_stack_draft|json_script:"techstack-json-data" }}
+            <div id="techstack-display" class="data-display"></div>
           </div>
           {% else %}
           <div class="empty-state">
@@ -366,7 +371,8 @@
                 Copy JSON
               </button>
             </div>
-            <div id="team-display" class="data-display" data-json="{{ project.team_recommendation|escapejs }}"></div>
+            {{ project.team_recommendation|json_script:"team-json-data" }}
+            <div id="team-display" class="data-display"></div>
           </div>
           {% else %}
           <div class="empty-state">
@@ -403,7 +409,8 @@
                 Copy JSON
               </button>
             </div>
-            <div id="candidates-display" class="data-display" data-json="{{ project.potential_candidates_per_role|escapejs }}"></div>
+            {{ project.potential_candidates_per_role|json_script:"candidates-json-data" }}
+            <div id="candidates-display" class="data-display"></div>
           </div>
           {% else %}
           <div class="empty-state">
@@ -440,7 +447,8 @@
                 Copy JSON
               </button>
             </div>
-            <div id="selected-display" class="data-display" data-json="{{ project.selected_candidates|escapejs }}"></div>
+            {{ project.selected_candidates|json_script:"selected-json-data" }}
+            <div id="selected-display" class="data-display"></div>
           </div>
           {% else %}
           <div class="empty-state">
@@ -1436,8 +1444,10 @@ function toggleText(button) {
 }
 
 function copyJSON(tabName) {
-  const displayElement = document.getElementById(tabName + '-display');
-  const jsonStr = displayElement.getAttribute('data-json');
+  const jsonElement = document.getElementById(tabName + '-json-data');
+  if (!jsonElement) return;
+  
+  const jsonStr = jsonElement.textContent;
   
   navigator.clipboard.writeText(jsonStr).then(() => {
     const button = event.target.closest('.btn-copy');
@@ -1465,26 +1475,27 @@ function copyJSON(tabName) {
 // JSON Rendering Functions
 function renderStructuredData() {
   const displays = [
-    { id: 'proposal-display', type: 'proposal' },
-    { id: 'techstack-display', type: 'techstack' },
-    { id: 'team-display', type: 'team' },
-    { id: 'candidates-display', type: 'candidates' },
-    { id: 'selected-display', type: 'selected' }
+    { id: 'proposal-display', jsonId: 'proposal-json-data', type: 'proposal' },
+    { id: 'techstack-display', jsonId: 'techstack-json-data', type: 'techstack' },
+    { id: 'team-display', jsonId: 'team-json-data', type: 'team' },
+    { id: 'candidates-display', jsonId: 'candidates-json-data', type: 'candidates' },
+    { id: 'selected-display', jsonId: 'selected-json-data', type: 'selected' }
   ];
 
-  displays.forEach(({ id, type }) => {
+  displays.forEach(({ id, jsonId, type }) => {
     const element = document.getElementById(id);
-    if (!element) return;
-
-    const jsonStr = element.getAttribute('data-json');
-    if (!jsonStr) return;
+    const jsonElement = document.getElementById(jsonId);
+    
+    if (!element || !jsonElement) return;
 
     try {
-      const data = JSON.parse(jsonStr);
+      const data = JSON.parse(jsonElement.textContent);
+      console.log('[v0] Parsed', type, 'data:', data);
       element.innerHTML = renderDataByType(data, type);
     } catch (e) {
-      console.error(`Error parsing ${type} JSON:`, e);
-      element.innerHTML = '<div class="empty-state"><p>Error parsing data</p></div>';
+      console.error(`[v0] Error parsing ${type} JSON:`, e);
+      console.error('[v0] JSON content:', jsonElement.textContent);
+      element.innerHTML = '<div class="empty-state"><p>Error parsing data. Check console for details.</p></div>';
     }
   });
 }
