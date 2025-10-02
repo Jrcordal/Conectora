@@ -91,8 +91,7 @@ def intake_create(request):
                 request,
                 "Intake created correctly. Matching being processed in the background"
             )
-            return redirect('clients:dashboard')
-            #return redirect("projects:detail", project_id=project.id)
+            return redirect('clients:project_detail', project_id=project.id)
     else:
         form = IntakeForm()
 
