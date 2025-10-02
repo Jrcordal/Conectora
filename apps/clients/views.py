@@ -102,6 +102,22 @@ def intake_create(request):
 @login_required
 @authorized_required
 def project_list(request):
+    # asumimos que el cliente autenticado tiene un perfil asociado
+    client_profile = request.user.client_profile  
 
-    projects = Project.objects.all(id=request.user.pk)
-    return render(request,'clients/projects.html',{'projects':projects})
+    # solo proyectos del cliente autenticado
+    qs = Project.objects.filter(client=client_profile)
+
+    qs = qs.order_by('-created_at')
+    return render(request, 'clients/project_list.html', {'projects': qs})
+
+
+
+"""
+@login_required
+@authorized_required
+def project_detail(request, project_id):
+    client_profile = request.user.client_profile
+    project = get_object_or_404(Project, id=project_id, client=client_profile)
+    return render(request, 'clients/project_detail.html', {'project': project})
+"""
