@@ -5,7 +5,7 @@
 {% block body %}
 <div class="container">
   <div class="projects-wrapper">
-    <!-- Header -->
+     Header 
     <div class="projects-header">
       <div class="header-content">
         <div class="header-icon">
@@ -36,7 +36,7 @@
       </div>
     </div>
 
-    <!-- Filters -->
+     Filters 
     <div class="filters-section">
       <div class="filter-group">
         <label for="statusFilter" class="filter-label">
@@ -74,17 +74,16 @@
         </select>
       </div>
 
-      <a class="btn-new-project" href="{% url 'clients:intake_create' %}">Create Project</a>
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <a class="btn-new-project" href="{% url 'clients:intake_create' %}">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <line x1="12" y1="5" x2="12" y2="19"></line>
           <line x1="5" y1="12" x2="19" y2="12"></line>
         </svg>
         New Project
-      </button>
+      </a>
     </div>
 
-    <!-- Projects List -->
+     Projects List 
     <div class="projects-list" id="projectsList">
       {% if projects %}
         {% for project in projects %}
@@ -110,20 +109,18 @@
           </div>
 
           <div class="project-body">
-            <!-- Progress Bar -->
+             Progress Bar 
             <div class="progress-section">
               <div class="progress-header">
                 <span class="progress-label">Processing Progress</span>
                 <span class="progress-value">{{ project.processing_progress }}%</span>
               </div>
               <div class="progress-bar">
-                <div class="progress-bar">
-                    <div class="progress-fill" data-progress="{{ project.processing_progress }}"></div>
-                  </div>               
+                <div class="progress-fill" style="width: {{ project.processing_progress }}%"></div>
               </div>
             </div>
 
-            <!-- Matching Status -->
+             Matching Status 
             <div class="matching-section">
               <h4 class="section-title">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -178,7 +175,7 @@
               </div>
             </div>
 
-            <!-- Project Deliverables -->
+             Project Deliverables 
             <div class="deliverables-section">
               <h4 class="section-title">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -294,13 +291,13 @@
           </div>
           <h3 class="empty-title">No projects yet</h3>
           <p class="empty-description">Start by creating your first project intake form</p>
-          <a class="btn-empty" href="{% url 'clients:intake_form' %}">Create Project</a>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <a class="btn-empty" href="{% url 'clients:intake_form' %}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <line x1="12" y1="5" x2="12" y2="19"></line>
               <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
             Create First Project
-          </button>
+          </a>
         </div>
       {% endif %}
     </div>
@@ -449,6 +446,7 @@
   align-items: center;
   gap: 0.5rem;
   height: fit-content;
+  text-decoration: none;
 }
 
 .btn-new-project:hover {
@@ -861,6 +859,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  text-decoration: none;
 }
 
 .btn-empty:hover {
