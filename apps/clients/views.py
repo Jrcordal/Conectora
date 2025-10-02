@@ -7,7 +7,6 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.contrib import messages
 from django.db.models import F
-from django.forms.models import model_to_dict
 
 # Create your views here.
 
@@ -117,30 +116,7 @@ def project_list(request):
 @login_required
 @authorized_required
 def project_detail(request, project_id):
-    client = request.user.clientprofile
-    project = get_object_or_404(
-        Project.objects.select_related("client").prefetch_related(
-            "project_intake__intakedocuments"  # ajusta related_name si difiere
-        ),
-        id=project_id,
-        client=client
-    )
+    client_profile = request.user.clientprofile
+    project = get_object_or_404(Project, id=project_id, client=client_profile)
+    return render(request, 'clients/project.html', {'project': project})
 
-    project_payload = model_to_dict(project)
-    project_payload.update({
-        "created_at": project.created_at,
-        "status": project.status,
-        "proposal_draft":project.proposal_draft,
-        "tech_stack_draft":project.tech_stack_draft,
-        "team_recommendation":project.team_recommendation,
-        "potential_candidates_per_role":project.potential_candidates_per_role,
-        "selected_candidates":project.selected_candidates,
-        "processing_progress":project.processing_progress,
-
-        # añade lo que necesites…
-    })
-
-    return render(request, "clients/project.html", {
-        "project": project,
-        "project_payload": project_payload,
-    })
