@@ -1,0 +1,1212 @@
+{% extends 'users/base.html' %}
+
+{% block title %}Project #{{ project.id }} - Details{% endblock %}
+
+{% block body %}
+<div class="container">
+  <div class="project-detail-wrapper">
+     Breadcrumb Navigation 
+    <nav class="breadcrumb">
+      <a href="{% url 'clients:projects' %}" class="breadcrumb-link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15,18 9,12 15,6"></polyline>
+        </svg>
+        Back to Projects
+      </a>
+      <span class="breadcrumb-separator">/</span>
+      <span class="breadcrumb-current">Project #{{ project.id }}</span>
+    </nav>
+
+     Project Header 
+    <div class="project-header">
+      <div class="header-main">
+        <div class="header-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+        </div>
+        <div class="header-info">
+          <h1 class="project-title">Project #{{ project.id }}</h1>
+          <div class="project-meta-header">
+            <span class="meta-badge">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              Created {{ project.created_at|date:"M d, Y" }}
+            </span>
+            <span class="meta-badge">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12,6 12,12 16,14"></polyline>
+              </svg>
+              Updated {{ project.updated_at|timesince }} ago
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="header-badges">
+        <span class="status-badge status-{{ project.status }}">
+          {{ project.get_status_display }}
+        </span>
+        <span class="matching-badge matching-{{ project.matching_status }}">
+          {{ project.get_matching_status_display }}
+        </span>
+      </div>
+    </div>
+
+     Progress Overview 
+    <div class="progress-card">
+      <div class="progress-header">
+        <div class="progress-title">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22,4 12,14.01 9,11.01"></polyline>
+          </svg>
+          Processing Progress
+        </div>
+        <div class="progress-percentage">{{ project.processing_progress }}%</div>
+      </div>
+      <div class="progress-bar-large">
+        <div class="progress-fill-large" style="width: {{ project.processing_progress }}%"></div>
+      </div>
+    </div>
+
+     Main Content Grid 
+    <div class="content-grid">
+       Left Column 
+      <div class="left-column">
+         Matching Timeline 
+        <div class="section-card">
+          <div class="section-header">
+            <h2 class="section-title">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12,6 12,12 16,14"></polyline>
+              </svg>
+              Matching Timeline
+            </h2>
+          </div>
+          
+          <div class="timeline-vertical">
+            <div class="timeline-step {% if project.matching_status == 'intake_requirements' %}active{% elif project.processing_progress >= 17 %}completed{% endif %}">
+              <div class="step-marker">
+                {% if project.processing_progress >= 17 %}
+                  <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                {% else %}
+                  <div class="step-number">1</div>
+                {% endif %}
+              </div>
+              <div class="step-content">
+                <h4 class="step-title">Requirements Received</h4>
+                <p class="step-description">Initial project requirements and documents submitted</p>
+                {% if project.matching_status == 'intake_requirements' %}
+                  <span class="step-status">In Progress</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="timeline-step {% if project.matching_status == 'proposal_draft' %}active{% elif project.processing_progress >= 34 %}completed{% endif %}">
+              <div class="step-marker">
+                {% if project.processing_progress >= 34 %}
+                  <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                {% else %}
+                  <div class="step-number">2</div>
+                {% endif %}
+              </div>
+              <div class="step-content">
+                <h4 class="step-title">Proposal Draft</h4>
+                <p class="step-description">Project proposal being prepared based on requirements</p>
+                {% if project.matching_status == 'proposal_draft' %}
+                  <span class="step-status">In Progress</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="timeline-step {% if project.matching_status == 'tech_stack_draft' %}active{% elif project.processing_progress >= 50 %}completed{% endif %}">
+              <div class="step-marker">
+                {% if project.processing_progress >= 50 %}
+                  <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                {% else %}
+                  <div class="step-number">3</div>
+                {% endif %}
+              </div>
+              <div class="step-content">
+                <h4 class="step-title">Tech Stack Draft</h4>
+                <p class="step-description">Technology stack and architecture being defined</p>
+                {% if project.matching_status == 'tech_stack_draft' %}
+                  <span class="step-status">In Progress</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="timeline-step {% if project.matching_status == 'team_recommendation' %}active{% elif project.processing_progress >= 67 %}completed{% endif %}">
+              <div class="step-marker">
+                {% if project.processing_progress >= 67 %}
+                  <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                {% else %}
+                  <div class="step-number">4</div>
+                {% endif %}
+              </div>
+              <div class="step-content">
+                <h4 class="step-title">Team Recommendation</h4>
+                <p class="step-description">Recommended team structure and roles identified</p>
+                {% if project.matching_status == 'team_recommendation' %}
+                  <span class="step-status">In Progress</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="timeline-step {% if project.matching_status == 'potential_candidates' %}active{% elif project.processing_progress >= 84 %}completed{% endif %}">
+              <div class="step-marker">
+                {% if project.processing_progress >= 84 %}
+                  <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                {% else %}
+                  <div class="step-number">5</div>
+                {% endif %}
+              </div>
+              <div class="step-content">
+                <h4 class="step-title">Potential Candidates</h4>
+                <p class="step-description">Matching potential developers to project requirements</p>
+                {% if project.matching_status == 'potential_candidates' %}
+                  <span class="step-status">In Progress</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="timeline-step {% if project.matching_status == 'selected_candidates' %}active{% elif project.processing_progress == 100 %}completed{% endif %}">
+              <div class="step-marker">
+                {% if project.processing_progress == 100 %}
+                  <svg class="check-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20,6 9,17 4,12"></polyline>
+                  </svg>
+                {% else %}
+                  <div class="step-number">6</div>
+                {% endif %}
+              </div>
+              <div class="step-content">
+                <h4 class="step-title">Selected Candidates</h4>
+                <p class="step-description">Final team selection and confirmation</p>
+                {% if project.matching_status == 'selected_candidates' %}
+                  <span class="step-status">In Progress</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+         Project Requirements 
+        <div class="section-card">
+          <div class="section-header">
+            <h2 class="section-title">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14,2 14,8 20,8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+              </svg>
+              Project Requirements
+            </h2>
+          </div>
+
+          <div class="requirements-content">
+            {% if project.client_description %}
+            <div class="requirement-item">
+              <h4 class="requirement-title">Company Description</h4>
+              <p class="requirement-text">{{ project.client_description }}</p>
+            </div>
+            {% endif %}
+
+            {% if project.problem %}
+            <div class="requirement-item">
+              <h4 class="requirement-title">Problem Statement</h4>
+              <p class="requirement-text">{{ project.problem }}</p>
+            </div>
+            {% endif %}
+
+            {% if project.end_user %}
+            <div class="requirement-item">
+              <h4 class="requirement-title">Target End Users</h4>
+              <p class="requirement-text">{{ project.end_user }}</p>
+            </div>
+            {% endif %}
+
+            {% if project.end_goal %}
+            <div class="requirement-item">
+              <h4 class="requirement-title">Project Goals</h4>
+              <p class="requirement-text">{{ project.end_goal }}</p>
+            </div>
+            {% endif %}
+
+            {% if project.must_features %}
+            <div class="requirement-item">
+              <h4 class="requirement-title">Must-Have Features</h4>
+              <p class="requirement-text">{{ project.must_features }}</p>
+            </div>
+            {% endif %}
+
+            {% if project.required_workflows %}
+            <div class="requirement-item">
+              <h4 class="requirement-title">Required Workflows</h4>
+              <p class="requirement-text">{{ project.required_workflows }}</p>
+            </div>
+            {% endif %}
+
+            {% if project.must_not_do %}
+            <div class="requirement-item">
+              <h4 class="requirement-title">Constraints & Restrictions</h4>
+              <p class="requirement-text">{{ project.must_not_do }}</p>
+            </div>
+            {% endif %}
+
+            {% if project.recommended_stack %}
+            <div class="requirement-item">
+              <h4 class="requirement-title">Recommended Tech Stack</h4>
+              <p class="requirement-text">{{ project.recommended_stack }}</p>
+            </div>
+            {% endif %}
+
+            {% if project.other_info %}
+            <div class="requirement-item">
+              <h4 class="requirement-title">Additional Information</h4>
+              <p class="requirement-text">{{ project.other_info }}</p>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+       Right Column 
+      <div class="right-column">
+         Deliverables 
+        <div class="section-card">
+          <div class="section-header">
+            <h2 class="section-title">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              </svg>
+              Available Deliverables
+            </h2>
+          </div>
+
+          <div class="deliverables-list">
+            <div class="deliverable-card {% if project.proposal_draft %}available{% else %}pending{% endif %}">
+              <div class="deliverable-header">
+                <div class="deliverable-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14,2 14,8 20,8"></polyline>
+                  </svg>
+                </div>
+                <h4 class="deliverable-title">Proposal Draft</h4>
+                {% if project.proposal_draft %}
+                  <span class="deliverable-status available">Available</span>
+                {% else %}
+                  <span class="deliverable-status pending">Pending</span>
+                {% endif %}
+              </div>
+              {% if project.proposal_draft %}
+              <p class="deliverable-description">Comprehensive project proposal with scope and timeline</p>
+              <a href="#" class="btn-download">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7,10 12,15 17,10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Download
+              </a>
+              {% else %}
+              <p class="deliverable-description pending-text">This deliverable will be available soon</p>
+              {% endif %}
+            </div>
+
+            <div class="deliverable-card {% if project.tech_stack_draft %}available{% else %}pending{% endif %}">
+              <div class="deliverable-header">
+                <div class="deliverable-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="16,18 22,12 16,6"></polyline>
+                    <polyline points="8,6 2,12 8,18"></polyline>
+                  </svg>
+                </div>
+                <h4 class="deliverable-title">Tech Stack</h4>
+                {% if project.tech_stack_draft %}
+                  <span class="deliverable-status available">Available</span>
+                {% else %}
+                  <span class="deliverable-status pending">Pending</span>
+                {% endif %}
+              </div>
+              {% if project.tech_stack_draft %}
+              <p class="deliverable-description">Recommended technology stack and architecture</p>
+              <a href="#" class="btn-download">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7,10 12,15 17,10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Download
+              </a>
+              {% else %}
+              <p class="deliverable-description pending-text">This deliverable will be available soon</p>
+              {% endif %}
+            </div>
+
+            <div class="deliverable-card {% if project.team_recommendation %}available{% else %}pending{% endif %}">
+              <div class="deliverable-header">
+                <div class="deliverable-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                  </svg>
+                </div>
+                <h4 class="deliverable-title">Team Recommendation</h4>
+                {% if project.team_recommendation %}
+                  <span class="deliverable-status available">Available</span>
+                {% else %}
+                  <span class="deliverable-status pending">Pending</span>
+                {% endif %}
+              </div>
+              {% if project.team_recommendation %}
+              <p class="deliverable-description">Recommended team structure and roles</p>
+              <a href="#" class="btn-download">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7,10 12,15 17,10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Download
+              </a>
+              {% else %}
+              <p class="deliverable-description pending-text">This deliverable will be available soon</p>
+              {% endif %}
+            </div>
+
+            <div class="deliverable-card {% if project.potential_candidates_per_role %}available{% else %}pending{% endif %}">
+              <div class="deliverable-header">
+                <div class="deliverable-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6m0 6v6"></path>
+                    <path d="M1 12h6m6 0h6"></path>
+                  </svg>
+                </div>
+                <h4 class="deliverable-title">Potential Candidates</h4>
+                {% if project.potential_candidates_per_role %}
+                  <span class="deliverable-status available">Available</span>
+                {% else %}
+                  <span class="deliverable-status pending">Pending</span>
+                {% endif %}
+              </div>
+              {% if project.potential_candidates_per_role %}
+              <p class="deliverable-description">Matched developers for each role</p>
+              <a href="#" class="btn-download">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                View Candidates
+              </a>
+              {% else %}
+              <p class="deliverable-description pending-text">This deliverable will be available soon</p>
+              {% endif %}
+            </div>
+
+            <div class="deliverable-card {% if project.selected_candidates %}available{% else %}pending{% endif %}">
+              <div class="deliverable-header">
+                <div class="deliverable-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="8.5" cy="7" r="4"></circle>
+                    <polyline points="17,11 19,13 23,9"></polyline>
+                  </svg>
+                </div>
+                <h4 class="deliverable-title">Selected Candidates</h4>
+                {% if project.selected_candidates %}
+                  <span class="deliverable-status available">Available</span>
+                {% else %}
+                  <span class="deliverable-status pending">Pending</span>
+                {% endif %}
+              </div>
+              {% if project.selected_candidates %}
+              <p class="deliverable-description">Final confirmed team members</p>
+              <a href="#" class="btn-download">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                View Team
+              </a>
+              {% else %}
+              <p class="deliverable-description pending-text">This deliverable will be available soon</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+         Uploaded Documents 
+        {% if project.files.all %}
+        <div class="section-card">
+          <div class="section-header">
+            <h2 class="section-title">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                <polyline points="13,2 13,9 20,9"></polyline>
+              </svg>
+              Uploaded Documents
+            </h2>
+          </div>
+
+          <div class="documents-list">
+            {% for file in project.files.all %}
+            <div class="document-item">
+              <div class="document-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14,2 14,8 20,8"></polyline>
+                </svg>
+              </div>
+              <div class="document-info">
+                <h4 class="document-name">{{ file.name }}</h4>
+                <p class="document-meta">{{ file.size|filesizeformat }} • Uploaded {{ file.uploaded_at|date:"M d, Y" }}</p>
+              </div>
+              <a href="{{ file.url }}" class="btn-download-doc" download>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7,10 12,15 17,10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+              </a>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+         Activity Log 
+        <div class="section-card">
+          <div class="section-header">
+            <h2 class="section-title">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"></polyline>
+              </svg>
+              Recent Activity
+            </h2>
+          </div>
+
+          <div class="activity-list">
+            <div class="activity-item">
+              <div class="activity-dot"></div>
+              <div class="activity-content">
+                <p class="activity-text">Project status updated to <strong>{{ project.get_status_display }}</strong></p>
+                <span class="activity-time">{{ project.updated_at|timesince }} ago</span>
+              </div>
+            </div>
+
+            <div class="activity-item">
+              <div class="activity-dot"></div>
+              <div class="activity-content">
+                <p class="activity-text">Matching stage changed to <strong>{{ project.get_matching_status_display }}</strong></p>
+                <span class="activity-time">{% if project.matching_status_changed_at %}{{ project.matching_status_changed_at|timesince }} ago{% else %}Recently{% endif %}</span>
+              </div>
+            </div>
+
+            <div class="activity-item">
+              <div class="activity-dot"></div>
+              <div class="activity-content">
+                <p class="activity-text">Project created</p>
+                <span class="activity-time">{{ project.created_at|timesince }} ago</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.project-detail-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.breadcrumb-link {
+  color: #00a99d;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.breadcrumb-link:hover {
+  color: #008a7e;
+}
+
+.breadcrumb-link svg {
+  width: 16px;
+  height: 16px;
+}
+
+.breadcrumb-separator {
+  color: #d1d5db;
+}
+
+.breadcrumb-current {
+  color: #333;
+  font-weight: 600;
+}
+
+/* Project Header */
+.project-header {
+  background: linear-gradient(135deg, #00a99d, #00c4b6);
+  color: white;
+  border-radius: 16px;
+  padding: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  box-shadow: 0 8px 25px rgba(0, 169, 157, 0.3);
+}
+
+.header-main {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.header-icon {
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.header-icon svg {
+  width: 30px;
+  height: 30px;
+}
+
+.header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.project-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.project-meta-header {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.meta-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  opacity: 0.9;
+}
+
+.meta-badge svg {
+  width: 16px;
+  height: 16px;
+}
+
+.header-badges {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.status-badge,
+.matching-badge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Progress Card */
+.progress-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.progress-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.progress-title svg {
+  width: 20px;
+  height: 20px;
+  color: #00a99d;
+}
+
+.progress-percentage {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #00a99d;
+}
+
+.progress-bar-large {
+  height: 12px;
+  background: #e5e7eb;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-fill-large {
+  height: 100%;
+  background: linear-gradient(90deg, #00a99d, #00c4b6);
+  transition: width 0.3s ease;
+  border-radius: 6px;
+}
+
+/* Content Grid */
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 2rem;
+}
+
+.left-column,
+.right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Section Card */
+.section-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.section-header {
+  background: #f8f9fa;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-title svg {
+  width: 20px;
+  height: 20px;
+  color: #00a99d;
+}
+
+/* Timeline Vertical */
+.timeline-vertical {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.timeline-step {
+  display: flex;
+  gap: 1rem;
+  position: relative;
+  padding-bottom: 2rem;
+}
+
+.timeline-step:last-child {
+  padding-bottom: 0;
+}
+
+.timeline-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 17px;
+  top: 36px;
+  bottom: 0;
+  width: 2px;
+  background: #e5e7eb;
+}
+
+.timeline-step.completed:not(:last-child)::after {
+  background: #00a99d;
+}
+
+.step-marker {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  transition: all 0.3s ease;
+}
+
+.timeline-step.completed .step-marker {
+  background: #00a99d;
+}
+
+.timeline-step.active .step-marker {
+  background: #00a99d;
+  animation: pulse 2s infinite;
+}
+
+.step-number {
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.timeline-step.completed .step-number,
+.timeline-step.active .step-number {
+  color: white;
+}
+
+.check-icon {
+  width: 20px;
+  height: 20px;
+  color: white;
+}
+
+.step-content {
+  flex: 1;
+  padding-top: 0.25rem;
+}
+
+.step-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 0.25rem;
+}
+
+.step-description {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.step-status {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  background: rgba(0, 169, 157, 0.1);
+  color: #00a99d;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Requirements Content */
+.requirements-content {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.requirement-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.requirement-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #00a99d;
+  text-transform: uppercase;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.requirement-text {
+  font-size: 0.875rem;
+  color: #333;
+  line-height: 1.6;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* Deliverables */
+.deliverables-list {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.deliverable-card {
+  background: #f8f9fa;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.deliverable-card.available {
+  background: rgba(0, 169, 157, 0.05);
+  border-color: #00a99d;
+}
+
+.deliverable-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.deliverable-icon {
+  width: 36px;
+  height: 36px;
+  background: #e5e7eb;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.deliverable-card.available .deliverable-icon {
+  background: #00a99d;
+  color: white;
+}
+
+.deliverable-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.deliverable-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+  flex: 1;
+}
+
+.deliverable-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.deliverable-status.available {
+  background: rgba(0, 169, 157, 0.1);
+  color: #00a99d;
+}
+
+.deliverable-status.pending {
+  background: #e5e7eb;
+  color: #6b7280;
+}
+
+.deliverable-description {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.pending-text {
+  font-style: italic;
+}
+
+.btn-download {
+  background: linear-gradient(135deg, #00a99d, #00c4b6);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.625rem 1rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.btn-download:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 169, 157, 0.3);
+}
+
+.btn-download svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Documents List */
+.documents-list {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.document-item {
+  background: #f8f9fa;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.document-item:hover {
+  background: #f3f4f6;
+}
+
+.document-icon {
+  width: 36px;
+  height: 36px;
+  background: #00a99d;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.document-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.document-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.document-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.document-meta {
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.btn-download-doc {
+  width: 32px;
+  height: 32px;
+  background: #00a99d;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.btn-download-doc:hover {
+  background: #008a7e;
+}
+
+.btn-download-doc svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Activity List */
+.activity-list {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.activity-item {
+  display: flex;
+  gap: 1rem;
+  position: relative;
+}
+
+.activity-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 24px;
+  bottom: -16px;
+  width: 2px;
+  background: #e5e7eb;
+}
+
+.activity-dot {
+  width: 16px;
+  height: 16px;
+  background: #00a99d;
+  border-radius: 50%;
+  border: 3px solid white;
+  box-shadow: 0 0 0 2px #00a99d;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.activity-content {
+  flex: 1;
+}
+
+.activity-text {
+  font-size: 0.875rem;
+  color: #333;
+  margin: 0 0 0.25rem;
+  line-height: 1.4;
+}
+
+.activity-time {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .right-column {
+    order: 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .project-header {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.5rem;
+  }
+  
+  .header-main {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .project-title {
+    font-size: 1.5rem;
+  }
+  
+  .header-badges {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .progress-card {
+    padding: 1rem;
+  }
+  
+  .section-card {
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .project-meta-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .deliverable-header {
+    flex-wrap: wrap;
+  }
+  
+  .deliverable-status {
+    width: 100%;
+    text-align: center;
+  }
+}
+</style>
+{% endblock %}

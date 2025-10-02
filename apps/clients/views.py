@@ -113,11 +113,10 @@ def project_list(request):
 
 
 
-"""
+
 @login_required
 @authorized_required
 def project_detail(request, project_id):
-    client_profile = request.user.client_profile
-    project = get_object_or_404(Project, id=project_id, client=clientprofile)
-    return render(request, 'clients/project_detail.html', {'project': project})
-"""
+    client_profile = request.user.clientprofile
+    project = get_object_or_404(Project, id=project_id, client=client_profile)
+    return render(request, 'clients/project.html', {'project': project})
