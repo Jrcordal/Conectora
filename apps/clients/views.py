@@ -109,7 +109,7 @@ def project_list(request):
     qs = Project.objects.filter(client=client_profile)
 
     qs = qs.order_by('-created_at')
-    return render(request, 'clients/project_list.html', {'projects': qs})
+    return render(request, 'clients/projects_list.html', {'projects': qs})
 
 
 
