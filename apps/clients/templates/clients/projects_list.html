@@ -116,7 +116,7 @@
                 <span class="progress-value">{{ project.processing_progress }}%</span>
               </div>
               <div class="progress-bar">
-                <div class="progress-fill" style="width: {{ project.processing_progress }}%"></div>
+                <div class="progress-fill" data-progress="{{ project.processing_progress }}"></div>
               </div>
             </div>
 
@@ -591,6 +591,7 @@
   height: 100%;
   background: linear-gradient(90deg, #00a99d, #00c4b6);
   transition: width 0.3s ease;
+  width: 0;
 }
 
 .matching-section {
@@ -939,6 +940,12 @@ document.addEventListener('DOMContentLoaded', function() {
   const statusFilter = document.getElementById('statusFilter');
   const matchingFilter = document.getElementById('matchingFilter');
   const projectCards = document.querySelectorAll('.project-card');
+
+  // Set progress bar widths from data attributes
+  document.querySelectorAll('.progress-fill').forEach(function(progressBar) {
+    const progress = progressBar.getAttribute('data-progress');
+    progressBar.style.width = progress + '%';
+  });
 
   function filterProjects() {
     const statusValue = statusFilter.value;
