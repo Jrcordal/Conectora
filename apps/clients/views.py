@@ -103,7 +103,7 @@ def intake_create(request):
 @authorized_required
 def project_list(request):
     # asumimos que el cliente autenticado tiene un perfil asociado
-    client_profile = request.user.client_profile  
+    client_profile = request.user.clientprofile  
 
     # solo proyectos del cliente autenticado
     qs = Project.objects.filter(client=client_profile)
@@ -118,6 +118,6 @@ def project_list(request):
 @authorized_required
 def project_detail(request, project_id):
     client_profile = request.user.client_profile
-    project = get_object_or_404(Project, id=project_id, client=client_profile)
+    project = get_object_or_404(Project, id=project_id, client=clientprofile)
     return render(request, 'clients/project_detail.html', {'project': project})
 """
