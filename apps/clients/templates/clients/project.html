@@ -72,8 +72,10 @@
         <div class="progress-percentage">{{ project.processing_progress }}%</div>
       </div>
       <div class="progress-bar-large">
-        <div class="progress-fill-large" style="width: {{ project.processing_progress }}%"></div>
-      </div>
+        <div class="progress-fill-large"
+        style="width: {{ project.processing_progress|default_if_none:0 }}%;">
+   </div>
+         </div>
     </div>
 
      Main Content Grid 

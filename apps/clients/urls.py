@@ -8,5 +8,5 @@ urlpatterns = [
     path('profile_form/',client_views.profile_form, name='profile_form'),
     path('intake/',client_views.intake_create, name='intake_create'),
     path('projects/',client_views.project_list, name='projects'),
-    path('project/',client_views.project_detail, name='project_detail')
+    path('project/<int:project_id>/',client_views.project_detail, name='project_detail')
     ]
