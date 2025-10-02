@@ -1,9 +1,8 @@
 {% extends 'users/base.html' %}
 
 {% load static %}
-{% load json_script from django.core.serializers.json %}
-
 {% block title %}Project #{{ project.id }} - Details{% endblock %}
+{{ project_payload|json_script:"project-json" }}
 
 {% block body %}
 <div class="container">
@@ -1408,6 +1407,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const progress = progressBar.getAttribute('data-progress');
     progressBar.style.width = progress + '%';
   }
+
+
+  const projectData = JSON.parse(document.getElementById("project-json").textContent);
+  console.log(projectData);
+
 
   // Tab switching
   const tabButtons = document.querySelectorAll('.tab-btn');
