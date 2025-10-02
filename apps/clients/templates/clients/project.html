@@ -213,6 +213,7 @@
               {% endif %}
             </div>
 
+             Intake Documents 
             {% if project.project_intake.intakedocuments.all %}
             <div class="documents-section">
               <h3 class="content-title">
@@ -275,8 +276,8 @@
 
         <div class="tab-content" id="proposal-tab">
           {% if project.proposal_draft %}
-          <div class="structured-content">
-            <div class="content-header">
+          <div class="json-viewer">
+            <div class="json-header">
               <h3 class="content-title">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -292,7 +293,7 @@
                 Copy JSON
               </button>
             </div>
-            <div id="proposal-display" class="data-display" data-json="{{ project.proposal_draft|escapejs }}"></div>
+            <pre id="proposal-json" class="json-content">{{ project.proposal_draft|safe }}</pre>
           </div>
           {% else %}
           <div class="empty-state">
@@ -311,8 +312,8 @@
 
         <div class="tab-content" id="techstack-tab">
           {% if project.tech_stack_draft %}
-          <div class="structured-content">
-            <div class="content-header">
+          <div class="json-viewer">
+            <div class="json-header">
               <h3 class="content-title">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="16,18 22,12 16,6"></polyline>
@@ -328,7 +329,7 @@
                 Copy JSON
               </button>
             </div>
-            <div id="techstack-display" class="data-display" data-json="{{ project.tech_stack_draft|escapejs }}"></div>
+            <pre id="techstack-json" class="json-content">{{ project.tech_stack_draft|safe }}</pre>
           </div>
           {% else %}
           <div class="empty-state">
@@ -347,8 +348,8 @@
 
         <div class="tab-content" id="team-tab">
           {% if project.team_recommendation %}
-          <div class="structured-content">
-            <div class="content-header">
+          <div class="json-viewer">
+            <div class="json-header">
               <h3 class="content-title">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -366,7 +367,7 @@
                 Copy JSON
               </button>
             </div>
-            <div id="team-display" class="data-display" data-json="{{ project.team_recommendation|escapejs }}"></div>
+            <pre id="team-json" class="json-content">{{ project.team_recommendation|safe }}</pre>
           </div>
           {% else %}
           <div class="empty-state">
@@ -385,8 +386,8 @@
 
         <div class="tab-content" id="candidates-tab">
           {% if project.potential_candidates_per_role %}
-          <div class="structured-content">
-            <div class="content-header">
+          <div class="json-viewer">
+            <div class="json-header">
               <h3 class="content-title">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <circle cx="12" cy="12" r="3"></circle>
@@ -403,7 +404,7 @@
                 Copy JSON
               </button>
             </div>
-            <div id="candidates-display" class="data-display" data-json="{{ project.potential_candidates_per_role|escapejs }}"></div>
+            <pre id="candidates-json" class="json-content">{{ project.potential_candidates_per_role|safe }}</pre>
           </div>
           {% else %}
           <div class="empty-state">
@@ -422,8 +423,8 @@
 
         <div class="tab-content" id="selected-tab">
           {% if project.selected_candidates %}
-          <div class="structured-content">
-            <div class="content-header">
+          <div class="json-viewer">
+            <div class="json-header">
               <h3 class="content-title">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
@@ -440,7 +441,7 @@
                 Copy JSON
               </button>
             </div>
-            <div id="selected-display" class="data-display" data-json="{{ project.selected_candidates|escapejs }}"></div>
+            <pre id="selected-json" class="json-content">{{ project.selected_candidates|safe }}</pre>
           </div>
           {% else %}
           <div class="empty-state">
@@ -966,19 +967,17 @@
   word-wrap: break-word;
 }
 
-/* Structured Content Styles */
-.structured-content {
+/* JSON Viewer */
+.json-viewer {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
-.content-header {
+.json-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid #e5e7eb;
 }
 
 .btn-copy {
@@ -1006,310 +1005,19 @@
   height: 16px;
 }
 
-.data-display {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.data-section {
-  background: #f8f9fa;
+.json-content {
+  background: #1e1e1e;
   border: 1px solid #e5e7eb;
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.section-title {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #00a99d;
   margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  text-transform: capitalize;
-}
-
-.section-title::before {
-  content: '';
-  width: 4px;
-  height: 20px;
-  background: #00a99d;
-  border-radius: 2px;
-}
-
-.data-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1rem;
-}
-
-.data-card {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  transition: all 0.2s ease;
-}
-
-.data-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 169, 157, 0.15);
-  border-color: #00a99d;
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.card-icon {
-  width: 36px;
-  height: 36px;
-  background: linear-gradient(135deg, #00a99d, #00c4b6);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 700;
+  overflow-x: auto;
+  font-family: 'Courier New', monospace;
   font-size: 0.875rem;
-  flex-shrink: 0;
-}
-
-.card-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #333;
-  margin: 0;
-  flex: 1;
-}
-
-.card-body {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.data-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.field-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #6b7280;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.field-value {
-  font-size: 0.9375rem;
-  color: #333;
-  line-height: 1.5;
-}
-
-.field-value.large {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #00a99d;
-}
-
-.data-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.list-item {
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 1rem;
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-}
-
-.list-item-icon {
-  width: 8px;
-  height: 8px;
-  background: #00a99d;
-  border-radius: 50%;
-  margin-top: 0.5rem;
-  flex-shrink: 0;
-}
-
-.list-item-content {
-  flex: 1;
-  font-size: 0.9375rem;
-  color: #333;
   line-height: 1.6;
-}
-
-.badge-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.data-badge {
-  background: #e0f7f5;
-  color: #00a99d;
-  padding: 0.375rem 0.75rem;
-  border-radius: 16px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  border: 1px solid #b3ebe6;
-}
-
-.candidate-card {
-  background: white;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  transition: all 0.2s ease;
-}
-
-.candidate-card:hover {
-  border-color: #00a99d;
-  box-shadow: 0 6px 20px rgba(0, 169, 157, 0.2);
-}
-
-.candidate-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.candidate-avatar {
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, #00a99d, #00c4b6);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 700;
-  font-size: 1.5rem;
-  flex-shrink: 0;
-}
-
-.candidate-info {
-  flex: 1;
-}
-
-.candidate-name {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #333;
-  margin: 0 0 0.25rem;
-}
-
-.candidate-role {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0;
-}
-
-.candidate-details {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e5e7eb;
-}
-
-.tech-items {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.tech-item {
-  background: #f8f9fa;
-  border: 1px solid #e5e7eb;
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  color: #333;
-  font-weight: 500;
-}
-
-.role-card {
-  background: white;
-  border: 2px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.role-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid #e5e7eb;
-}
-
-.role-title-group {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.role-icon {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #00a99d, #00c4b6);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-}
-
-.role-icon svg {
-  width: 24px;
-  height: 24px;
-}
-
-.role-name {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #333;
-  margin: 0;
-}
-
-.role-count {
-  background: #e0f7f5;
-  color: #00a99d;
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.875rem;
-  font-weight: 700;
-}
-
-.role-body {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  color: #d4d4d4;
+  max-height: 600px;
+  overflow-y: auto;
 }
 
 /* Empty State */
@@ -1385,10 +1093,6 @@
   .progress-stages {
     flex-wrap: wrap;
   }
-  
-  .data-grid {
-    grid-template-columns: 1fr;
-  }
 }
 </style>
 
@@ -1420,8 +1124,16 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
-  // Render structured data
-  renderStructuredData();
+  // Format JSON in pre tags
+  document.querySelectorAll('.json-content').forEach(pre => {
+    try {
+      const jsonText = pre.textContent;
+      const jsonObj = JSON.parse(jsonText);
+      pre.textContent = JSON.stringify(jsonObj, null, 2);
+    } catch (e) {
+      console.error('JSON parsing error:', e);
+    }
+  });
 });
 
 function toggleText(button) {
@@ -1436,10 +1148,10 @@ function toggleText(button) {
 }
 
 function copyJSON(tabName) {
-  const displayElement = document.getElementById(tabName + '-display');
-  const jsonStr = displayElement.getAttribute('data-json');
+  const jsonElement = document.getElementById(tabName + '-json');
+  const text = jsonElement.textContent;
   
-  navigator.clipboard.writeText(jsonStr).then(() => {
+  navigator.clipboard.writeText(text).then(() => {
     const button = event.target.closest('.btn-copy');
     const originalText = button.innerHTML;
     
@@ -1460,403 +1172,6 @@ function copyJSON(tabName) {
   }).catch(err => {
     console.error('Failed to copy:', err);
   });
-}
-
-// JSON Rendering Functions
-function renderStructuredData() {
-  const displays = [
-    { id: 'proposal-display', type: 'proposal' },
-    { id: 'techstack-display', type: 'techstack' },
-    { id: 'team-display', type: 'team' },
-    { id: 'candidates-display', type: 'candidates' },
-    { id: 'selected-display', type: 'selected' }
-  ];
-
-  displays.forEach(({ id, type }) => {
-    const element = document.getElementById(id);
-    if (!element) return;
-
-    const jsonStr = element.getAttribute('data-json');
-    if (!jsonStr) return;
-
-    try {
-      const data = JSON.parse(jsonStr);
-      element.innerHTML = renderDataByType(data, type);
-    } catch (e) {
-      console.error(`Error parsing ${type} JSON:`, e);
-      element.innerHTML = '<div class="empty-state"><p>Error parsing data</p></div>';
-    }
-  });
-}
-
-function renderDataByType(data, type) {
-  switch (type) {
-    case 'proposal':
-      return renderProposal(data);
-    case 'techstack':
-      return renderTechStack(data);
-    case 'team':
-      return renderTeam(data);
-    case 'candidates':
-      return renderCandidates(data);
-    case 'selected':
-      return renderSelected(data);
-    default:
-      return renderGeneric(data);
-  }
-}
-
-function renderProposal(data) {
-  let html = '';
-  
-  if (data.overview) {
-    html += `
-      <div class="data-section">
-        <h3 class="section-title">Project Overview</h3>
-        <div class="data-field">
-          <p class="field-value">${escapeHtml(data.overview)}</p>
-        </div>
-      </div>
-    `;
-  }
-
-  if (data.objectives || data.goals) {
-    const items = data.objectives || data.goals;
-    html += `
-      <div class="data-section">
-        <h3 class="section-title">Objectives & Goals</h3>
-        <div class="data-list">
-          ${Array.isArray(items) ? items.map(item => `
-            <div class="list-item">
-              <div class="list-item-icon"></div>
-              <div class="list-item-content">${escapeHtml(item)}</div>
-            </div>
-          `).join('') : `<p class="field-value">${escapeHtml(items)}</p>`}
-        </div>
-      </div>
-    `;
-  }
-
-  if (data.deliverables) {
-    html += `
-      <div class="data-section">
-        <h3 class="section-title">Deliverables</h3>
-        <div class="data-list">
-          ${Array.isArray(data.deliverables) ? data.deliverables.map(item => `
-            <div class="list-item">
-              <div class="list-item-icon"></div>
-              <div class="list-item-content">${escapeHtml(item)}</div>
-            </div>
-          `).join('') : `<p class="field-value">${escapeHtml(data.deliverables)}</p>`}
-        </div>
-      </div>
-    `;
-  }
-
-  if (data.timeline || data.duration) {
-    html += `
-      <div class="data-section">
-        <h3 class="section-title">Timeline</h3>
-        <div class="data-field">
-          <p class="field-value large">${escapeHtml(data.timeline || data.duration)}</p>
-        </div>
-      </div>
-    `;
-  }
-
-  if (data.budget || data.cost) {
-    html += `
-      <div class="data-section">
-        <h3 class="section-title">Budget</h3>
-        <div class="data-field">
-          <p class="field-value large">${escapeHtml(data.budget || data.cost)}</p>
-        </div>
-      </div>
-    `;
-  }
-
-  html += renderRemainingFields(data, ['overview', 'objectives', 'goals', 'deliverables', 'timeline', 'duration', 'budget', 'cost']);
-
-  return html || renderGeneric(data);
-}
-
-function renderTechStack(data) {
-  let html = '';
-
-  const categories = {
-    frontend: ['frontend', 'front-end', 'client', 'ui'],
-    backend: ['backend', 'back-end', 'server', 'api'],
-    database: ['database', 'db', 'storage'],
-    infrastructure: ['infrastructure', 'deployment', 'hosting', 'devops'],
-    tools: ['tools', 'utilities', 'development']
-  };
-
-  Object.entries(categories).forEach(([category, keys]) => {
-    const matchingKey = keys.find(key => data[key]);
-    if (matchingKey && data[matchingKey]) {
-      const items = Array.isArray(data[matchingKey]) ? data[matchingKey] : [data[matchingKey]];
-      html += `
-        <div class="data-section">
-          <h3 class="section-title">${category}</h3>
-          <div class="tech-items">
-            ${items.map(item => `<div class="tech-item">${escapeHtml(item)}</div>`).join('')}
-          </div>
-        </div>
-      `;
-    }
-  });
-
-  const usedKeys = Object.values(categories).flat();
-  html += renderRemainingFields(data, usedKeys);
-
-  return html || renderGeneric(data);
-}
-
-function renderTeam(data) {
-  let html = '';
-
-  if (data.roles || Array.isArray(data)) {
-    const roles = data.roles || data;
-    html += `<div class="data-list">`;
-    
-    roles.forEach((role, index) => {
-      html += `
-        <div class="role-card">
-          <div class="role-header">
-            <div class="role-title-group">
-              <div class="role-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-              </div>
-              <h4 class="role-name">${escapeHtml(role.title || role.role || role.name || `Role ${index + 1}`)}</h4>
-            </div>
-            ${role.count ? `<div class="role-count">${role.count} ${role.count > 1 ? 'people' : 'person'}</div>` : ''}
-          </div>
-          <div class="role-body">
-            ${role.description ? `
-              <div class="data-field">
-                <span class="field-label">Description</span>
-                <p class="field-value">${escapeHtml(role.description)}</p>
-              </div>
-            ` : ''}
-            ${role.responsibilities ? `
-              <div class="data-field">
-                <span class="field-label">Responsibilities</span>
-                <div class="data-list">
-                  ${Array.isArray(role.responsibilities) ? role.responsibilities.map(resp => `
-                    <div class="list-item">
-                      <div class="list-item-icon"></div>
-                      <div class="list-item-content">${escapeHtml(resp)}</div>
-                    </div>
-                  `).join('') : `<p class="field-value">${escapeHtml(role.responsibilities)}</p>`}
-                </div>
-              </div>
-            ` : ''}
-            ${role.skills ? `
-              <div class="data-field">
-                <span class="field-label">Required Skills</span>
-                <div class="badge-group">
-                  ${Array.isArray(role.skills) ? role.skills.map(skill => `
-                    <span class="data-badge">${escapeHtml(skill)}</span>
-                  `).join('') : `<span class="data-badge">${escapeHtml(role.skills)}</span>`}
-                </div>
-              </div>
-            ` : ''}
-          </div>
-        </div>
-      `;
-    });
-    
-    html += `</div>`;
-  } else {
-    html = renderGeneric(data);
-  }
-
-  return html;
-}
-
-function renderCandidates(data) {
-  let html = '';
-
-  if (typeof data === 'object' && !Array.isArray(data)) {
-    Object.entries(data).forEach(([role, candidates]) => {
-      html += `
-        <div class="data-section">
-          <h3 class="section-title">${escapeHtml(role)}</h3>
-          ${renderCandidateList(candidates)}
-        </div>
-      `;
-    });
-  } else if (Array.isArray(data)) {
-    html = renderCandidateList(data);
-  } else {
-    html = renderGeneric(data);
-  }
-
-  return html;
-}
-
-function renderSelected(data) {
-  return renderCandidates(data);
-}
-
-function renderCandidateList(candidates) {
-  if (!Array.isArray(candidates)) return '';
-
-  return `
-    <div class="data-grid">
-      ${candidates.map((candidate, index) => {
-        const initials = getInitials(candidate.name || `Candidate ${index + 1}`);
-        return `
-          <div class="candidate-card">
-            <div class="candidate-header">
-              <div class="candidate-avatar">${initials}</div>
-              <div class="candidate-info">
-                <h4 class="candidate-name">${escapeHtml(candidate.name || `Candidate ${index + 1}`)}</h4>
-                ${candidate.role ? `<p class="candidate-role">${escapeHtml(candidate.role)}</p>` : ''}
-              </div>
-            </div>
-            <div class="candidate-details">
-              ${candidate.experience ? `
-                <div class="data-field">
-                  <span class="field-label">Experience</span>
-                  <span class="field-value">${escapeHtml(candidate.experience)}</span>
-                </div>
-              ` : ''}
-              ${candidate.location ? `
-                <div class="data-field">
-                  <span class="field-label">Location</span>
-                  <span class="field-value">${escapeHtml(candidate.location)}</span>
-                </div>
-              ` : ''}
-              ${candidate.rate ? `
-                <div class="data-field">
-                  <span class="field-label">Rate</span>
-                  <span class="field-value">${escapeHtml(candidate.rate)}</span>
-                </div>
-              ` : ''}
-              ${candidate.availability ? `
-                <div class="data-field">
-                  <span class="field-label">Availability</span>
-                  <span class="field-value">${escapeHtml(candidate.availability)}</span>
-                </div>
-              ` : ''}
-            </div>
-            ${candidate.skills ? `
-              <div class="data-field">
-                <span class="field-label">Skills</span>
-                <div class="badge-group">
-                  ${Array.isArray(candidate.skills) ? candidate.skills.map(skill => `
-                    <span class="data-badge">${escapeHtml(skill)}</span>
-                  `).join('') : `<span class="data-badge">${escapeHtml(candidate.skills)}</span>`}
-                </div>
-              </div>
-            ` : ''}
-          </div>
-        `;
-      }).join('')}
-    </div>
-  `;
-}
-
-function renderRemainingFields(data, excludeKeys) {
-  let html = '';
-  const remainingKeys = Object.keys(data).filter(key => !excludeKeys.includes(key));
-
-  if (remainingKeys.length > 0) {
-    html += '<div class="data-section"><h3 class="section-title">Additional Information</h3><div class="data-grid">';
-    
-    remainingKeys.forEach(key => {
-      const value = data[key];
-      if (value !== null && value !== undefined) {
-        html += `
-          <div class="data-card">
-            <div class="card-header">
-              <div class="card-icon">${key.charAt(0).toUpperCase()}</div>
-              <h4 class="card-title">${formatKey(key)}</h4>
-            </div>
-            <div class="card-body">
-              ${renderValue(value)}
-            </div>
-          </div>
-        `;
-      }
-    });
-    
-    html += '</div></div>';
-  }
-
-  return html;
-}
-
-function renderGeneric(data) {
-  if (typeof data !== 'object' || data === null) {
-    return `<div class="data-section"><p class="field-value">${escapeHtml(String(data))}</p></div>`;
-  }
-
-  let html = '<div class="data-grid">';
-  
-  Object.entries(data).forEach(([key, value]) => {
-    html += `
-      <div class="data-card">
-        <div class="card-header">
-          <div class="card-icon">${key.charAt(0).toUpperCase()}</div>
-          <h4 class="card-title">${formatKey(key)}</h4>
-        </div>
-        <div class="card-body">
-          ${renderValue(value)}
-        </div>
-      </div>
-    `;
-  });
-  
-  html += '</div>';
-  return html;
-}
-
-function renderValue(value) {
-  if (Array.isArray(value)) {
-    return `
-      <div class="data-list">
-        ${value.map(item => `
-          <div class="list-item">
-            <div class="list-item-icon"></div>
-            <div class="list-item-content">${typeof item === 'object' ? JSON.stringify(item, null, 2) : escapeHtml(String(item))}</div>
-          </div>
-        `).join('')}
-      </div>
-    `;
-  } else if (typeof value === 'object' && value !== null) {
-    return `<pre class="field-value" style="font-size: 0.8125rem; background: #f8f9fa; padding: 0.75rem; border-radius: 6px; overflow-x: auto;">${escapeHtml(JSON.stringify(value, null, 2))}</pre>`;
-  } else {
-    return `<p class="field-value">${escapeHtml(String(value))}</p>`;
-  }
-}
-
-function formatKey(key) {
-  return key
-    .replace(/([A-Z])/g, ' $1')
-    .replace(/[_-]/g, ' ')
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(' ')
-    .trim();
-}
-
-function getInitials(name) {
-  return name
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase())
-    .slice(0, 2)
-    .join('');
-}
-
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
 }
 </script>
 {% endblock %}
