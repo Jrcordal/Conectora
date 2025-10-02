@@ -97,3 +97,11 @@ def intake_create(request):
         form = IntakeForm()
 
     return render(request, "clients/intake_form.html", {"form": form})
+
+
+@login_required
+@authorized_required
+def project_list(request):
+
+    projects = Project.objects.all(id=request.user.pk)
+    return render(request,'clients/projects.html',{'projects':projects})
