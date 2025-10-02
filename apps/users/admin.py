@@ -30,6 +30,7 @@ class CustomUserAdmin(UserAdmin):
     list_select_related = ("developerprofile",)  # evita N+1 si accedes user.profile
 
     list_display = [
+        "id"
         "email",
         "username",
         "first_name",
