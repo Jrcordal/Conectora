@@ -19,7 +19,6 @@ class ClientProfile(models.Model):
     website = models.URLField(blank=True, null=True)
     currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, blank=True, null=True)
     role_in_company = models.CharField(max_length=50, blank = True)
-    number_of_projects = models.IntegerField(blank=True, default=0)
     total_candidates_matched = models.IntegerField(blank=True, default=0)
     search_limit = models.PositiveIntegerField(blank=True, default=0)
     created_at = models.DateTimeField(default=timezone.now, editable=False)
@@ -36,6 +35,9 @@ class ClientProfile(models.Model):
             created_at__year=year,
             created_at__month=month
         ).count()
+    @property
+    def number_of_projects(self):
+        return self.projects.count()   # asumiendo que el related_name en Project es 'projects'
 
 
 
