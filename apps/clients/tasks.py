@@ -491,13 +491,30 @@ def matching_pipeline(intake_id: int, project_id: int):
     matches_by_role = match_candidates(team_rec)
     # build_candidates_json_per_role espera un dict {role: [user_ids]}
     role_json_map = build_candidates_json_per_role(matches_by_role)  # {role: '<json str>'}
-    potential = {r: json.loads(s) for r, s in role_json_map.items()}
+
+
+    # Estructura para el TEMPLATE: {"matches": [ {user_id, main_developer_role, recommended_role}, ... ]}
+    flat_matches = []
+    for role, s in (role_json_map or {}).items():
+        try:
+            arr = json.loads(s)  # lista de candidatos (dicts)
+        except Exception:
+            arr = []
+        for c in arr or []:
+            flat_matches.append({
+                "user_id": c.get("id"),
+                "main_developer_role": c.get("main_developer_role", ""),
+                "recommended_role": role,
+            })
     set_matching_status(
-        project, "potential_candidates", progress=80,
-        extra={"potential_candidates_per_role": potential}
+    project, "potential_candidates", progress=80,
+    extra={"potential_candidates_per_role": {"matches": flat_matches}}
     )
+
     logger.info(f"Potential candidates structured for project {project_id}")
     # 5) Selección final
+
+
     selected_by_role = alpha_select_candidates_sync(
         roles_dict=role_json_map,
         sw=structured_req,
