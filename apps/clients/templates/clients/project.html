@@ -627,56 +627,56 @@
           {% endif %}
         </div>
 
-<div class="tab-content" id="candidates-tab">
-  {% if project.potential_candidates_per_role %}
-    {# Inyecta JSON seguro para poder copiarlo #}
-    {{ project.potential_candidates_per_role|json_script:"candidates-data" }}
-
-    <div class="json-header">
-      <h3 class="content-title">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3"></circle>
-          <path d="M12 1v6m0 6v6"></path>
-          <path d="M1 12h6m6 0h6"></path>
-        </svg>
-        Potential Candidates
-      </h3>
-      <button class="btn-copy" onclick="copyJSON(event, 'candidates-data')">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-        </svg>
-        Copy JSON
-      </button>
-    </div>
-
-    {% with data=project.potential_candidates_per_role %}
-      {% if data.matches %}
-        {# Agrupa por rol recomendado #}
-        {% regroup data.matches by recommended_role as role_groups %}
-
-        <div class="candidates-groups">
-          {% for grp in role_groups %}
-            <div class="role-group">
-              <h4 class="section-title">{{ grp.grouper }}</h4>
-              <div class="list-cards">
-                {% for c in grp.list %}
-                  <div class="card">
-                    <div class="row">
-                      <div><strong>User ID:</strong> {{ c.user_id }}</div>
-                      <div><strong>Main Role:</strong> {{ c.main_developer_role }}</div>
-                    </div>
-                    <div class="kv" style="margin-top:.5rem">
-                      <div class="kv-label">Recommended Role</div>
-                      <div class="kv-value">{{ c.recommended_role }}</div>
-                    </div>
-                    {# Si en el futuro añades más campos al CandidateMatch, añádelos aquí como kvs #}
-                  </div>
-                {% endfor %}
-              </div>
+        <div class="tab-content" id="candidates-tab">
+          {% if project.potential_candidates_per_role %}
+            {{ project.potential_candidates_per_role|json_script:"candidates-data" }}
+        
+            <div class="json-header">
+              <h3 class="content-title">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="3"></circle>
+                  <path d="M12 1v6m0 6v6"></path>
+                  <path d="M1 12h6m6 0h6"></path>
+                </svg>
+                Potential Candidates
+              </h3>
+              <button class="btn-copy" onclick="copyJSON(event, 'candidates-data')">Copy JSON</button>
             </div>
-          {% endfor %}
-        </div>
+        
+            {# data = wrapper o lista #}
+            {% with data=project.potential_candidates_per_role %}
+              {# matches = data.matches (si existe) o data (si ya es lista) #}
+              {% with matches=data.matches|default:data %}
+                {% if matches %}
+                  {# Asegura grupos contiguos: ordena por recommended_role #}
+                  {% regroup matches|dictsort:"recommended_role" by recommended_role as role_groups %}
+        
+                  <div class="candidates-groups">
+                    {% for grp in role_groups %}
+                      <div class="role-group">
+                        <h4 class="section-title">{{ grp.grouper|default:"(Unassigned role)" }}</h4>
+                        <div class="list-cards">
+                          {% for c in grp.list %}
+                            <div class="card">
+                              <div class="row">
+                                <div><strong>User ID:</strong> {{ c.user_id }}</div>
+                                <div><strong>Main Role:</strong> {{ c.main_developer_role }}</div>
+                              </div>
+                              <div class="kv" style="margin-top:.5rem">
+                                <div class="kv-label">Recommended Role</div>
+                                <div class="kv-value">{{ c.recommended_role|default:"—" }}</div>
+                              </div>
+                            </div>
+                          {% endfor %}
+                        </div>
+                      </div>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <div class="empty-state"><p>No matches found.</p></div>
+                {% endif %}
+              {% endwith %}
+            {% endwith %}
       {% else %}
         <div class="empty-state"><p>No matches found.</p></div>
       {% endif %}
