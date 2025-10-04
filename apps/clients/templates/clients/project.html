@@ -629,7 +629,6 @@
 
 <div class="tab-content" id="candidates-tab">
   {% if project.potential_candidates_per_role %}
-    {# Inyecta el JSON de forma segura para copiarlo #}
     {{ project.potential_candidates_per_role|json_script:"candidates-data" }}
 
     <div class="json-header">
@@ -641,12 +640,18 @@
         </svg>
         Potential Candidates
       </h3>
-      <button class="btn-copy" onclick="copyJSON(event, 'candidates-data')">Copy JSON</button>
+      <button class="btn-copy" onclick="copyJSON(event, 'candidates-data')">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+        Copy JSON
+      </button>
     </div>
 
     {% with data=project.potential_candidates_per_role %}
       {% if data.matches %}
-        {# Agrupar por recommended_role #}
+        {# Agrupa por rol recomendado #}
         {% regroup data.matches by recommended_role as role_groups %}
 
         <div class="candidates-groups">
@@ -664,16 +669,13 @@
                       <div class="kv-label">Recommended Role</div>
                       <div class="kv-value">{{ c.recommended_role }}</div>
                     </div>
+                    {# Si en el futuro añades más campos al CandidateMatch, añádelos aquí como kvs #}
                   </div>
                 {% endfor %}
               </div>
             </div>
           {% endfor %}
         </div>
-      {% else %}
-        <div class="empty-state"><p>No matches found.</p></div>
-      {% endif %}
-    {% endwith %}
       {% else %}
         <div class="empty-state"><p>No matches found.</p></div>
       {% endif %}
