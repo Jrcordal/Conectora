@@ -275,25 +275,112 @@
 
         <div class="tab-content" id="proposal-tab">
           {% if project.proposal_draft %}
-          <div class="json-viewer">
+            {{ project.proposal_draft|json_script:"proposal-draft-data" }}
+        
             <div class="json-header">
-              <h3 class="content-title">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14,2 14,8 20,8"></polyline>
-                </svg>
-                Proposal Draft
-              </h3>
-              <button class="btn-copy" onclick="copyJSON('proposal')">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-                Copy JSON
-              </button>
+              <h3 class="content-title">Proposal Draft</h3>
+              <button class="btn-copy" onclick="copyJSON(event, 'proposal-draft-data')">Copy JSON</button>
             </div>
-            <pre id="proposal-json" class="json-content">{{ project.proposal_draft|safe }}</pre>
-          </div>
+        
+            <div class="kv-grid">
+              {# --- Introduction --- #}
+              {% if project.proposal_draft.introduction %}
+                {% with intro=project.proposal_draft.introduction %}
+                  <div class="kv"><div class="kv-label">Scope</div><div class="kv-value">{{ intro.scope|default:"—" }}</div></div>
+                  <div class="kv"><div class="kv-label">Definitions</div>
+                    <div class="kv-value">
+                      {% if intro.definitions %}<ul class="list">{% for d in intro.definitions %}<li>{{ d }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}
+                    </div>
+                  </div>
+                  <div class="kv"><div class="kv-label">References</div>
+                    <div class="kv-value">
+                      {% if intro.references %}<ul class="list">{% for r in intro.references %}<li>{{ r }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}
+                    </div>
+                  </div>
+                {% endwith %}
+              {% endif %}
+        
+              {# --- Purpose --- #}
+              {% if project.proposal_draft.purpose %}
+                {% with p=project.proposal_draft.purpose %}
+                  <div class="kv"><div class="kv-label">Objectives</div>
+                    <div class="kv-value">
+                      {% if p.objectives %}<ul class="list">{% for o in p.objectives %}<li>{{ o }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}
+                    </div>
+                  </div>
+                  <div class="kv"><div class="kv-label">Success Criteria</div>
+                    <div class="kv-value">
+                      {% if p.success_criteria %}<ul class="list">{% for s in p.success_criteria %}<li>{{ s }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}
+                    </div>
+                  </div>
+                {% endwith %}
+              {% endif %}
+        
+              {# --- Overall Description --- #}
+              {% if project.proposal_draft.overall_description %}
+                {% with od=project.proposal_draft.overall_description %}
+                  <div class="kv"><div class="kv-label">Product Perspective</div>
+                    <div class="kv-value">{% if od.product_perspective %}<ul class="list">{% for x in od.product_perspective %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div>
+                  </div>
+                  <div class="kv"><div class="kv-label">Product Functions</div>
+                    <div class="kv-value">{% if od.product_functions %}<ul class="list">{% for x in od.product_functions %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div>
+                  </div>
+                  <div class="kv"><div class="kv-label">User Characteristics</div>
+                    <div class="kv-value">{% if od.user_characteristics %}<ul class="list">{% for x in od.user_characteristics %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div>
+                  </div>
+                  <div class="kv"><div class="kv-label">Design Constraints</div>
+                    <div class="kv-value">{% if od.design_constraints %}<ul class="list">{% for x in od.design_constraints %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div>
+                  </div>
+                  <div class="kv"><div class="kv-label">Assumptions & Dependencies</div>
+                    <div class="kv-value">{% if od.assumptions_dependencies %}<ul class="list">{% for x in od.assumptions_dependencies %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div>
+                  </div>
+                  <div class="kv"><div class="kv-label">Out of Scope</div>
+                    <div class="kv-value">{% if od.out_of_scope %}<ul class="list">{% for x in od.out_of_scope %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div>
+                  </div>
+                {% endwith %}
+              {% endif %}
+        
+              {# --- Non Functional Requirements --- #}
+              {% if project.proposal_draft.non_functional_requirements %}
+                {% with nfr=project.proposal_draft.non_functional_requirements %}
+                  <div class="kv"><div class="kv-label">Reliability</div><div class="kv-value">{% if nfr.reliability %}<ul class="list">{% for x in nfr.reliability %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
+                  <div class="kv"><div class="kv-label">Availability</div><div class="kv-value">{% if nfr.availability %}<ul class="list">{% for x in nfr.availability %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
+                  <div class="kv"><div class="kv-label">Performance</div><div class="kv-value">{% if nfr.performance %}<ul class="list">{% for x in nfr.performance %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
+                  <div class="kv"><div class="kv-label">Security</div><div class="kv-value">{% if nfr.security %}<ul class="list">{% for x in nfr.security %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
+                  <div class="kv"><div class="kv-label">Privacy</div><div class="kv-value">{% if nfr.privacy %}<ul class="list">{% for x in nfr.privacy %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
+                  <div class="kv"><div class="kv-label">Usability</div><div class="kv-value">{% if nfr.usability %}<ul class="list">{% for x in nfr.usability %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
+                  <div class="kv"><div class="kv-label">Accessibility</div><div class="kv-value">{% if nfr.accessibility %}<ul class="list">{% for x in nfr.accessibility %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
+                  <div class="kv"><div class="kv-label">Maintainability</div><div class="kv-value">{% if nfr.maintainability %}<ul class="list">{% for x in nfr.maintainability %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
+                  <div class="kv"><div class="kv-label">Portability</div><div class="kv-value">{% if nfr.portability %}<ul class="list">{% for x in nfr.portability %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
+                  <div class="kv"><div class="kv-label">Compliance</div><div class="kv-value">{% if nfr.compliance %}<ul class="list">{% for x in nfr.compliance %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
+                {% endwith %}
+              {% endif %}
+        
+              {# --- Specific Requirements --- #}
+              {% if project.proposal_draft.specific_requirements %}
+                {% with sr=project.proposal_draft.specific_requirements %}
+                  <div class="kv"><div class="kv-label">Functional Requirements</div><div class="kv-value">{% if sr.functional_requirements %}<ul class="list">{% for x in sr.functional_requirements %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
+                  <div class="kv"><div class="kv-label">Performance Requirements</div><div class="kv-value">{% if sr.performance_requirements %}<ul class="list">{% for x in sr.performance_requirements %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
+                  <div class="kv"><div class="kv-label">Logical DB Requirements</div><div class="kv-value">{% if sr.logical_database_requirements %}<ul class="list">{% for x in sr.logical_database_requirements %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
+                  <div class="kv"><div class="kv-label">Data Migration</div><div class="kv-value">{% if sr.data_migration_requirements %}<ul class="list">{% for x in sr.data_migration_requirements %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
+                  <div class="kv"><div class="kv-label">Acceptance Criteria</div><div class="kv-value">{% if sr.acceptance_criteria %}<ul class="list">{% for x in sr.acceptance_criteria %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
+        
+                  {% if sr.external_interface_requirements %}
+                    {% with ei=sr.external_interface_requirements %}
+                      <div class="kv"><div class="kv-label">UI</div><div class="kv-value">{% if ei.ui %}<ul class="list">{% for x in ei.ui %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
+                      <div class="kv"><div class="kv-label">API</div><div class="kv-value">{% if ei.api %}<ul class="list">{% for x in ei.api %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
+                      <div class="kv"><div class="kv-label">Hardware</div><div class="kv-value">{% if ei.hardware %}<ul class="list">{% for x in ei.hardware %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
+                      <div class="kv"><div class="kv-label">Comms</div><div class="kv-value">{% if ei.communications %}<ul class="list">{% for x in ei.communications %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
+                      <div class="kv"><div class="kv-label">Other</div><div class="kv-value">{% if ei.other %}<ul class="list">{% for x in ei.other %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
+                    {% endwith %}
+                  {% endif %}
+                {% endwith %}
+              {% endif %}
+        
+              {# --- Recommended Stack / Other Info --- #}
+              <div class="kv"><div class="kv-label">Recommended Stack</div><div class="kv-value">{% if project.proposal_draft.recommended_stack %}<ul class="list">{% for x in project.proposal_draft.recommended_stack %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
+              <div class="kv"><div class="kv-label">Other Info</div><div class="kv-value">{% if project.proposal_draft.other_info %}<ul class="list">{% for x in project.proposal_draft.other_info %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
+            </div>
           {% else %}
           <div class="empty-state">
             <div class="empty-icon">

@@ -63,19 +63,6 @@ class SoftwareRequirements(BaseModel):
 
 # Tech Stack
 
-class TechStack(BaseModel):
-    frontend: list[str]
-    backend: list[str]
-    database: list[str]
-    infrastructure: list[str]
-
-class StackRecommendation(BaseModel):
-    name: str = Field(description="Name or label for the stack option")
-    preferred_stack: TechStack = Field(description="Stack selected as most suitable")
-    rationale: Optional[str] = Field(description="Reason why this stack is recommended")
-    pros: list[str] = Field(description="Pros of the recommended stack")
-    cons: list[str] = Field(description="Cons of the recommended stack")
-    need_more_info: Optional[bool] = Field(description="Whether more input is needed to decide on a stack")
 
 
 class TechStack(BaseModel):
@@ -98,8 +85,8 @@ class TechStack(BaseModel):
 
 class StackRecommendation(BaseModel):
     name: str = Field(description="Name or label for the recommended option")
-    preferred_stack: TechStack
-    rationale: StrList = Field(None, description="Reasoning behind this tech stack recommendation")
+    preferred_stack: TechStack = Field(description="Stack selected as most suitable")
+    rationale:  Optional[str] = Field(description="Reason why this stack is recommended")
     pros: List[str] = Field(default_factory=list, description="Advantages of this recommended stack")
     cons: List[str] = Field(default_factory=list, description="Disadvantages of this recommended stack")
     need_more_info: Optional[bool] = Field(False, description="Whether more input is needed to refine the recommendation")
