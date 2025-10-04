@@ -643,34 +643,36 @@
               <button class="btn-copy" onclick="copyJSON(event, 'candidates-data')">Copy JSON</button>
             </div>
         
-            {# Toma la lista: si existe 'matches', úsala; si no, usa el propio valor #}
-            {% regroup (project.potential_candidates_per_role.matches|default:project.potential_candidates_per_role) by recommended_role as role_groups %}
+            {# matches: usa data.matches si existe, si no usa data. Luego ordénalo por recommended_role #}
+            {% with matches=project.potential_candidates_per_role.matches|default:project.potential_candidates_per_role|dictsort:"recommended_role" %}
+              {% if matches %}
+                {% regroup matches by recommended_role as role_groups %}
         
-            {% if role_groups %}
-              <div class="candidates-groups">
-                {% for grp in role_groups %}
-                  <div class="role-group">
-                    <h4 class="section-title">{{ grp.grouper|default:"(Unassigned role)" }}</h4>
-                    <div class="list-cards">
-                      {% for c in grp.list %}
-                        <div class="card">
-                          <div class="row">
-                            <div><strong>User ID:</strong> {{ c.user_id }}</div>
-                            <div><strong>Main Role:</strong> {{ c.main_developer_role }}</div>
+                <div class="candidates-groups">
+                  {% for grp in role_groups %}
+                    <div class="role-group">
+                      <h4 class="section-title">{{ grp.grouper|default:"(Unassigned role)" }}</h4>
+                      <div class="list-cards">
+                        {% for c in grp.list %}
+                          <div class="card">
+                            <div class="row">
+                              <div><strong>User ID:</strong> {{ c.user_id }}</div>
+                              <div><strong>Main Role:</strong> {{ c.main_developer_role }}</div>
+                            </div>
+                            <div class="kv" style="margin-top:.5rem">
+                              <div class="kv-label">Recommended Role</div>
+                              <div class="kv-value">{{ c.recommended_role|default:"—" }}</div>
+                            </div>
                           </div>
-                          <div class="kv" style="margin-top:.5rem">
-                            <div class="kv-label">Recommended Role</div>
-                            <div class="kv-value">{{ c.recommended_role|default:"—" }}</div>
-                          </div>
-                        </div>
-                      {% endfor %}
+                        {% endfor %}
+                      </div>
                     </div>
-                  </div>
-                {% endfor %}
-              </div>
-            {% else %}
-              <div class="empty-state"><p>No matches found.</p></div>
-            {% endif %}
+                  {% endfor %}
+                </div>
+              {% else %}
+                <div class="empty-state"><p>No matches found.</p></div>
+              {% endif %}
+            {% endwith %}
           {% else %}
             <div class="empty-state">
               <div class="empty-icon">
@@ -685,21 +687,6 @@
             </div>
           {% endif %}
         </div>
-          {% else %}
-          <div class="empty-state">
-            <div class="empty-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="12"></line>
-                <line x1="12" y1="16" x2="12.01" y2="16"></line>
-              </svg>
-            </div>
-            <h3>Candidates Not Yet Available</h3>
-            <p>Potential candidates are being matched to your project requirements.</p>
-          </div>
-          {% endif %}
-        </div>
-
         <div class="tab-content" id="selected-tab">
           {% if project.selected_candidates %}
             {# JSON seguro para copiar/usar desde JS #}
