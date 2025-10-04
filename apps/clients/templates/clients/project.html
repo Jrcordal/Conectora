@@ -397,8 +397,8 @@
         </div>
 
         <div class="tab-content" id="techstack-tab">
-          {% if tech_stack_data %}
-            {{ tech_stack_data|json_script:"techstack-data" }}
+          {% if project.tech_stack_draft %}
+            {{ project.tech_stack_draft|json_script:"techstack-data" }}
         
             <div class="json-header">
               <h3 class="content-title">
@@ -416,15 +416,25 @@
             <div class="kv-grid">
               <div class="kv">
                 <div class="kv-label">Name</div>
-                <div class="kv-value">{{ tech_stack_data.name }}</div>
+                <div class="kv-value">{{ project.tech_stack_draft.name }}</div>
               </div>
               <div class="kv">
                 <div class="kv-label">Rationale</div>
-                <div class="kv-value">{{ tech_stack_data.rationale|default:"—" }}</div>
+                <div class="kv-value">{{ project.tech_stack_draft.rationale|default:"—" }}</div>
+              </div>
+              <div class="kv">
+                <div class="kv-label">Need More Info</div>
+                <div class="kv-value">
+                  {% if project.tech_stack_draft.need_more_info %}
+                    Yes
+                  {% else %}
+                    No
+                  {% endif %}
+                </div>
               </div>
         
               <h4 class="section-title">Preferred Stack</h4>
-              {% for field, value in tech_stack_data.preferred_stack.items %}
+              {% for field, value in project.tech_stack_draft.preferred_stack.items %}
                 <div class="kv">
                   <div class="kv-label">{{ field|capfirst }}</div>
                   <div class="kv-value">
@@ -441,19 +451,19 @@
                 </div>
               {% endfor %}
         
-              {% if tech_stack_data.pros %}
+              {% if project.tech_stack_draft.pros %}
                 <h4 class="section-title">Pros</h4>
                 <ul class="list">
-                  {% for p in tech_stack_data.pros %}
+                  {% for p in project.tech_stack_draft.pros %}
                     <li>{{ p }}</li>
                   {% endfor %}
                 </ul>
               {% endif %}
         
-              {% if tech_stack_data.cons %}
+              {% if project.tech_stack_draft.cons %}
                 <h4 class="section-title">Cons</h4>
                 <ul class="list">
-                  {% for c in tech_stack_data.cons %}
+                  {% for c in project.tech_stack_draft.cons %}
                     <li>{{ c }}</li>
                   {% endfor %}
                 </ul>
@@ -619,7 +629,6 @@
 
 <div class="tab-content" id="candidates-tab">
   {% if project.potential_candidates_per_role %}
-    {# Inyecta JSON seguro para poder copiarlo #}
     {{ project.potential_candidates_per_role|json_script:"candidates-data" }}
 
     <div class="json-header">
