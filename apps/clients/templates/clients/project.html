@@ -629,6 +629,7 @@
 
 <div class="tab-content" id="candidates-tab">
   {% if project.potential_candidates_per_role %}
+    {# Inyecta JSON seguro para poder copiarlo #}
     {{ project.potential_candidates_per_role|json_script:"candidates-data" }}
 
     <div class="json-header">
