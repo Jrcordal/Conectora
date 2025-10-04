@@ -510,6 +510,7 @@ def matching_pipeline(intake_id: int, project_id: int):
     project, "potential_candidates", progress=80,
     extra={"potential_candidates_per_role": {"matches": flat_matches}}
     )
+    
 
     logger.info(f"Potential candidates structured for project {project_id}")
     # 5) Selección final
@@ -525,10 +526,29 @@ def matching_pipeline(intake_id: int, project_id: int):
         role: (obj.model_dump() if hasattr(obj, "model_dump") else obj)
         for role, obj in selected_by_role.items()
     }
+
+
+    # 👉 normalizar para la vista
+    flat_selected = []
+    for role, cand in (selected_by_role_json or {}).items():
+        c = dict(cand or {})
+        c.setdefault("role", role)  # asegura que exista 'role'
+        # normaliza campos que podrían venir como string JSON
+        for k in ("tech_stack", "related_projects"):
+            v = c.get(k)
+            if isinstance(v, str) and v and v[0] in "[{":
+                try:
+                    c[k] = json.loads(v)
+                except Exception:
+                    pass
+        flat_selected.append(c)
+
     set_matching_status(
         project, "selected_candidates", progress=100,
-        extra={"selected_candidates": selected_by_role_json, "status": "presale"}
+        extra={"selected_candidates": flat_selected, "status": "presale"}
     )
+
+    
     logger.info(f"Selected candidates structured for project {project_id}")
     logger.info(f"Selected candidates: {selected_by_role}")
     return 
