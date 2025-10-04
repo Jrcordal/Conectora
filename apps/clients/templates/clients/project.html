@@ -5,6 +5,7 @@
 {% block body %}
 <div class="container">
   <div class="project-detail-wrapper">
+     Breadcrumb Navigation 
     <nav class="breadcrumb">
       <a href="{% url 'clients:projects' %}" class="breadcrumb-link">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -16,6 +17,7 @@
       <span class="breadcrumb-current">Project #{{ project.id }}</span>
     </nav>
 
+     Project Header 
     <div class="project-header">
       <div class="header-main">
         <div class="header-icon">
@@ -57,6 +59,7 @@
       </div>
     </div>
 
+     Progress Overview 
     <div class="progress-card">
       <div class="progress-header">
         <div class="progress-title">
@@ -81,6 +84,7 @@
       </div>
     </div>
 
+     Deliverables Tabs 
     <div class="deliverables-section">
       <div class="tabs-header">
         <button class="tab-btn active" data-tab="intake">
@@ -136,7 +140,9 @@
         </button>
       </div>
 
+       Tab Contents 
       <div class="tabs-content">
+         Intake Tab 
         <div class="tab-content active" id="intake-tab">
           <div class="intake-wrapper">
             {% if project.project_intake %}
@@ -213,6 +219,7 @@
               {% endif %}
             </div>
 
+             Intake Documents 
             {% if project.project_intake.intakedocuments.all %}
             <div class="documents-section">
               <h3 class="content-title">
@@ -273,6 +280,7 @@
           </div>
         </div>
 
+         Proposal Tab 
         <div class="tab-content" id="proposal-tab">
           {% if project.proposal_draft %}
             {{ project.proposal_draft|json_script:"proposal-draft-data" }}
@@ -283,7 +291,7 @@
             </div>
         
             <div class="kv-grid">
-              {# --- Introduction --- #}
+              {# Introduction #}
               {% if project.proposal_draft.introduction %}
                 {% with intro=project.proposal_draft.introduction %}
                   <div class="kv"><div class="kv-label">Scope</div><div class="kv-value">{{ intro.scope|default:"—" }}</div></div>
@@ -300,7 +308,7 @@
                 {% endwith %}
               {% endif %}
         
-              {# --- Purpose --- #}
+              {# Purpose #}
               {% if project.proposal_draft.purpose %}
                 {% with p=project.proposal_draft.purpose %}
                   <div class="kv"><div class="kv-label">Objectives</div>
@@ -316,7 +324,7 @@
                 {% endwith %}
               {% endif %}
         
-              {# --- Overall Description --- #}
+              {# Overall Description #}
               {% if project.proposal_draft.overall_description %}
                 {% with od=project.proposal_draft.overall_description %}
                   <div class="kv"><div class="kv-label">Product Perspective</div>
@@ -340,7 +348,7 @@
                 {% endwith %}
               {% endif %}
         
-              {# --- Non Functional Requirements --- #}
+              {# Non Functional Requirements #}
               {% if project.proposal_draft.non_functional_requirements %}
                 {% with nfr=project.proposal_draft.non_functional_requirements %}
                   <div class="kv"><div class="kv-label">Reliability</div><div class="kv-value">{% if nfr.reliability %}<ul class="list">{% for x in nfr.reliability %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
@@ -356,7 +364,7 @@
                 {% endwith %}
               {% endif %}
         
-              {# --- Specific Requirements --- #}
+              {# Specific Requirements #}
               {% if project.proposal_draft.specific_requirements %}
                 {% with sr=project.proposal_draft.specific_requirements %}
                   <div class="kv"><div class="kv-label">Functional Requirements</div><div class="kv-value">{% if sr.functional_requirements %}<ul class="list">{% for x in sr.functional_requirements %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
@@ -377,7 +385,7 @@
                 {% endwith %}
               {% endif %}
         
-              {# --- Recommended Stack / Other Info --- #}
+              {# Recommended Stack / Other Info #}
               <div class="kv"><div class="kv-label">Recommended Stack</div><div class="kv-value">{% if project.proposal_draft.recommended_stack %}<ul class="list">{% for x in project.proposal_draft.recommended_stack %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
               <div class="kv"><div class="kv-label">Other Info</div><div class="kv-value">{% if project.proposal_draft.other_info %}<ul class="list">{% for x in project.proposal_draft.other_info %}<li>{{ x }}</li>{% endfor %}</ul>{% else %}<span class="muted">—</span>{% endif %}</div></div>
             </div>
@@ -396,6 +404,7 @@
           {% endif %}
         </div>
 
+         Tech Stack Tab 
         <div class="tab-content" id="techstack-tab">
           {% if project.tech_stack_draft %}
             {{ project.tech_stack_draft|json_script:"techstack-data" }}
@@ -484,9 +493,9 @@
           {% endif %}
         </div>
 
+         Team Tab 
         <div class="tab-content" id="team-tab">
           {% if project.team_recommendation %}
-            {# JSON seguro para copiar/usar desde JS #}
             {{ project.team_recommendation|json_script:"team-data" }}
         
             <div class="json-header">
@@ -508,7 +517,6 @@
               </button>
             </div>
         
-            {# Encabezado de la recomendación #}
             <div class="kv-grid" style="margin-bottom:1rem">
               <div class="kv">
                 <div class="kv-label">Overview</div>
@@ -524,7 +532,6 @@
               </div>
             </div>
         
-            {# Tabla del equipo #}
             {% if project.team_recommendation.project_team %}
               <div class="table-wrap">
                 <table class="table">
@@ -599,7 +606,6 @@
                                   </div>
                                 </div>
                               {% endif %}
-                              {# añade más categorías si las usas: auth_identity, messaging_streams, etc. #}
                             </div>
                           {% else %}—{% endif %}
                         </td>
@@ -627,6 +633,7 @@
           {% endif %}
         </div>
 
+         Candidates Tab 
         <div class="tab-content" id="candidates-tab">
           {% if project.potential_candidates_per_role %}
             {{ project.potential_candidates_per_role|json_script:"candidates-data" }}
@@ -640,35 +647,52 @@
                 </svg>
                 Potential Candidates
               </h3>
-              <button class="btn-copy" onclick="copyJSON(event, 'candidates-data')">Copy JSON</button>
+              <button class="btn-copy" onclick="copyJSON(event, 'candidates-data')">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                Copy JSON
+              </button>
             </div>
         
-            {# matches: usa data.matches si existe, si no usa data. Luego ordénalo por recommended_role #}
-            {% with matches=project.potential_candidates_per_role.matches|default:project.potential_candidates_per_role|dictsort:"recommended_role" %}
+            {% with matches=project.potential_candidates_per_role.matches|default:project.potential_candidates_per_role %}
               {% if matches %}
                 {% regroup matches by recommended_role as role_groups %}
         
-                <div class="candidates-groups">
-                  {% for grp in role_groups %}
-                    <div class="role-group">
-                      <h4 class="section-title">{{ grp.grouper|default:"(Unassigned role)" }}</h4>
-                      <div class="list-cards">
-                        {% for c in grp.list %}
-                          <div class="card">
-                            <div class="row">
-                              <div><strong>User ID:</strong> {{ c.user_id }}</div>
-                              <div><strong>Main Role:</strong> {{ c.main_developer_role }}</div>
+                {% for grp in role_groups %}
+                  <div class="role-group">
+                    <h4 class="section-title">{{ grp.grouper|default:"Unassigned Role" }}</h4>
+                    <div class="candidates-grid">
+                      {% for c in grp.list %}
+                        <div class="candidate-card">
+                          <div class="candidate-header">
+                            <div class="candidate-avatar">
+                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                              </svg>
                             </div>
-                            <div class="kv" style="margin-top:.5rem">
-                              <div class="kv-label">Recommended Role</div>
-                              <div class="kv-value">{{ c.recommended_role|default:"—" }}</div>
+                            <div class="candidate-info">
+                              <h5 class="candidate-id">User ID: {{ c.user_id }}</h5>
+                              <span class="candidate-badge">{{ c.main_developer_role }}</span>
                             </div>
                           </div>
-                        {% endfor %}
-                      </div>
+                          <div class="candidate-body">
+                            <div class="kv">
+                              <div class="kv-label">Main Role</div>
+                              <div class="kv-value">{{ c.main_developer_role }}</div>
+                            </div>
+                            <div class="kv">
+                              <div class="kv-label">Recommended For</div>
+                              <div class="kv-value">{{ c.recommended_role }}</div>
+                            </div>
+                          </div>
+                        </div>
+                      {% endfor %}
                     </div>
-                  {% endfor %}
-                </div>
+                  </div>
+                {% endfor %}
               {% else %}
                 <div class="empty-state"><p>No matches found.</p></div>
               {% endif %}
@@ -687,9 +711,10 @@
             </div>
           {% endif %}
         </div>
+
+         Selected Tab 
         <div class="tab-content" id="selected-tab">
           {% if project.selected_candidates %}
-            {# JSON seguro para copiar/usar desde JS #}
             {{ project.selected_candidates|json_script:"selected-data" }}
         
             <div class="json-header">
@@ -711,47 +736,61 @@
             </div>
         
             {% with data=project.selected_candidates %}
-              {# data puede ser lista o dict con una lista; intentamos iterar como lista directamente #}
               {% if data %}
-                <div class="list-cards">
+                <div class="selected-candidates-grid">
                   {% for c in data %}
-                    <div class="card">
-                      <div class="row" style="margin-bottom:.5rem">
-                        <div><strong>User ID:</strong> {{ c.user_id }}</div>
-                        <div><strong>Role:</strong> {{ c.role }}</div>
-                        <div><strong>Seniority:</strong> {{ c.seniority }} yrs</div>
-                      </div>
-        
-                      <div class="kv">
-                        <div class="kv-label">Tech Stack</div>
-                        <div class="kv-value">
-                          {% if c.tech_stack %}
-                            <div class="stack-badges">
-                              {% for x in c.tech_stack %}<span class="badge">{{ x }}</span>{% endfor %}
-                            </div>
-                          {% else %}—{% endif %}
+                    <div class="selected-card">
+                      <div class="selected-header">
+                        <div class="selected-avatar">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                          </svg>
+                          <div class="selected-check">✓</div>
+                        </div>
+                        <div class="selected-info">
+                          <h5 class="selected-id">User ID: {{ c.user_id }}</h5>
+                          <div class="selected-meta">
+                            <span class="selected-role">{{ c.role }}</span>
+                            <span class="selected-seniority">{{ c.seniority }} yrs</span>
+                          </div>
                         </div>
                       </div>
         
-                      <div class="kv" style="margin-top:.5rem">
-                        <div class="kv-label">Related Projects</div>
-                        <div class="kv-value">
-                          {% if c.related_projects %}
-                            <ul class="list" style="margin:0">
-                              {% for p in c.related_projects %}<li>{{ p }}</li>{% endfor %}
-                            </ul>
-                          {% else %}—{% endif %}
+                      <div class="selected-body">
+                        <div class="kv">
+                          <div class="kv-label">Tech Stack</div>
+                          <div class="kv-value">
+                            {% if c.tech_stack %}
+                              <div class="stack-badges">
+                                {% for tech in c.tech_stack %}
+                                  <span class="badge">{{ tech }}</span>
+                                {% endfor %}
+                              </div>
+                            {% else %}—{% endif %}
+                          </div>
                         </div>
-                      </div>
         
-                      <div class="kv" style="margin-top:.5rem">
-                        <div class="kv-label">Summary</div>
-                        <div class="kv-value">{{ c.summary_profile|default:"—" }}</div>
-                      </div>
+                        <div class="kv">
+                          <div class="kv-label">Related Projects</div>
+                          <div class="kv-value">
+                            {% if c.related_projects %}
+                              <ul class="list" style="margin:0">
+                                {% for p in c.related_projects %}<li>{{ p }}</li>{% endfor %}
+                              </ul>
+                            {% else %}—{% endif %}
+                          </div>
+                        </div>
         
-                      <div class="kv" style="margin-top:.5rem">
-                        <div class="kv-label">Rationale</div>
-                        <div class="kv-value">{{ c.rationale|default:"—" }}</div>
+                        <div class="kv">
+                          <div class="kv-label">Profile Summary</div>
+                          <div class="kv-value">{{ c.summary_profile|default:"—" }}</div>
+                        </div>
+        
+                        <div class="kv">
+                          <div class="kv-label">Selection Rationale</div>
+                          <div class="kv-value">{{ c.rationale|default:"—" }}</div>
+                        </div>
                       </div>
                     </div>
                   {% endfor %}
@@ -780,6 +819,381 @@
 </div>
 
 <style>
+/* Key-Value Grid - used across multiple tabs */
+.kv-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.kv {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  align-items: start;
+}
+
+.kv-label {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #00a99d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.kv-value {
+  font-size: 0.9375rem;
+  color: #333;
+  line-height: 1.6;
+}
+
+.kv-value ul.list {
+  margin: 0;
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+
+.kv-value ul.list li {
+  margin-bottom: 0.5rem;
+}
+
+.section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #333;
+  margin: 2rem 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #00a99d;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.muted {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+/* Table Styles */
+.table-wrap {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.table thead {
+  background: #f8f9fa;
+}
+
+.table th {
+  padding: 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  color: #00a99d;
+  text-transform: uppercase;
+  font-size: 0.8125rem;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.table td {
+  padding: 1rem 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+  vertical-align: top;
+}
+
+.table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+/* Stack Display */
+.stack-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.stack-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stack-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stack-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: rgba(0, 169, 157, 0.1);
+  color: #00a99d;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Potential Candidates Styles */
+.role-group {
+  margin-bottom: 2.5rem;
+}
+
+.role-group:last-child {
+  margin-bottom: 0;
+}
+
+.candidates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.candidate-card {
+  background: #f8f9fa;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.25rem;
+  transition: all 0.2s ease;
+}
+
+.candidate-card:hover {
+  border-color: #00a99d;
+  box-shadow: 0 4px 12px rgba(0, 169, 157, 0.1);
+  transform: translateY(-2px);
+}
+
+.candidate-header {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.candidate-avatar {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #00a99d, #00c4b6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.candidate-avatar svg {
+  width: 24px;
+  height: 24px;
+}
+
+.candidate-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.candidate-id {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 0.5rem;
+}
+
+.candidate-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: rgba(0, 169, 157, 0.1);
+  color: #00a99d;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.candidate-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.candidate-body .kv {
+  grid-template-columns: 1fr;
+  gap: 0.5rem;
+  padding: 0.75rem;
+}
+
+.candidate-body .kv-label {
+  font-size: 0.75rem;
+}
+
+.candidate-body .kv-value {
+  font-size: 0.875rem;
+}
+
+/* Selected Candidates Styles */
+.selected-candidates-grid {
+  display: grid;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.selected-card {
+  background: white;
+  border: 2px solid #00a99d;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 169, 157, 0.1);
+}
+
+.selected-header {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.selected-avatar {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #00a99d, #00c4b6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.selected-avatar svg {
+  width: 30px;
+  height: 30px;
+}
+
+.selected-check {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 24px;
+  height: 24px;
+  background: #22c55e;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 2px solid white;
+}
+
+.selected-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.selected-id {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 0.5rem;
+}
+
+.selected-meta {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.selected-role {
+  padding: 0.25rem 0.75rem;
+  background: rgba(0, 169, 157, 0.1);
+  color: #00a99d;
+  border-radius: 12px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.selected-seniority {
+  padding: 0.25rem 0.75rem;
+  background: #f3f4f6;
+  color: #6b7280;
+  border-radius: 12px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.selected-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.selected-body .kv {
+  grid-template-columns: 150px 1fr;
+  background: #f8f9fa;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .kv {
+    grid-template-columns: 1fr;
+  }
+  
+  .candidates-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .selected-body .kv {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .table-wrap {
+    font-size: 0.8125rem;
+  }
+  
+  .table th,
+  .table td {
+    padding: 0.5rem;
+  }
+  
+  .candidate-header,
+  .selected-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .candidate-avatar,
+  .selected-avatar {
+    margin: 0 auto;
+  }
+}
+
+/* Container and base styles */
 .container {
   max-width: 1400px;
   margin: 0 auto;
@@ -1284,17 +1698,12 @@
   word-wrap: break-word;
 }
 
-/* JSON Viewer */
-.json-viewer {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
+/* JSON Header */
 .json-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 1.5rem;
 }
 
 .btn-copy {
@@ -1320,21 +1729,6 @@
 .btn-copy svg {
   width: 16px;
   height: 16px;
-}
-
-.json-content {
-  background: #1e1e1e;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin: 0;
-  overflow-x: auto;
-  font-family: 'Courier New', monospace;
-  font-size: 0.875rem;
-  line-height: 1.6;
-  color: #d4d4d4;
-  max-height: 600px;
-  overflow-y: auto;
 }
 
 /* Empty State */
@@ -1440,17 +1834,6 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById(tabId).classList.add('active');
     });
   });
-
-  // Format JSON in pre tags
-  document.querySelectorAll('.json-content').forEach(pre => {
-    try {
-      const jsonText = pre.textContent;
-      const jsonObj = JSON.parse(jsonText);
-      pre.textContent = JSON.stringify(jsonObj, null, 2);
-    } catch (e) {
-      console.error('JSON parsing error:', e);
-    }
-  });
 });
 
 function toggleText(button) {
@@ -1464,13 +1847,13 @@ function toggleText(button) {
   text.textContent = isVisible ? 'View Extracted Text' : 'Hide Extracted Text';
 }
 
-function copyJSON(tabName) {
-  const jsonElement = document.getElementById(tabName + '-json');
+function copyJSON(event, dataId) {
+  const jsonElement = document.getElementById(dataId);
   const text = jsonElement.textContent;
   
   navigator.clipboard.writeText(text).then(() => {
     const button = event.target.closest('.btn-copy');
-    const originalText = button.innerHTML;
+    const originalHTML = button.innerHTML;
     
     button.innerHTML = `
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1482,7 +1865,7 @@ function copyJSON(tabName) {
     button.style.color = '#00a99d';
     
     setTimeout(() => {
-      button.innerHTML = originalText;
+      button.innerHTML = originalHTML;
       button.style.borderColor = '';
       button.style.color = '';
     }, 2000);
