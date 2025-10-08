@@ -117,11 +117,7 @@ def logout_view(request):
 
 @login_required
 def dashboard(request):
-    try:
-        profile = DeveloperProfile.objects.get(user=request.user)
-    except DeveloperProfile.DoesNotExist:
-        return redirect('developers:consent_form')
-    
+
     return render(request, 'users/dashboard.html')
 
 
