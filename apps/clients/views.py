@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import ClientProfile, Project, IntakeDocument
+from .models import ClientProfile, Project, IntakeDocument, AuthorizedClientEmail
 from .forms import ClientProfileForm, IntakeForm
 from .decorators import authorized_required, prompt_limit_reached_required
 from django.utils import timezone
@@ -15,9 +15,25 @@ from django.db.models import F
 @login_required
 @authorized_required
 def dashboard(request):
- 
-    return render(request, 'clients/dashboard.html')
+    user = request.user
 
+    # 1️⃣ Crear el perfil de cliente si no existe
+    profile, created = ClientProfile.objects.get_or_create(
+        user=user,
+        defaults={"created_at": timezone.now()}
+    )
+
+    # 2️⃣ Si el usuario es un authorized client (en tu modelo), darle prompts de prueba
+    if AuthorizedClientEmail.objects.filter(email=user.email, active=True).exists():
+        if profile.search_limit is None or profile.search_limit == 0:
+            profile.search_limit = 10   # número de prompts de prueba
+            profile.save()
+
+    context = {
+        "profile": profile,
+    }
+
+    return render(request, "clients/dashboard.html", context)
 
 
 
