@@ -10,6 +10,13 @@ from apps.developers.models import CVStorage
 class AuthorizedClientEmail(models.Model):
     email = models.EmailField(unique=True)
     active = models.BooleanField(default=True)
+    def save(self, *args, **kwargs):
+        if self.email:
+            self.email = self.email.lower().strip()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.email
 
 
 class ClientProfile(models.Model):
