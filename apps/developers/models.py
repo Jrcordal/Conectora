@@ -62,6 +62,38 @@ def cv_upload_path(instance, filename):
     else:
         raise ValidationError("Only PDF and DOCX files are allowed.")
 
+
+
+class Skill(models.Model):
+    CATEGORY_CHOICES = [
+        ('programming_language', 'Programming language'),
+        ('framework', 'Framework / Library'),
+        ('architecture', 'Architecture / Pattern'),
+        ('tool', 'Tool / Version control'),
+        ('database', 'Database'),
+        ('cloud', 'Cloud platform'),
+        ('testing', 'Testing / QA'),
+        ('devops', 'DevOps / CI/CD'),
+        ('container', 'Containerization'),
+        ('data', 'Data skill'),
+        ('frontend', 'Frontend technology'),
+        ('mobile', 'Mobile development'),
+        ('api', 'APIs / Integrations'),
+        ('security', 'Security'),
+        ('agile', 'Agile / PM'),
+        ('os', 'Operating system'),
+    ]
+
+    name = models.CharField(max_length=100)
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES)
+
+    class Meta:
+        unique_together = ('name', 'category')
+
+    def __str__(self):
+        return f"{self.name} ({self.category})"
+
+
 class DeveloperProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True,related_name='developerprofile')
     consent_promotional_use = models.BooleanField(null=True, blank=True)
@@ -126,7 +158,8 @@ class DeveloperProfile(models.Model):
 
     # ---- Control de versiones del esquema ---- (Schema version control)
     schema_version = models.CharField(max_length=20, default="v1")
-
+    # Capa normalizada para filtros/reporting
+    skills = models.ManyToManyField('Skill', blank=True, related_name='developers')
     def __str__(self):
         return self.user.username
 
@@ -134,7 +167,51 @@ class DeveloperProfile(models.Model):
     def save(self, *args, **kwargs):
         self.has_cv = bool(self.cv_file)  # se autocalcula siempre
         super().save(*args, **kwargs)
+        # Sincronizar skills desde JSON después de guardar
+        self.sync_skills_from_json()
         
+    def sync_skills_from_json(self):
+
+        mapping = [
+            ('programming_languages', 'programming_language'),
+            ('frameworks_libraries', 'framework'),
+            ('architectures_patterns', 'architecture'),
+            ('tools_version_control', 'tool'),
+            ('databases', 'database'),
+            ('cloud_platforms', 'cloud'),
+            ('testing_qa', 'testing'),
+            ('devops_ci_cd', 'devops'),
+            ('containerization', 'container'),
+            ('data_skills', 'data'),
+            ('frontend_technologies', 'frontend'),
+            ('mobile_development', 'mobile'),
+            ('apis_integrations', 'api'),
+            ('security', 'security'),
+            ('agile_pm', 'agile'),
+            ('operating_systems', 'os'),
+        ]
+
+        # Limpiamos skills actuales (opcional, según cómo quieras versionar)
+        self.skills.clear()
+
+        for field_name, skill_type in mapping:
+            values = getattr(self, field_name) or []
+            # asumimos que son listas de strings
+            for v in values:
+                name = (v or "").strip()
+                if not name:
+                    continue
+                skill, _ = Skill.objects.get_or_create(
+                    name=name,
+                    category=skill_type,
+                )
+                self.skills.add(skill)
+
+
+
+    
     @property
     def cv_filename(self):
         return os.path.basename(self.cv_file.name)
+
+

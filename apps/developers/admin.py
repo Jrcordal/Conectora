@@ -22,6 +22,22 @@ def update_from_current_cv(modeladmin, request, queryset):
     if no_cv:
         messages.warning(request, f"{no_cv} profiles did not have CV.")
 
+@admin.action(description="Sync skills from JSON fields")
+def sync_skills_from_json_action(modeladmin, request, queryset):
+    synced = 0
+    errors = 0
+    for profile in queryset:
+        try:
+            profile.sync_skills_from_json()
+            synced += 1
+        except Exception as e:
+            errors += 1
+            messages.error(request, f"Error syncing skills for {profile.user.username}: {str(e)}")
+    if synced:
+        messages.success(request, f"Skills synchronized for {synced} profile(s).")
+    if errors:
+        messages.warning(request, f"{errors} profile(s) had errors during synchronization.")
+
 
 class JSONTextarea(forms.Textarea):
     def format_value(self, value):
@@ -37,7 +53,7 @@ class DeveloperProfileAdmin(admin.ModelAdmin):
     search_fields = ("user__username" ,"user__email", "main_developer_role")
     list_filter = ("country_living_in", "nationality")
     autocomplete_fields = ["user"]
-    actions = [update_from_current_cv]
+    actions = [update_from_current_cv, sync_skills_from_json_action]
 
     # Colapsables por secciones (Grappelli)
     fieldsets = (
