@@ -197,7 +197,7 @@ def fill_developer_fields(self, profile_id):
                 model="gemini-2.5-flash",
                 temperature=0.1,
                 max_tokens=None,
-                timeout=None,
+                timeout=60,
                 max_retries=2,
                 google_api_key=settings.GOOGLE_API_KEY
             )
